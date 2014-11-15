@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8AC96572-0105-47A3-83AA-3FD6061FBD06}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Dwarf</RootNamespace>
+    <AssemblyName>Dwarf</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\Release\Dwarf.xml</DocumentationFile>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlServerCe, Version=4.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\External\System.Data.SqlServerCe.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataAccess\DbContext.cs" />
+    <Compile Include="DataAccess\SqlCe\SqlCeDatabase.cs" />
+    <Compile Include="DataAccess\SqlCe\SqlCeDatabaseScripts.cs" />
+    <Compile Include="DatabaseOperator.cs" />
+    <Compile Include="DbContextHelper.cs" />
+    <Compile Include="DomainModel\AuditLogEventTrace.cs" />
+    <Compile Include="ContextAdapter.cs" />
+    <Compile Include="DomainModel\AuditLogTypes.cs" />
+    <Compile Include="DataAccess\DatabaseOperationException.cs" />
+    <Compile Include="Interfaces\IDatabaseOperator.cs" />
+    <Compile Include="Interfaces\IAxiormConfiguration.cs" />
+    <Compile Include="Interfaces\IDatabaseScripts.cs" />
+    <Compile Include="Interfaces\IDatabase.cs" />
+    <Compile Include="Interfaces\IDbContext.cs" />
+    <Compile Include="Interfaces\ICompositeID.cs" />
+    <Compile Include="DataAccess\SqlServer\SqlServerDatabaseScripts.cs" />
+    <Compile Include="Utilities\ExceptionHandler.cs" />
+    <Compile Include="Extensions\AuditLogExtensions.cs" />
+    <Compile Include="Extensions\DwarfExtensions.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\StreamExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Interfaces\IAuditLog.cs" />
+    <Compile Include="Interfaces\IAuditLogless.cs" />
+    <Compile Include="Interfaces\IAuditLogService.cs" />
+    <Compile Include="Interfaces\IDwarf.cs" />
+    <Compile Include="Interfaces\IUnaryDwarf.cs" />
+    <Compile Include="Interfaces\ICacheless.cs" />
+    <Compile Include="Interfaces\IErrorLog.cs" />
+    <Compile Include="Interfaces\IErrorLogService.cs" />
+    <Compile Include="Interfaces\ITransactionless.cs" />
+    <Compile Include="Interfaces\IDwarfList.cs" />
+    <Compile Include="Interfaces\IUser.cs" />
+    <Compile Include="Interfaces\IUserService.cs" />
+    <Compile Include="Interfaces\IForeignDwarf.cs" />
+    <Compile Include="Interfaces\IUnvalidatable.cs" />
+    <Compile Include="Attributes\UnvalidatableAttribute.cs" />
+    <Compile Include="Attributes\DwarfProjectionPropertyAttribute.cs" />
+    <Compile Include="Attributes\ManyToMany.cs" />
+    <Compile Include="Attributes\OneToMany.cs" />
+    <Compile Include="Attributes\DwarfPropertyAttribute.cs" />
+    <Compile Include="Cfg.cs" />
+    <Compile Include="DataAccess\DatabaseTypes.cs" />
+    <Compile Include="Interfaces\IWhereCondition.cs" />
+    <Compile Include="DataAccess\SqlServer\QueryBuilderLight.cs" />
+    <Compile Include="DataAccess\QueryBuilder\QueryMergers.cs" />
+    <Compile Include="DataAccess\QueryBuilder\DateParts.cs" />
+    <Compile Include="DataAccess\QueryBuilder\QueryOperators.cs" />
+    <Compile Include="DataAccess\SqlServer\QueryBuilder.cs" />
+    <Compile Include="DataAccess\QueryBuilder\WhereSeparator.cs" />
+    <Compile Include="DataAccess\QueryBuilder\QuerySeparatorOperatons.cs" />
+    <Compile Include="DataAccess\SqlServer\QueryStringHelper.cs" />
+    <Compile Include="DataAccess\QueryBuilder\SelectOperators.cs" />
+    <Compile Include="DataAccess\TransactionWrapper.cs" />
+    <Compile Include="DomainModel\AuditLog.cs" />
+    <Compile Include="DomainModel\Dwarf.cs" />
+    <Compile Include="CacheManager.cs" />
+    <Compile Include="DataAccess\SqlServer\SqlServerDatabase.cs" />
+    <Compile Include="DataAccess\QueryBuilder\WhereCondition.cs" />
+    <Compile Include="DomainModel\DwarfHelper.cs" />
+    <Compile Include="DomainModel\UnaryDwarf.cs" />
+    <Compile Include="DomainModel\ForeignDwarfHelper.cs" />
+    <Compile Include="DomainModel\ErrorLog.cs" />
+    <Compile Include="DomainModel\ForeignDwarfList.cs" />
+    <Compile Include="Interfaces\IForeignDwarfList.cs" />
+    <Compile Include="Utilities\ExpressionProperty.cs" />
+    <Compile Include="Web\DwarfGlobal.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="DwarfConfiguration.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DomainModel\PropertyService.cs" />
+    <Compile Include="DomainModel\ForeignDwarf.cs" />
+    <Compile Include="Proxy\IProxy.cs" />
+    <Compile Include="Proxy\ProxyGenerator.cs" />
+    <Compile Include="DataAccess\SqlCe\SqlCeDatabaseScriptHelper.cs" />
+    <Compile Include="DataAccess\SqlServer\SqlServerDatabaseScriptHelper.cs" />
+    <Compile Include="Utilities\ReflectionHelper.cs" />
+    <Compile Include="Extensions\TypeExtensions.cs" />
+    <Compile Include="DomainModel\DwarfList.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
