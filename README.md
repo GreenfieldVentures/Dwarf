@@ -128,29 +128,113 @@ By default an object's OneToMany and ManyToMany relationships/collections are au
 In most cases it's natural that if an object is deleted, its collections should be deleted as well. But sometimes the semantic relationship is the opposite. For example if a person is deleted should all its pets be deleted too? This is accomplished by inversing the relationship via setting the Inverse-property to true on the OneToMany-attribute and setting IsNullable to true on the foreign key property.
 
 ###The Dwarf base class
+Creating a class
 ```csharp
-//Save an object
-new Mountain {Location = "Himalaya"}.Save();
-
-//or
-var home = new Mountain {Location = "Himalaya"}.SaveX();
-
-//Update an object
-home.Location = "Erebor";
-home.Save();
-
-//Delete an object
-home.Delete();
-
-//You may call SaveAll or DeleteAll on DwarfLists 
-new DwarfList<Mountain>
+public class Person : Dwarf<Person>
 {
-    new Mountain {Location = "Himalaya"},
-    new Mountain {Location = "Erebor"},
-}.SaveAll();
+}
 ```
+
+####Properties
+Here are some examples of properties of different types and DwarfPropertyAttribute settings. Dwarf supports DateTime, Enum, int, decimal, double, bool, Type, byte[], IDwarf (foreign keys), IGoblin & IGoblinLists
+```csharp
+[DwarfProperty]
+public string Name { get; set; }
+
+[DwarfProperty]
+public int Age { get; set; }
+
+[DwarfProperty]
+public double? BeardSize { get; set; }
+
+[DwarfProperty(UseMaxLength = true)]
+public string History { get; set; }
+
+[DwarfProperty]
+public virtual Mountain Home { get; set; } //Virtual to enable Lazy Loading
+
+[DwarfProperty(IsUnique = true)]
+public string SocialSecurityNumber { get; set; }
+
+[DwarfProperty(DisableDeleteCascade = true, IsNullable = true)]
+public virtual Country Country { get; set; }
+
+[DwarfProperty(UniqueGroupName = "UniqueGroupWithCoolName")]
+public string PropertyOne { get; set; }
+
+[DwarfProperty(UniqueGroupName = "UniqueGroupWithCoolName")]
+public string PropertyTwo { get; set; }
+```
+
+####ProjectionProperties
+Projection properties behaves like readonly properies where the data is fetched by a custom query. These properties are queryable like and other property (linq or the QueryBuilder). They serve as a means to avoid unnecessary round trips to the database
+```csharp
+[DwarfProjectionProperty("select some_column from another_table at where at.personId = person.id")]
+public bool IsSomethingValid { get; set; }
+```
+
+####OneToMany & ManyToMany
 Dwarf keeps track of all collection's added/removed/updated objects and will take care of the necessary database operations. 
 Many-to-many collections are also mapped and handled automatically.
+
+You can either let Dwarf handle the naming of the Many-To-Many tables or manually assign one
+```csharp
+[ManyToMany]
+public DwarfList<Disease> Diseases
+{
+    get { return ManyToMany(x => x.Diseases); }
+}
+
+[ManyToMany(TableName = "CurrentlyActiveDiseases")]
+public DwarfList<Disease> Diseases
+{
+    get { return ManyToMany(x => x.Diseases); }
+}
+```
+
+A regular OneToMany property
+```csharp
+[OneToMany]
+public DwarfList<Memory> Memories
+{
+    get { return OneToMany(x => x.Memories); }
+}
+```
+
+A OneToMany property where the foreign key in Memory is named other than the calling type. I.e. if the implementing type is Person, then Memory's foreign key must be named Person for Dwarf to automatically handle the relationship. Otherwise the foreign key must be specified as:
+```csharp
+[OneToMany]
+public DwarfList<Memory> Memories
+{
+    get { return OneToMany(x => x.Memories, null, x => x.TheOwningProperty); }
+}
+```
+
+As described above regarding inverse relationships
+```csharp
+[OneToMany(IsInverse = true)]
+public DwarfList<Memory> Memories
+{
+    get { return OneToMany(x => x.Memories); }
+}
+```
+
+By default the DwarfLists will use the containing object's id (or composite id) as a primary key, but an alternate key can be specified to be used when determining if an object should be added or not to the collection
+```csharp
+[OneToMany]
+public DwarfList<BirthdayParty> BirthdayParties
+{
+    get { return OneToMany(x => x.Ordinal); }
+}
+```
+
+####Interfaces
+Assign behavior to objects in the model by decorating them with interfaces
+* ICacheless - Objects of this type will not be subject to caching
+* ICompositeId - Discard the default Id-property and instead compose a primary key from all DwarfProperties with IsPrimaryKey = true
+* ITranscationless - Objects of this type will always be handled outside of and will not be affected by any ongoing transcation
+
+####Functions
 
 ```csharp
 //Revert all local changes to the object's properties
@@ -172,11 +256,31 @@ var isPropertyDirty = home.IsPropertyDirty(x => x.Location);
 var isSaved = home.IsSaved;
 ```
 
-####Properties
-####OneToMany
-####ManyToMany
-####Interfaces
+
 ####Save/Delete
+```csharp
+//Save an object
+new Mountain {Location = "Himalaya"}.Save();
+
+//or
+var home = new Mountain {Location = "Himalaya"}.SaveX();
+
+//Update an object
+home.Location = "Erebor";
+home.Save();
+
+//Delete an object
+home.Delete();
+
+//You may call SaveAll or DeleteAll on DwarfLists 
+new DwarfList<Mountain>
+{
+    new Mountain {Location = "Himalaya"},
+    new Mountain {Location = "Erebor"},
+}.SaveAll();
+
+```
+
 ####Load/LoadAll/LoadReferencing
 ```csharp
 //Load an object from the database 
@@ -189,4 +293,16 @@ var allPets = Pet.LoadAll();
 
 ###The UnaryDwarf base class
 ###Goblins & GoblinCollections
+```csharp
+
+//GoblinLists doesn't need an attribute to be handled
+public GoblinList<Number> Numbers
+{
+    get { return Goblins(x => x.Numbers); }
+}
+
+[DwarfProperty]
+public Number MyLuckyNumber { get; set; }
+
+```
 ###The QueryBuilder
