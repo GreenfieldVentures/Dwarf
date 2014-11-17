@@ -234,7 +234,7 @@ Assign behavior to objects in the model by decorating them with interfaces
 * ICompositeId - Discard the default Id-property and instead compose a primary key from all DwarfProperties with IsPrimaryKey = true
 * ITranscationless - Objects of this type will always be handled outside of and will not be affected by any ongoing transcation
 
-####Functions
+####Other Functions
 
 ```csharp
 //Revert all local changes to the object's properties
@@ -255,7 +255,6 @@ var isPropertyDirty = home.IsPropertyDirty(x => x.Location);
 //True if the object has been saved
 var isSaved = home.IsSaved;
 ```
-
 
 ####Save/Delete
 ```csharp
@@ -281,7 +280,8 @@ new DwarfList<Mountain>
 
 ```
 
-####Load/LoadAll/LoadReferencing
+####Load & LoadAll
+
 ```csharp
 //Load an object from the database 
 var pet = Pet.Load(myPetId);
@@ -292,17 +292,96 @@ var allPets = Pet.LoadAll();
 ```
 
 ###The UnaryDwarf base class
-###Goblins & GoblinCollections
-```csharp
+Your "tree structure"-like types can inherit from UnaryDwarf instead of Dwarf. 
+This will add two properties to the type:
+* Parent
+* Children
 
-//GoblinLists doesn't need an attribute to be handled
+And the following utility functions:
+* LoadAncestors
+* LoadDescendants
+* LoadRoots
+
+###Goblins & GoblinCollections
+Lacking a better noun a Goblin is a value object, meaning an object not persisted by the current database like a type inheriting from dwarf. I.e. it can be a wrapper for a service or any other composed datatype. Dwarf objects will save the Id property as a reference. Here's a simple examble of a Goblin type called Number
+```csharp
+public class Number : Goblin<Number>
+{
+    public override object Id
+    {
+        get { return TheSecretNumber; }
+    }
+
+    public int TheSecretNumber { get; set; }
+
+    public override Number LoadImplementation(object id)
+    {
+        //Imagine a call to a REST service
+        return new Number {TheSecretNumber = (int) id};
+    }
+
+    public override List<Number> LoadAllImplementation()
+    {
+        //Imagine a call to a REST service
+        return new List<Number>
+        {
+            new Number{ TheSecretNumber = 1 },
+            new Number{ TheSecretNumber = 2 },
+            new Number{ TheSecretNumber = 3 }
+        }; 
+    }
+}
+```
+
+To implement Number in or Dwarf class we can either chose to reference one object:
+```csharp
+[DwarfProperty]
+public Number MyLuckyNumber { get; set; }
+```
+
+Or a collection of objects
+```csharp
 public GoblinList<Number> Numbers
 {
     get { return Goblins(x => x.Numbers); }
 }
-
-[DwarfProperty]
-public Number MyLuckyNumber { get; set; }
-
 ```
+Note that GoblinLists don't need an attribute to be handled
+
+
 ###The QueryBuilder
+//The query builder supports 
+//Nested queries
+//Inner and Left Outer Joins
+//Almost any Where-clause (are constructed with the WhereCondition-objects
+//Where's with inner or-clauses
+//Ordering
+//Grouping
+//Distinct queries
+//Can construct update & delete queries (though they ought to be rarely used)
+//All through a fluent interface. 
+//The QueryBuilder is your friend! Type-safety above all and let the compiler tell you when a change in the model will break a query. 
+
+```csharp
+public static List<Pet> LoadAllPetsNamed(string name)
+{
+    var query = new QueryBuilder()
+        .Select<Pet>()
+        .From<Pet>()
+        .Where<Pet>(x => x.Name, name);
+
+    return LoadReferencing<Pet>(query);
+} 
+
+public static List<Person> LoadAllPetsNamed(string name)
+{
+    var query = new QueryBuilder()
+        .Select<Person>()
+        .From<Person>()
+        .InnerJoin<Pet, Person>(x => x.Owner, x => x)
+        .Where<Pet>(x => x.Name, name)
+        .OrderBy<Person>(x => x.Age);
+
+    return LoadReferencing<Person>(query);
+} 
+```
