@@ -148,27 +148,28 @@ new DwarfList<Mountain>
     new Mountain {Location = "Himalaya"},
     new Mountain {Location = "Erebor"},
 }.SaveAll();
+```
+Dwarf keeps track of all collection's added/removed/updated objects and will take care of the necessary database operations. 
+Many-to-many collections are also mapped and handled automatically.
 
-//Dwarf keeps track of all collection's added/removed/updated objects and will take care of the necessary database operations. 
-//Many-to-many collections are also mapped and handled automatically.
-
+```csharp
 //Revert all local changes to the object's properties
-pet.Reset();
+home.Reset();
 
 //Reload all property values for object from the database
-pet.Refresh();
+home.Refresh();
 
 //Clone an object
-var pet2 = pet.CloneX();
+var clone = home.CloneX();
 
 //True if any properties on the object have changed
-var isDirty = pet.IsDirty;
+var isDirty = home.IsDirty;
 
 //True if the name property has changed
-var isPropertyDirty = pet.IsPropertyDirty(x => x.Name);
+var isPropertyDirty = home.IsPropertyDirty(x => x.Location);
 
 //True if the object has been saved
-var isSaved = pet.IsSaved;
+var isSaved = home.IsSaved;
 ```
 
 ####Properties
