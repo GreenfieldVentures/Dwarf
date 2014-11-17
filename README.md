@@ -13,6 +13,7 @@ In the initialization code of your application, e.g. Application_Start in global
 ```csharp
 var cfg = new DwarfConfiguration<Person> { ConnectionString = "MyConnectionString" }.Configure();
 ```
+
 ######Basic Example with built-in audit logging and error logging
 ```csharp
 var cfg = new DwarfConfiguration<Person>
@@ -44,6 +45,7 @@ cfg.DatabaseScripts.ExecuteDropScript();
 //Executes drop scripts then create scripts
 cfg.DatabaseScripts.ExecuteCreateScript(); 
 ```
+
 ####Ad-Hoc queries
 ```csharp
 //Execute ad-hoc queries that returns dynamic objects
@@ -58,6 +60,7 @@ cfg.Database.ExecuteNonQuery("create view Temp as select Id from Person where Ag
 //Execute ad-hoc scalar queries.
 cfg.Database.ExecuteScalar<int?>("select top 1 age from Person");
 ```
+
 ####Suspend & Resume audit logging
 ```csharp
 //Suspend and Resume auditlogging for the current session
@@ -79,11 +82,11 @@ using (cfg.Database.OpenTransaction())
 //Manually rollback the transcation
 using (var transaction = cfg.Database.OpenTransaction())
 {
-new Pet {Name = "Billy the Cat"}.Save();
-new Disease {Name = "Pink Eye"}.Save();
+    new Pet {Name = "Billy the Cat"}.Save();
+    new Disease {Name = "Pink Eye"}.Save();
 
-//Explicit rollback
-transaction.Rollback();
+    //Explicit rollback
+    transaction.Rollback();
 }
 ```
 
@@ -92,6 +95,7 @@ transaction.Rollback();
 //Manual error logging. Internally generated exceptions are handled automatically
 cfg.ErrorLogService.Logg(new Exception("My application just crashed", new Exception("This is an inner exception")));
 ```
+
 ####Audit Logging
 ```csharp
 var myCat = new Pet { Name = "Whiskers" };
