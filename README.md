@@ -303,31 +303,31 @@ And the following utility functions:
 * LoadRoots
 
 ###Goblins & GoblinCollections
-Lacking a better noun a Goblin is a value object, meaning an object not persisted by the current database like a type inheriting from dwarf. I.e. it can be a wrapper for a service or any other composed datatype. Dwarf objects will save the Id property as a reference. Here's a simple examble of a Goblin type called Number
+Lacking a better noun a Goblin is a value object, meaning an object not persisted by the current database like a type inheriting from dwarf. I.e. it can be a wrapper for a service or any other composed datatype. Dwarf objects will save the Id property as a reference. Here's a simple examble of a Goblin type called MagicNumber
 ```csharp
-public class Number : Goblin<Number>
+public class MagicNumber : Goblin<MagicNumber>
 {
     public override object Id
     {
-        get { return TheSecretNumber; }
+        get { return TheSecretSauce; }
     }
 
-    public int TheSecretNumber { get; set; }
+    public int TheSecretSauce { get; set; }
 
-    public override Number LoadImplementation(object id)
+    public override MagicNumber LoadImplementation(object id)
     {
         //Imagine a call to a REST service
-        return new Number {TheSecretNumber = (int) id};
+        return new MagicNumber { TheSecretSauce = (int)id };
     }
 
-    public override List<Number> LoadAllImplementation()
+    public override List<MagicNumber> LoadAllImplementation()
     {
         //Imagine a call to a REST service
-        return new List<Number>
+        return new List<MagicNumber>
         {
-            new Number{ TheSecretNumber = 1 },
-            new Number{ TheSecretNumber = 2 },
-            new Number{ TheSecretNumber = 3 }
+            new MagicNumber{ TheSecretSauce = 1 },
+            new MagicNumber{ TheSecretSauce = 2 },
+            new MagicNumber{ TheSecretSauce = 3 }
         }; 
     }
 }
@@ -336,14 +336,14 @@ public class Number : Goblin<Number>
 To implement Number in or Dwarf class we can either chose to reference one object:
 ```csharp
 [DwarfProperty]
-public Number MyLuckyNumber { get; set; }
+public MagicNumber MyLuckyNumber { get; set; }
 ```
 
 Or a collection of objects
 ```csharp
-public GoblinList<Number> Numbers
+public GoblinList<MagicNumber> MagicNumbers
 {
-    get { return Goblins(x => x.Numbers); }
+    get { return Goblins(x => x.MagicNumbers); }
 }
 ```
 Note that GoblinLists don't need an attribute to be handled
@@ -380,6 +380,27 @@ public static List<Person> LoadAllPetsNamed(string name)
         .From<Person>()
         .InnerJoin<Pet, Person>(x => x.Owner, x => x)
         .Where<Pet>(x => x.Name, name)
+        .OrderBy<Person>(x => x.Age);
+
+    return LoadReferencing<Person>(query);
+} 
+
+public static List<Person> SomeWierdQuery()
+{
+    var query = new QueryBuilder()
+        .Select<Person>()
+        .From<Person>()
+        .LeftOuterJoin<Pet, Person>(x => x.Owner, x => x)
+        .Where<Person>(x => x.Age, QueryOperators.LessThan, 50)
+        .Where<Person>(x => x.Name, QueryOperators.Like, "Hans")
+        .Where<Person>(x => x.BeardSize, 15)
+        .Where(DateParts.Year, new WhereCondition<Person> { Column = x => x.BirthDay, Operator = QueryOperators.In, Value = new List<int>{1985, 1987, 1989} })
+        .Where<Person>(x => x.MagicNumber, QueryOperators.Contains, MagicNumber.Load(53))
+        .WhereWithInnerOrClause
+        (
+            new WhereCondition<Pet>(x => x.Name, QueryOperators.IsNot, null),
+            new WhereCondition<Pet>(x => x.Name, QueryOperators.Like, "uste")
+        )
         .OrderBy<Person>(x => x.Age);
 
     return LoadReferencing<Person>(query);
