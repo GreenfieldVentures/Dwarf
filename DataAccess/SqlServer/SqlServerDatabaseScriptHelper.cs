@@ -240,7 +240,7 @@ namespace Dwarf.DataAccess
                 var existingColumns = (List<dynamic>)ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT c.name as name1, t.name as name2, c.max_length, c.is_nullable FROM sys.columns c inner join sys.types t on t.user_type_id = c.user_type_id WHERE object_id = OBJECT_ID('dbo." + existingTable + "') ");
                 
                 var type = allCurrentDomainTypes.First(x => x.Name.Equals(existingTable));
-                var props = DwarfHelper.GetForeignDwarfCollectionProperties(type).Union(DwarfHelper.GetDBProperties(type)).ToList();
+                var props = DwarfHelper.GetGemListProperties(type).Union(DwarfHelper.GetDBProperties(type)).ToList();
 
                 foreach (var existingColumn in existingColumns)
                 {
@@ -262,7 +262,7 @@ namespace Dwarf.DataAccess
 
                 foreach (var pi in props)
                 {
-                    if (DwarfPropertyAttribute.GetAttribute(pi.ContainedProperty) == null && !pi.PropertyType.Implements<IForeignDwarfList>())
+                    if (DwarfPropertyAttribute.GetAttribute(pi.ContainedProperty) == null && !pi.PropertyType.Implements<IGemList>())
                         continue;
 
                     var existingColumn = existingColumns.FirstOrDefault(x => (pi.PropertyType.Implements<IDwarf>() ? pi.Name + "Id" : pi.Name).Equals(x.name1));
@@ -607,9 +607,9 @@ namespace Dwarf.DataAccess
                 value = "bit";
             else if (pi.PropertyType.Implements<Guid?>())
                 value = "uniqueidentifier";
-            else if (pi.PropertyType.Implements<IForeignDwarf>())
+            else if (pi.PropertyType.Implements<IGem>())
                 value = "varchar";
-            else if (pi.PropertyType.Implements<IForeignDwarfList>())
+            else if (pi.PropertyType.Implements<IGemList>())
                 value = "varchar";
             else if (pi.PropertyType.Implements<Type>())
                 value = "varchar";
@@ -638,12 +638,12 @@ namespace Dwarf.DataAccess
             if (pi.Name.Equals("Id"))
                 value += " NOT NULL";
             else if (DwarfPropertyAttribute.IsFK(pi))
-                value += att.Nullable ? string.Empty : " NOT NULL";
+                value += att.IsNullable ? string.Empty : " NOT NULL";
             else if (pi.PropertyType == typeof(string))
                 value += att.UseMaxLength ? "(max)" : "(255)";
-            else if (pi.PropertyType.Implements<IForeignDwarf>())
-                value += "(255)" + (att.Nullable ? string.Empty : " NOT NULL");
-            else if (pi.PropertyType.Implements<IForeignDwarfList>())
+            else if (pi.PropertyType.Implements<IGem>())
+                value += "(255)" + (att.IsNullable ? string.Empty : " NOT NULL");
+            else if (pi.PropertyType.Implements<IGemList>())
                 value += "(max)";
             else if (pi.PropertyType.Implements<byte[]>())
                 value += "(max)";
@@ -653,7 +653,7 @@ namespace Dwarf.DataAccess
                 value += "(28, 8)";
             else if (pi.PropertyType.IsEnum())
                 value += "(255)" + (pi.PropertyType.IsGenericType ? string.Empty : " NOT NULL");
-            else if (!pi.PropertyType.IsGenericType && !att.Nullable)
+            else if (!pi.PropertyType.IsGenericType && !att.IsNullable)
                 value += " NOT NULL";
 
             if (att != null && att.IsUnique)
@@ -679,19 +679,19 @@ namespace Dwarf.DataAccess
             if (att == null)
                 return true;
 
-            if (att.IsPK)
+            if (att.IsPrimaryKey)
                 return false;
 
             if (pi.Name.Equals("Id"))
                 return false;
 
             if (DwarfPropertyAttribute.IsFK(pi))
-                return att.Nullable;
+                return att.IsNullable;
 
             if (pi.PropertyType == typeof(string))
                 return true;
 
-            if (att.Nullable)
+            if (att.IsNullable)
                 return true;
 
             return pi.PropertyType.IsGenericType;
@@ -731,7 +731,7 @@ namespace Dwarf.DataAccess
             foreach (var pi in DwarfHelper.GetDBProperties(type))
                 tables.AppendLine(TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty));
 
-            foreach (var pi in DwarfHelper.GetForeignDwarfCollectionProperties(type))
+            foreach (var pi in DwarfHelper.GetGemListProperties(type))
                 tables.AppendLine(TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty));
 
             foreach (var manyToManyProperty in DwarfHelper.GetManyToManyProperties(type))

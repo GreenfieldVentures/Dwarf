@@ -8,11 +8,11 @@ namespace Dwarf
     /// <summary>
     /// An object, referenced by a persisted Dwarf, that itself is persisted elsewhere.
     /// </summary>
-    public abstract class ForeignDwarf<T> : IForeignDwarf where T : ForeignDwarf<T>, new()
+    public abstract class Gem<T> : IGem where T : Gem<T>, new()
     {
         #region Variables
 
-        internal static ConcurrentDictionary<Type, ForeignDwarf<T>> loadObjects = new ConcurrentDictionary<Type, ForeignDwarf<T>>();
+        internal static ConcurrentDictionary<Type, Gem<T>> loadObjects = new ConcurrentDictionary<Type, Gem<T>>();
 
         #endregion Variables
 
@@ -82,12 +82,12 @@ namespace Dwarf
         /// </summary>
         public override bool Equals(object obj)
         {
-            if (obj is ForeignDwarf<T>)
+            if (obj is Gem<T>)
             {
                 if (GetType() != obj.GetType())
                     return false;
 
-                return Id.Equals(((ForeignDwarf<T>)obj).Id);
+                return Id.Equals(((Gem<T>)obj).Id);
             }
       
             return false;
@@ -120,7 +120,7 @@ namespace Dwarf
         /// <summary>
         /// Indicates wether the two Dwarfs are equal
         /// </summary>
-        public static bool operator ==(ForeignDwarf<T> a, object b)
+        public static bool operator ==(Gem<T> a, object b)
         {
             // If both are null, or both are same instance, return true.
             if (ReferenceEquals(a, b))
@@ -140,7 +140,7 @@ namespace Dwarf
         /// <summary>
         /// Indicates wether the two Dwarfs are not equal
         /// </summary>
-        public static bool operator !=(ForeignDwarf<T> a, object b)
+        public static bool operator !=(Gem<T> a, object b)
         {
             return !(a == b);
         }

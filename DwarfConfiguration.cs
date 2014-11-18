@@ -127,7 +127,7 @@ namespace Dwarf
         /// <summary>
         /// Suspends audit logging for the current request
         /// </summary>
-        public static void SuspendAuditLogging()
+        public void SuspendAuditLogging()
         {
             ContextAdapter<T>.GetDBContext().IsAuditLoggingSuspended = true;
         }
@@ -139,7 +139,7 @@ namespace Dwarf
         /// <summary>
         /// Resumes audit logging for the current request
         /// </summary>
-        public static void ResumeAuditLogging()
+        public void ResumeAuditLogging()
         {
             ContextAdapter<T>.GetDBContext().IsAuditLoggingSuspended = false;
         }
@@ -250,9 +250,9 @@ namespace Dwarf
                                                       where attribute is ManyToManyAttribute
                                                       select ep).ToList();
 
-                Cfg.ForeignDwarfCollectionProperties[validType] = (from ep in PropertyHelper.GetProperties(validType)
-                                                                    where ep.PropertyType.Implements<IForeignDwarfList>()
-                                                                    select ep).ToList();
+                Cfg.GemListProperties[validType] = (from ep in PropertyHelper.GetProperties(validType)
+                                                      where ep.PropertyType.Implements<IGemList>()
+                                                      select ep).ToList();
 
                 var fkPropertiesToOverride = new List<ExpressionProperty>();
 
@@ -286,12 +286,12 @@ namespace Dwarf
                 Cfg.LoadExpressions[validType] = Expression.Lambda<Func<Guid, object>>(Expression.Call(mi, value), new[] { value }).Compile();
             }
 
-            foreach (var validType in typeof(T).Assembly.GetTypes().Where(type => type.Implements<IForeignDwarf>() && !type.IsAbstract))
+            foreach (var validType in typeof(T).Assembly.GetTypes().Where(type => type.Implements<IGem>() && !type.IsAbstract))
             {
                 var value = Expression.Parameter(typeof(object), "value");
 
                 var mi = validType.FindMethodRecursively("Load", (BindingFlags.Static | BindingFlags.Public), new[] { typeof(object) });
-                Cfg.LoadForeignDwarf[validType] = Expression.Lambda<Func<object, object>>(Expression.Call(mi, value), new[] { value }).Compile();
+                Cfg.LoadGem[validType] = Expression.Lambda<Func<object, object>>(Expression.Call(mi, value), new[] { value }).Compile();
             }
         }
 
@@ -334,7 +334,7 @@ namespace Dwarf
 
                     foreach (var attribute in ep.GetCustomAttributes(false))
                     {
-                        if (attribute is DwarfPropertyAttribute && ((DwarfPropertyAttribute)attribute).IsPK)
+                        if (attribute is DwarfPropertyAttribute && ((DwarfPropertyAttribute)attribute).IsPrimaryKey)
                             yield return ep;
                     }
                 }
@@ -449,7 +449,7 @@ namespace Dwarf
 
             public string UserName
             {
-                get { return "FakeUser"; }
+                get { return ""; }
                 set { throw new NotImplementedException(); }
             }
 

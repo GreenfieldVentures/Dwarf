@@ -18,7 +18,7 @@ namespace Dwarf.DataAccess
     {
         public QueryBuilder()
         {
-            baseType = typeof (T);
+            origianlBaseType = baseType = typeof(T);
         }
     }
 
@@ -31,6 +31,7 @@ namespace Dwarf.DataAccess
 
         private readonly List<string> selectColumns;
         protected Type baseType;
+        protected Type origianlBaseType;
         private QueryTypes queryType;
         private string tableName;
         private bool isDistinctQuery;
@@ -665,8 +666,10 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Converts the current WhereCondition to an SQL Query
         /// </summary>
-        internal static string WhereConditionToQuery<T>(WhereCondition<T> condition, DateParts? datePart = null)
+        internal string WhereConditionToQuery<T>(WhereCondition<T> condition, DateParts? datePart = null)
         {
+            var bt = origianlBaseType ?? baseType;
+            
             if (condition.Operator == null)
                 condition.Operator = condition.Value != null ? QueryOperators.Equals : QueryOperators.Is;
 
@@ -678,15 +681,15 @@ namespace Dwarf.DataAccess
             {
                 condition.Operator = QueryOperators.Like;
 
-                if (condition.Value is IForeignDwarf)
-                    condition.Value = "¶" + ((IForeignDwarf)condition.Value).Id + "¶";
+                if (condition.Value is IGem)
+                    condition.Value = "¶" + ((IGem)condition.Value).Id + "¶";
 
                 return WhereConditionToQuery(condition, datePart);
             }
 
             if (condition.Operator == QueryOperators.Like)
             {
-                conditionValue = ContextAdapter<T>.GetDatabase().ValueToSqlString("%" + condition.Value + "%");
+                conditionValue = ContextAdapter.GetDatabase(bt).ValueToSqlString("%" + condition.Value + "%");
             }
             else if (condition.Operator == QueryOperators.In || condition.Operator == QueryOperators.NotIn)
             {
@@ -701,7 +704,7 @@ namespace Dwarf.DataAccess
                 {
                     var values = condition.Value as IEnumerable;
 
-                    var aggItems = values.Cast<object>().Aggregate(string.Empty, (current, value) => current + (ContextAdapter<T>.GetDatabase().ValueToSqlString(value) + ", "));
+                    var aggItems = values.Cast<object>().Aggregate(string.Empty, (current, value) => current + (ContextAdapter.GetDatabase(bt).ValueToSqlString(value) + ", "));
 
                     conditionValue = "(" + (aggItems.Length == 0 ? "''" : aggItems.TruncateEnd(2)) + ")";
                 }
@@ -712,12 +715,12 @@ namespace Dwarf.DataAccess
             }
             else
             {
-                conditionValue = ContextAdapter<T>.GetDatabase().ValueToSqlString(condition.Value);
+                conditionValue = ContextAdapter.GetDatabase(bt).ValueToSqlString(condition.Value);
             }
 
             if (!condition.IsTimeIncluded && condition.Value is DateTime)
             {
-                conditionValue = ContextAdapter<T>.GetDatabase().ValueToSqlString(((DateTime)condition.Value).Date);
+                conditionValue = ContextAdapter.GetDatabase(bt).ValueToSqlString(((DateTime)condition.Value).Date);
 
                 return "DATEADD(dd, 0, DATEDIFF(dd, 0, " + GetColumnName<T>(condition.GetColumn()) + ")) " + op + conditionValue + " ";
             }
@@ -745,7 +748,7 @@ namespace Dwarf.DataAccess
             if (DwarfProjectionPropertyAttribute.GetAttribute(pi) != null)
                 return "(" + DwarfProjectionPropertyAttribute.GetAttribute(pi).Script + ")";
 
-            if (pi.PropertyType.Implements<IForeignDwarfList>())
+            if (pi.PropertyType.Implements<IGemList>())
                 return string.Format("[{0}].[{1}]", typeof(T).Name, pi.Name);
 
             throw new InvalidOperationException("A queriable property must reside in the database too, right?");
@@ -759,7 +762,7 @@ namespace Dwarf.DataAccess
             if (DwarfProjectionPropertyAttribute.GetAttribute(pi) != null)
                 return "(" + DwarfProjectionPropertyAttribute.GetAttribute(pi).Script + ")";
 
-            if (pi.PropertyType.Implements<IForeignDwarfList>())
+            if (pi.PropertyType.Implements<IGemList>())
                 return pi.Name;
 
             throw new InvalidOperationException("A queriable property must reside in the database too, right?");
@@ -1034,7 +1037,7 @@ namespace Dwarf.DataAccess
             foreach (var pi in DwarfHelper.GetDBProperties(obj))
                 qb.ValuesInternal(new InsertIntoValue { ColumnProperty = pi, Type = obj.GetType(), Value = pi.GetValue(obj) });
 
-            foreach (var pi in DwarfHelper.GetForeignDwarfCollectionProperties(obj))
+            foreach (var pi in DwarfHelper.GetGemListProperties(obj))
                 qb.ValuesInternal(new InsertIntoValue { ColumnProperty = pi, Type = obj.GetType(), Value = pi.GetValue(obj) });
 
             return qb;
@@ -1150,7 +1153,7 @@ namespace Dwarf.DataAccess
                 qb.Set(qb.ConvertToQueryCondition(obj, pi));
             }
 
-            foreach (var pi in DwarfHelper.GetForeignDwarfCollectionProperties(obj))
+            foreach (var pi in DwarfHelper.GetGemListProperties(obj))
             {
                 if (!obj.GetType().Implements<ICompositeId>() && pi.Name.Equals("Id"))
                     continue;
@@ -1282,9 +1285,25 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Adds conditions to the where clause
         /// </summary>
-        public static QueryBuilder Where<T>(this QueryBuilder qb, Expression<Func<T, object>> expression, object value, QueryOperators queryOperator)
+        public static QueryBuilder Where<T>(this QueryBuilder qb, Expression<Func<T, object>> expression, QueryOperators queryOperator, object value)
         {
             return qb.Where(new WhereCondition<T>(expression, queryOperator, value));
+        }       
+        
+        /// <summary>
+        /// Adds conditions to the where clause
+        /// </summary>
+        public static QueryBuilder Where<T>(this QueryBuilder qb, DateParts datePart, Expression<Func<T, object>> expression, object value)
+        {
+            return qb.Where(datePart, new WhereCondition<T>(expression, value));
+        }
+
+        /// <summary>
+        /// Adds conditions to the where clause
+        /// </summary>
+        public static QueryBuilder Where<T>(this QueryBuilder qb, DateParts datePart, Expression<Func<T, object>> expression, QueryOperators queryOperator, object value)
+        {
+            return qb.Where(datePart, new WhereCondition<T>(expression, queryOperator, value));
         }
 
         /// <summary>
@@ -1293,7 +1312,7 @@ namespace Dwarf.DataAccess
         public static QueryBuilder Where<T>(this QueryBuilder qb, params WhereCondition<T>[] conditions)
         {
             foreach (var whereCondition in conditions)
-                qb.WhereInternal(QueryBuilder.WhereConditionToQuery(whereCondition));
+                qb.WhereInternal(qb.WhereConditionToQuery(whereCondition));
 
             return qb;
         }
@@ -1375,7 +1394,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder WhereWithInnerOrClause<T>(this QueryBuilder qb, params WhereCondition<T>[] conditions)
         {
-            qb.WhereWithInnerOrClauseInternal(conditions.Select(x => QueryBuilder.WhereConditionToQuery(x)).ToArray());
+            qb.WhereWithInnerOrClauseInternal(conditions.Select(x => qb.WhereConditionToQuery(x)).ToArray());
 
             return qb;
         }
@@ -1385,7 +1404,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder Where<T>(this QueryBuilder qb, DateParts datePart, WhereCondition<T> condition)
         {
-            qb.Where(QueryBuilder.WhereConditionToQuery(condition, datePart));
+            qb.Where(qb.WhereConditionToQuery(condition, datePart));
 
             return qb;
         }

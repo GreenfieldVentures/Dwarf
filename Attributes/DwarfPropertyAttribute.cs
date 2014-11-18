@@ -18,23 +18,23 @@ namespace Dwarf.Attributes
     {
         #region Properties
 
-        #region IsPK
+        #region IsPrimaryKey
 
         /// <summary>
         /// True if the property is PK for the object/table
         /// </summary>
-        public bool IsPK { get; set; }
+        public bool IsPrimaryKey { get; set; }
 
-        #endregion IsPK
+        #endregion IsPrimaryKey
 
-        #region Nullable
+        #region IsNullable
 
         /// <summary>
         /// True if the property can be null in the database
         /// </summary>
-        public bool Nullable { get; set; }
+        public bool IsNullable { get; set; }
 
-        #endregion Nullable
+        #endregion IsNullable
 
         #region UseMaxLength
 

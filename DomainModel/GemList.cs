@@ -14,37 +14,37 @@ using Dwarf.Utilities;
 namespace Dwarf
 {
     /// <summary>
-    /// A DwarfList extension for foreign dwarfs
+    /// A DwarfList extension for gems
     /// </summary>
-    public class ForeignDwarfList<T> : DwarfList<T>, IForeignDwarfList, IXmlSerializable where T : ForeignDwarf<T>, new()
+    public class GemList<T> : DwarfList<T>, IGemList, IXmlSerializable where T : Gem<T>, new()
     {
         #region Constructors
 
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public ForeignDwarfList()
+        public GemList()
         {
         }
 
         /// <summary>
         /// Constructor that initializes the collection with a predefined List of Ts
         /// </summary>
-        public ForeignDwarfList(Expression<Func<T, object>> alternatePrimaryKey): base(alternatePrimaryKey)
+        public GemList(Expression<Func<T, object>> alternatePrimaryKey): base(alternatePrimaryKey)
         {
         }
 
         /// <summary>
         /// Constructor that initializes the collection with a predefined List of Ts
         /// </summary>
-        public ForeignDwarfList(IEnumerable<T> list): base(list)
+        public GemList(IEnumerable<T> list): base(list)
         {
         }
 
         /// <summary>
         /// Constructor that initializes the collection with a predefined List of Ts and uniqueColumns
         /// </summary>
-        public ForeignDwarfList(IEnumerable<T> list, Expression<Func<T, object>> alternatePrimaryKey) : base(list, alternatePrimaryKey)
+        public GemList(IEnumerable<T> list, Expression<Func<T, object>> alternatePrimaryKey) : base(list, alternatePrimaryKey)
         {
             
         }        
@@ -56,7 +56,7 @@ namespace Dwarf
         /// <summary>
         /// See base
         /// </summary>
-        public IForeignDwarfList Parse(string value)
+        public IGemList Parse(string value)
         {
             return ParseValue(value);
         }
@@ -68,9 +68,9 @@ namespace Dwarf
         /// <summary>
         /// See Parse
         /// </summary>
-        public static ForeignDwarfList<T> ParseValue(string value)
+        public static GemList<T> ParseValue(string value)
         {
-            return new ForeignDwarfList<T>(new Regex(@"(?<=\¶)[^¶]+(?=\¶)", RegexOptions.IgnoreCase).Matches(value).Cast<Match>().Select(x => ForeignDwarf<T>.Load(x.Groups[0].Value)), x => x.Id);
+            return new GemList<T>(new Regex(@"(?<=\¶)[^¶]+(?=\¶)", RegexOptions.IgnoreCase).Matches(value).Cast<Match>().Select(x => Gem<T>.Load(x.Groups[0].Value)), x => x.Id);
         }
 
         #endregion ParseValue
@@ -145,7 +145,7 @@ namespace Dwarf
                     reader.ReadStartElement("Item");
                     
                     reader.MoveToContent();
-                    items.Add((T)ForeignDwarfHelper.Load(typeof(T), reader.ReadContentAsObject()));
+                    items.Add((T)GemList.Load(typeof(T), reader.ReadContentAsObject()));
                     reader.ReadToNextSibling("Item");
                 }
 

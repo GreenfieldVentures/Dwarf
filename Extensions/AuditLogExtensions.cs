@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -21,10 +22,10 @@ namespace Dwarf.Extensions
         /// Finds the event trace of the supplied property in the audit log
         /// and returns, if possible, a typed array of the values; OriginalValue | NewValue
         /// </summary>
-        public static TY[] GetLogData<T, TY>(this IAuditLog auditLog, Expression<Func<T, TY>> expression)
+        public static dynamic GetLogData<T, TY>(this IAuditLog auditLog, Expression<Func<T, TY>> expression)
         {
             if (string.IsNullOrEmpty(auditLog.AuditDetails))
-                throw new InvalidOperationException("No events found.");
+                return null;
 
             var doc = XDocument.Parse(auditLog.AuditDetails);
 
@@ -34,9 +35,9 @@ namespace Dwarf.Extensions
                 
                 if (trace.PropertyName.Equals(ReflectionHelper.GetPropertyName(expression)))
                 {
-                    var result = new TY[2];
-                    result[0] = (TY)Convert.ChangeType(trace.OriginalValue, typeof(TY));
-                    result[1] = (TY)Convert.ChangeType(trace.NewValue, typeof(TY));
+                    IDictionary<string, object> result = new ExpandoObject();
+                    result["OldValue"] = (TY)Convert.ChangeType(trace.OriginalValue, typeof(TY));
+                    result["NewValue"] = (TY)Convert.ChangeType(trace.NewValue, typeof(TY));
                     return result;
                 }
             }

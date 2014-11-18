@@ -4,9 +4,9 @@ using System.Collections.Generic;
 namespace Dwarf
 {
     /// <summary>
-    /// Helper class for foreign dwarfs
+    /// Helper class for gems
     /// </summary>
-    public static class ForeignDwarfHelper
+    public static class GemList
     {
         #region Methods
 
@@ -17,7 +17,7 @@ namespace Dwarf
         /// </summary>
         public static object Load(Type type, object id)
         {
-            return Cfg.LoadForeignDwarf[type](id);
+            return Cfg.LoadGem[type](id);
         }
 
         #endregion Load

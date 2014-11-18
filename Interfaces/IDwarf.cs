@@ -15,7 +15,7 @@ namespace Dwarf.Interfaces
         /// <summary>
         /// Returns true if the item is stored in the database (has a generated Id)
         /// </summary>
-        bool IsStored { get; }
+        bool IsSaved { get; }
 
         /// <summary>
         /// Returns true if the item is stored in the database and has one or many dirty (non-stored) properties

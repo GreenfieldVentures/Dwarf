@@ -3,9 +3,9 @@
 namespace Dwarf.Interfaces
 {
     /// <summary>
-    /// Base interface for all foreign dwarfs.
+    /// Base interface for all gems.
     /// </summary>
-    public interface IForeignDwarf : IComparable
+    public interface IGem : IComparable
     {
         /// <summary>
         /// Returns the Id of the instance

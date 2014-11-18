@@ -194,7 +194,7 @@ namespace Dwarf
         /// <summary>
         /// Cache the supplied list of Dwarfs
         /// </summary>
-        internal static ForeignDwarfList<T> SetCacheList<T>(string key, ForeignDwarfList<T> list) where T : ForeignDwarf<T>, new()
+        internal static GemList<T> SetCacheList<T>(string key, GemList<T> list) where T : Gem<T>, new()
         {
             if (Cache == null)
                 return list;

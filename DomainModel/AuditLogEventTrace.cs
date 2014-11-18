@@ -173,7 +173,7 @@ namespace Dwarf
                 return obj;
             }
 
-            if (pi.PropertyType.Implements<IForeignDwarf>())
+            if (pi.PropertyType.Implements<IGem>())
                 return pi.PropertyType.FindMethodRecursively("Load", new[] { typeof(object) }).Invoke(null, new object[] { value });
 
             if (pi.PropertyType.IsEnum())
@@ -228,8 +228,8 @@ namespace Dwarf
             if (obj != null && obj.GetType().Implements<IDwarf>())
                 return ((IDwarf) obj).Id;
 
-            if (obj != null && obj.GetType().Implements<IForeignDwarf>())
-                return ((IForeignDwarf)obj).Id;
+            if (obj != null && obj.GetType().Implements<IGem>())
+                return ((IGem)obj).Id;
 
             return obj != null ? obj.ToString() : null;
         }

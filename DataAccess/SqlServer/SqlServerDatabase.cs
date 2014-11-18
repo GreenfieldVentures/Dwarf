@@ -132,7 +132,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public virtual List<TY> SelectReferencing<T, TY>(params WhereCondition<TY>[] conditions) where TY : Dwarf<TY>, new() 
         {
-            return SelectReferencing<T, TY>(new QueryBuilder().Select<TY>().From<TY>().Where(conditions).ToQuery());
+            return SelectReferencing<T, TY>(new QueryBuilder<T>().Select<TY>().From<TY>().Where(conditions).ToQuery());
         }
         
         /// <summary>
@@ -266,7 +266,7 @@ namespace Dwarf.DataAccess
 
             ExecuteNonQuery<T, TY>(new QueryBuilder<T>().InsertInto(type).Values(dwarf));
 
-            dwarf.IsStored = true;
+            dwarf.IsSaved = true;
         }
 
         #endregion Insert
@@ -299,7 +299,7 @@ namespace Dwarf.DataAccess
 
             Parallel.ForEach(list, obj =>
             {
-                if (obj.IsStored)
+                if (obj.IsSaved)
                     return;
 
                 obj.Id = obj.Id.HasValue ? obj.Id.Value : Guid.NewGuid();
@@ -321,7 +321,7 @@ namespace Dwarf.DataAccess
                         row[i] = value ?? DBNull.Value;
                 }
 
-                obj.IsStored = true;
+                obj.IsSaved = true;
 
                 lock (dt.Rows.SyncRoot)
                     dt.Rows.Add(row);
@@ -344,7 +344,7 @@ namespace Dwarf.DataAccess
             if (con != DbContextHelper<T>.Connection)
                 con.Close();
 
-            objects.ForEachX(x => x.IsStored = true);
+            objects.ForEachX(x => x.IsSaved = true);
         }
 
         #endregion BulkInsert        
@@ -356,10 +356,10 @@ namespace Dwarf.DataAccess
         /// </summary>
         public virtual void InsertManyToMany<T>(IDwarf obj1, IDwarf obj2, string alternateTableName = null)
         {
-            if (!obj1.IsStored)
+            if (!obj1.IsSaved)
                 obj1.Save();
 
-            if (!obj2.IsStored)
+            if (!obj2.IsSaved)
                 obj2.Save();
 
             var type1 = obj1.GetType();
@@ -391,7 +391,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public virtual List<T> SelectManyToMany<T>(IDwarf owner, string alternateTableName = null) where T : Dwarf<T>, new()
         {
-            if (owner == null || !owner.IsStored)
+            if (owner == null || !owner.IsSaved)
                 return new List<T>();
 
             var targetType = typeof(T);
@@ -450,7 +450,7 @@ namespace Dwarf.DataAccess
 
             ExecuteNonQuery<T>(command);
 
-            dwarf.IsStored = false;
+            dwarf.IsSaved = false;
         }
 
         #endregion Delete
@@ -597,7 +597,7 @@ namespace Dwarf.DataAccess
             {
                 if (DbContextHelper<T, TY>.Transaction != null)
                     command.Transaction = DbContextHelper<T, TY>.Transaction;
-
+                
                 command.ExecuteNonQuery();
             }
             catch (DbException sqle)
@@ -727,7 +727,7 @@ namespace Dwarf.DataAccess
             if (result is TY)
                 return (TY)result;
 
-            if (result is DBNull)
+            if (result is DBNull || result == null)
                 return default(TY);
 
             return (TY)Convert.ChangeType(result, typeof(TY));
@@ -758,8 +758,8 @@ namespace Dwarf.DataAccess
 
                 if (propertyValue is DBNull)
                     propertyValue = pi.ContainedProperty.PropertyType == typeof(string) ? string.Empty : null;
-                else if (pi.PropertyType.Implements<IForeignDwarf>())
-                    propertyValue = Cfg.LoadForeignDwarf[pi.PropertyType](propertyValue);
+                else if (pi.PropertyType.Implements<IGem>())
+                    propertyValue = Cfg.LoadGem[pi.PropertyType](propertyValue);
                 else if (pi.PropertyType.IsEnum() && propertyValue != null)
                     propertyValue = Enum.Parse(pi.PropertyType.GetTrueEnumType(), propertyValue.ToString());
                 else if (pi.PropertyType.Implements<Type>())
@@ -794,7 +794,7 @@ namespace Dwarf.DataAccess
                 obj.SetOriginalValue(pi.Name, propertyValue);
             }
 
-            obj.IsStored = true;
+            obj.IsSaved = true;
 
             return obj;
         }
@@ -830,8 +830,8 @@ namespace Dwarf.DataAccess
                 return ValueToSqlString(value.ToString());
             if (value is byte[])
                 return ("0x" + BitConverter.ToString((byte[]) value).RemoveAll("-"));
-            if (value is IForeignDwarfList)
-                return ValueToSqlString(((IEnumerable<IForeignDwarf>)value).Flatten(x => "¶" + x.Id + "¶"));
+            if (value is IGemList)
+                return ValueToSqlString(((IEnumerable<IGem>)value).Flatten(x => "¶" + x.Id + "¶"));
             if (value is DateTime)
             {
                 var date = (DateTime)value;
@@ -843,8 +843,8 @@ namespace Dwarf.DataAccess
 
                 return string.Format("CONVERT(datetime, '{0}', 101)", date.ToString("yyyy-MM-dd HH:mm:ss.fff"));
             }
-            if (value is IForeignDwarf)
-                return ValueToSqlString(((IForeignDwarf) value).Id.ToString()); 
+            if (value is IGem)
+                return ValueToSqlString(((IGem) value).Id.ToString()); 
 
             throw new Exception("Non-supported type: " + value.GetType().Name);
         }

@@ -34,9 +34,9 @@ namespace Dwarf
         internal static Dictionary<Type, List<ExpressionProperty>> OneToManyProperties = new Dictionary<Type, List<ExpressionProperty>>();
       
         /// <summary>
-        /// All Collection properties per type
+        /// All List properties per type
         /// </summary>
-        internal static Dictionary<Type, List<ExpressionProperty>> ForeignDwarfCollectionProperties = new Dictionary<Type, List<ExpressionProperty>>();
+        internal static Dictionary<Type, List<ExpressionProperty>> GemListProperties = new Dictionary<Type, List<ExpressionProperty>>();
     
         /// <summary>
         /// All ManyToMany properties per type
@@ -59,9 +59,9 @@ namespace Dwarf
         internal static Dictionary<Type, Func<Guid, object>> LoadExpressions = new Dictionary<Type, Func<Guid, object>>();
 
         /// <summary>
-        /// The list of post-"compiled" expressions used to deflect reflection for ForeignDwarf.Load
+        /// The list of post-"compiled" expressions used to deflect reflection for Gem.Load
         /// </summary>
-        internal static Dictionary<Type, Func<object, object>> LoadForeignDwarf = new Dictionary<Type, Func<object, object>>();
+        internal static Dictionary<Type, Func<object, object>> LoadGem = new Dictionary<Type, Func<object, object>>();
 
         /// <summary>
         /// The list of post-"compiled" expressions used to deflect reflection 

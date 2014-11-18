@@ -201,34 +201,34 @@ namespace Dwarf
 
         #endregion GetOneToManyProperties
 
-        #region GetCollectionProperties
+        #region GetGemListProperties
 
         /// <summary>
         /// Returns all Collection properties of the current object
         /// </summary>
-        internal static IEnumerable<ExpressionProperty> GetForeignDwarfCollectionProperties(IDwarf obj)
+        internal static IEnumerable<ExpressionProperty> GetGemListProperties(IDwarf obj)
         {
-            return GetForeignDwarfCollectionProperties(obj.GetType());
+            return GetGemListProperties(obj.GetType());
         }
 
         /// <summary>
         /// Returns all Collection properties of the current object
         /// </summary>
-        internal static IEnumerable<ExpressionProperty> GetForeignDwarfCollectionProperties(Type type)
+        internal static IEnumerable<ExpressionProperty> GetGemListProperties(Type type)
         {
             DeProxyfy(ref type);
-            return Cfg.ForeignDwarfCollectionProperties[type];
+            return Cfg.GemListProperties[type];
         }
         /// <summary
         /// >
         /// Returns all Collection properties of the current object
         /// </summary>
-        internal static IEnumerable<ExpressionProperty> GetForeignDwarfCollectionProperties<T>()
+        internal static IEnumerable<ExpressionProperty> GetGemListProperties<T>()
         {
-            return GetForeignDwarfCollectionProperties(typeof(T));
+            return GetGemListProperties(typeof(T));
         }
 
-        #endregion GetCollectionProperties
+        #endregion GetGemListProperties
 
         #region GetFKProperties
 

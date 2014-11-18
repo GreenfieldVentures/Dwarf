@@ -3,17 +3,17 @@ using System.Collections;
 namespace Dwarf.Interfaces
 {
     /// <summary>
-    /// An interface for the DwarfList extension for foreign dwarfs
+    /// An interface for the DwarfList extension for gems
     /// </summary>
-    public interface IForeignDwarfList: IEnumerable
+    public interface IGemList: IEnumerable
     {
         /// <summary>
-        /// Parses the supplied value and returns a new IForeignDwarfList
+        /// Parses the supplied value and returns a new IGemList
         /// </summary>
-        IForeignDwarfList Parse(string value);
+        IGemList Parse(string value);
 
         /// <summary>
-        /// Gets the number of elements contained in the <see cref="T:Dwarf.IForeignDwarfList"/>.
+        /// Gets the number of elements contained in the <see cref="T:Dwarf.IGemList"/>.
         /// </summary>
         int Count { get; }
 

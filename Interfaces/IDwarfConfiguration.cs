@@ -13,5 +13,8 @@ namespace Dwarf.Interfaces
         IDwarfConfiguration Configure();
         void Terminate();
         IDatabaseOperator Database { get; }
+
+        void SuspendAuditLogging();
+        void ResumeAuditLogging();
     }
 }

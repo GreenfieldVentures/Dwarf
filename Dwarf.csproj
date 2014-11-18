@@ -71,7 +71,7 @@
     <Compile Include="DomainModel\AuditLogTypes.cs" />
     <Compile Include="DataAccess\DatabaseOperationException.cs" />
     <Compile Include="Interfaces\IDatabaseOperator.cs" />
-    <Compile Include="Interfaces\IAxiormConfiguration.cs" />
+    <Compile Include="Interfaces\IDwarfConfiguration.cs" />
     <Compile Include="Interfaces\IDatabaseScripts.cs" />
     <Compile Include="Interfaces\IDatabase.cs" />
     <Compile Include="Interfaces\IDbContext.cs" />
@@ -87,7 +87,6 @@
     <Compile Include="Interfaces\IAuditLogless.cs" />
     <Compile Include="Interfaces\IAuditLogService.cs" />
     <Compile Include="Interfaces\IDwarf.cs" />
-    <Compile Include="Interfaces\IUnaryDwarf.cs" />
     <Compile Include="Interfaces\ICacheless.cs" />
     <Compile Include="Interfaces\IErrorLog.cs" />
     <Compile Include="Interfaces\IErrorLogService.cs" />
@@ -95,7 +94,7 @@
     <Compile Include="Interfaces\IDwarfList.cs" />
     <Compile Include="Interfaces\IUser.cs" />
     <Compile Include="Interfaces\IUserService.cs" />
-    <Compile Include="Interfaces\IForeignDwarf.cs" />
+    <Compile Include="Interfaces\IGem.cs" />
     <Compile Include="Interfaces\IUnvalidatable.cs" />
     <Compile Include="Attributes\UnvalidatableAttribute.cs" />
     <Compile Include="Attributes\DwarfProjectionPropertyAttribute.cs" />
@@ -122,17 +121,17 @@
     <Compile Include="DataAccess\QueryBuilder\WhereCondition.cs" />
     <Compile Include="DomainModel\DwarfHelper.cs" />
     <Compile Include="DomainModel\UnaryDwarf.cs" />
-    <Compile Include="DomainModel\ForeignDwarfHelper.cs" />
+    <Compile Include="DomainModel\GemHelper.cs" />
     <Compile Include="DomainModel\ErrorLog.cs" />
-    <Compile Include="DomainModel\ForeignDwarfList.cs" />
-    <Compile Include="Interfaces\IForeignDwarfList.cs" />
+    <Compile Include="DomainModel\GemList.cs" />
+    <Compile Include="Interfaces\IGemList.cs" />
     <Compile Include="Utilities\ExpressionProperty.cs" />
     <Compile Include="Web\DwarfGlobal.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="DwarfConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DomainModel\PropertyService.cs" />
-    <Compile Include="DomainModel\ForeignDwarf.cs" />
+    <Compile Include="DomainModel\Gem.cs" />
     <Compile Include="Proxy\IProxy.cs" />
     <Compile Include="Proxy\ProxyGenerator.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeDatabaseScriptHelper.cs" />

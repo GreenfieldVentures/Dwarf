@@ -37,19 +37,19 @@ namespace Dwarf
         /// <summary>
         /// Id - Auto Persistent
         /// </summary>
-        [DwarfProperty(IsPK = true)]
+        [DwarfProperty(IsPrimaryKey = true)]
         public Guid? Id { get; set; }
 
         #endregion Id
 
-        #region IsStored
+        #region IsSaved
 
         /// <summary>
         /// Specifies wether the current object already resides in the database
         /// </summary>
-        public bool IsStored { get; set; }
+        public bool IsSaved { get; set; }
 
-        #endregion IsStored
+        #endregion IsSaved
 
         #region IsDirty
 
@@ -72,22 +72,22 @@ namespace Dwarf
         #region Collection
 
         /// <summary> 
-        /// Helper method for handling ForeignDwarfLists
+        /// Helper method for handling GemLists
         /// </summary>
-        protected ForeignDwarfList<TY> ForeignDwarfs<TY>(Expression<Func<T, DwarfList<TY>>> property) where TY : ForeignDwarf<TY>, new()
+        protected GemList<TY> Gems<TY>(Expression<Func<T, DwarfList<TY>>> property) where TY : Gem<TY>, new()
         {
             var propertyName = ReflectionHelper.GetPropertyName(property);
             var key = GetCollectionKey(propertyName);
 
-            var cacheItem = CacheManager.Cache[key] as ForeignDwarfList<TY>;
+            var cacheItem = CacheManager.Cache[key] as GemList<TY>;
 
             if (cacheItem != null)
                 return cacheItem;
 
             if (originalValues == null || !originalValues.ContainsKey(propertyName) || originalValues[propertyName] == null)
-                return CacheManager.SetCacheList(key, new ForeignDwarfList<TY>(x => x.Id));
+                return CacheManager.SetCacheList(key, new GemList<TY>(x => x.Id));
 
-            return CacheManager.SetCacheList(key, new ForeignDwarfList<TY>(ForeignDwarfList<TY>.ParseValue(originalValues[propertyName].ToString()), x => x.Id));
+            return CacheManager.SetCacheList(key, new GemList<TY>(GemList<TY>.ParseValue(originalValues[propertyName].ToString()), x => x.Id));
         }
 
         #endregion Collection
@@ -116,7 +116,7 @@ namespace Dwarf
 
             if (list == null)
             {
-                var resultList = IsStored ? InitializeOneToMany(alternatePrimaryKey, alternateReferencingColumn) : new DwarfList<TY>(alternatePrimaryKey);
+                var resultList = IsSaved ? InitializeOneToMany(alternatePrimaryKey, alternateReferencingColumn) : new DwarfList<TY>(alternatePrimaryKey);
                 CacheManager.SetCollectionCache(key, resultList);
                 return resultList;
             }
@@ -148,7 +148,7 @@ namespace Dwarf
         {
             var id = Id.HasValue ? Id.Value : (internallyProvidedCustomId.HasValue ? internallyProvidedCustomId.Value : (Guid?)null);
 
-            if (!IsStored && !id.HasValue)
+            if (!IsSaved && !id.HasValue)
                 internallyProvidedCustomId = Guid.NewGuid();
 
             return CacheManager.GetUserKey((T)this, internallyProvidedCustomId) + ":" + propertyName;
@@ -172,7 +172,7 @@ namespace Dwarf
 
             if (list == null)
             {
-                var resultList = IsStored ? InitializeManyToMany(property) : new DwarfList<TY>();
+                var resultList = IsSaved ? InitializeManyToMany(property) : new DwarfList<TY>();
                 CacheManager.SetCollectionCache(key, resultList);
                 return resultList;
             }
@@ -238,7 +238,7 @@ namespace Dwarf
               
                 var traces = CreateAuditLogTraceEvents();
 
-                if (IsStored)
+                if (IsSaved)
                 {
                     if (traces.Length > 0) //IsDirty
                         ContextAdapter<T>.GetDatabase().Update(this, traces.Select(x => PropertyHelper.GetProperty<T>(x.PropertyName)));
@@ -249,11 +249,13 @@ namespace Dwarf
                     ContextAdapter<T>.GetDatabase().Insert<T, T>(this, Id);
                 }
 
-                OnAfterSaveInternal();
-                OnAfterSave();
                 CreateAuditLog(actionType);
+                PersistOneToManyCollections();
+                PersistManyToManyCollections(); 
 
+                OnAfterSave();
                 DbContextHelper<T>.FinalizeOperation(false);
+                OnAfterSaveInternal();
             }
             catch (Exception e)
             {
@@ -440,7 +442,7 @@ namespace Dwarf
         /// </summary>
         public void Delete()
         {
-            if (!IsStored)
+            if (!IsSaved)
                 return;
 
             try
@@ -626,7 +628,7 @@ namespace Dwarf
         /// </summary>
         private AuditLogEventTrace[] CreateAuditLogTraceEvents(bool includeManyToManyCollections = false, bool inclundeOneToManyCollections = false)
         {
-            if (!IsStored)
+            if (!IsSaved)
                 return new AuditLogEventTrace[0];
 
             if (originalValues == null)
@@ -648,9 +650,9 @@ namespace Dwarf
                           where (oldValue != null && !oldValue.Equals(newValue)) || (oldValue == null && newValue != null)
                           select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue, NewValue = newValue };
 
-            var collections = from ep in DwarfHelper.GetForeignDwarfCollectionProperties(GetType())
+            var collections = from ep in DwarfHelper.GetGemListProperties(GetType())
                               where IsCollectionInitialized(ep.ContainedProperty)
-                              let x = (IForeignDwarfList)ep.GetValue(this) 
+                              let x = (IGemList)ep.GetValue(this) 
                               let newValue = x
                               let oldValue = x.Parse((string)originalValues[ep.Name] ?? string.Empty)
                               where (oldValue != null && !oldValue.ComparisonString.Equals(newValue.ComparisonString)) || (oldValue == null && newValue != null) 
@@ -734,13 +736,10 @@ namespace Dwarf
         /// </summary>
         private void OnAfterSaveInternal()
         {
-            PersistOneToManyCollections();
-            PersistManyToManyCollections();
-
             foreach (var ep in DwarfHelper.GetDBProperties(GetType()))
                 SetOriginalValue(ep.Name, ep.GetValue(this));
 
-            foreach (var ep in DwarfHelper.GetForeignDwarfCollectionProperties(GetType()))
+            foreach (var ep in DwarfHelper.GetGemListProperties(GetType()))
             {
                 if (IsCollectionInitialized(ep.ContainedProperty))
                     SetOriginalValue(ep.Name, ep.GetValue(this));
@@ -795,8 +794,8 @@ namespace Dwarf
                           where oldValue != null && (oldValue is string ? !string.IsNullOrEmpty(oldValue.ToString()) : true)
                           select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue }).ToArray();
 
-            var collectionTraces = (from ep in DwarfHelper.GetForeignDwarfCollectionProperties(GetType())
-                                    let oldValue = (IForeignDwarfList)ep.GetValue(this)
+            var collectionTraces = (from ep in DwarfHelper.GetGemListProperties(GetType())
+                                    let oldValue = (IGemList)ep.GetValue(this)
                                     where oldValue != null && oldValue.Count > 0
                                     select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue }).ToArray();
 
@@ -862,7 +861,7 @@ namespace Dwarf
                 clone.oneToManyAlternateKeys = new Dictionary<string, string>();
 
             clone.Id = internallyProvidedCustomId = null;
-            clone.IsStored = clone.isDeleted = false;
+            clone.IsSaved = clone.isDeleted = false;
 
             return clone;
         }
@@ -923,7 +922,7 @@ namespace Dwarf
             {
                 var att = DwarfPropertyAttribute.GetAttribute(pi.ContainedProperty);
 
-                if (!att.Nullable && (pi.GetValue(obj) == null || !((IDwarf)pi.GetValue(obj)).IsStored))
+                if (!att.IsNullable && (pi.GetValue(obj) == null || !((IDwarf)pi.GetValue(obj)).IsSaved))
                     yield return pi.Name;
             }
         }
@@ -997,8 +996,8 @@ namespace Dwarf
 
             if (value is IDwarf)
                 originalValues[property] = ((IDwarf) value).Id;
-            else if (value is IForeignDwarfList)
-                originalValues[property] = ((IEnumerable<IForeignDwarf>)value).Flatten(x => "¶" + x.Id + "¶");
+            else if (value is IGemList)
+                originalValues[property] = ((IEnumerable<IGem>)value).Flatten(x => "¶" + x.Id + "¶");
             else
                 originalValues[property] = value;
         }
@@ -1086,7 +1085,7 @@ namespace Dwarf
         /// <summary>
         /// Returns true if the supplied property is dirty
         /// </summary>
-        protected bool IsPropertyDirty(Expression<Func<T, object>> property)
+        public bool IsPropertyDirty(Expression<Func<T, object>> property)
         {
             var piName = ReflectionHelper.GetPropertyName(property);
 

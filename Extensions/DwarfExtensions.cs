@@ -19,6 +19,18 @@ namespace Dwarf.Extensions
             return obj;
         }
 
-        #endregion SaveX
+        #endregion SaveX        
+        
+        #region CloneX
+
+        /// <summary>
+        /// See IDwarf.Clone()
+        /// </summary>
+        public static T CloneX<T>(this T obj) where T : IDwarf
+        {
+            return (T)obj.Clone();
+        }
+
+        #endregion CloneX
     }
 }

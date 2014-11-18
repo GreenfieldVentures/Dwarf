@@ -11,7 +11,7 @@ namespace Dwarf
     /// <summary>
     /// Dwarf specialization for tree structures
     /// </summary>
-    public abstract class UnaryDwarf<T> : Dwarf<T>, IUnaryDwarf where T : UnaryDwarf<T>, new()
+    public abstract class UnaryDwarf<T> : Dwarf<T> where T : UnaryDwarf<T>, new()
     {
         #region Properties
 
@@ -20,7 +20,7 @@ namespace Dwarf
         /// <summary>
         /// The Parent
         /// </summary>
-        [DwarfProperty(Nullable = true, DisableDeleteCascade = true)]
+        [DwarfProperty(IsNullable = true, DisableDeleteCascade = true)]
         public virtual T Parent { get; set; }
 
         #endregion Parent
@@ -118,31 +118,6 @@ namespace Dwarf
         }
 
         #endregion LoadRoots
-
-        #region GetPath
-        /// <summary>
-        /// Returns the path of the current node/object
-        /// </summary>
-        public virtual string GetPath()
-        {
-            var hierarchy = new List<Guid>();
-            var currentItem = this;
-
-            while (currentItem != null && currentItem.Id != null)
-            {
-                hierarchy.Add((Guid)currentItem.Id);
-                currentItem = currentItem.Parent;
-            }
-
-            var path = string.Empty;
-
-            for (var i = hierarchy.Count - 1; i >= 0; i--)
-                path += "(" + hierarchy[i] + ")";
-
-            return path;
-        }
-
-        #endregion GetPath
 
         #endregion Methods
     }
