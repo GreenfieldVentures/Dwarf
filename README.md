@@ -1,9 +1,19 @@
 Dwarf
 =====
-Overview Text
+Dwarf.Net is a light weight, highly competent, versatile, easy-to-use O/R-M framework. Since the project was initiated in 2008 its goal has always been to minimize boiler plate code while maintaining high performance and readability. Dwarf aims to never "get in your way" which makes it an excellent companion during all stages of your project! Dwarf is currently used in a multitude of applications spanning from single-user desktop apps to online api backends with thousands of users. 
 
-##Setup / Getting started
-##Examples
+##FAQ
+#####Does Dwarf use reflection?
+No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
+
+#####Does Dwarf support Lazy Loading?
+Yes. All relationships/collections implement Lazy Loading by design. Foreign key properties supports both lazy loading and eager loading. Either by decorating the property as virtual to let the proxy generator handle the lazy loading or set the EagerLoad property to true in the dwarf attribute.
+
+#####Which databases does Dwarf support?
+Dwarf has full support for Sql Server and Sql Ce. Its internals are highly extendable thus adding support for additional providers is fairly easy, though not yet requested.
+
+#####Configuration and Conventions?
+Dwarf is a wee bit opinionated and is built upon its own set of conventions, were some are overridable and some aren't. There are no mapping files, instead mapping is done via property attributes. Less files, less code and less scattered code without making the domain model unreadable.
 
 ##Features
 ###The Config object
@@ -173,7 +183,7 @@ Projection properties behaves like readonly properies where the data is fetched 
 public bool IsSomethingValid { get; set; }
 ```
 
-####OneToMany & ManyToMany
+####OneToMany & ManyToMany collections
 Dwarf keeps track of all collection's added/removed/updated objects and will take care of the necessary database operations. 
 Many-to-many collections are also mapped and handled automatically.
 
@@ -227,6 +237,15 @@ public DwarfList<BirthdayParty> BirthdayParties
     get { return OneToMany(x => x.Ordinal); }
 }
 ```
+
+####Extension points
+There are two extension points each for the save and delete operations which can be overridden
+* PrependSave
+* AppendSave
+* PrependDelete
+* AppendDelete
+They all occur inside an ongoing transaction but prior to or after the command is sent to the database. 
+
 
 ####Interfaces
 Assign behavior to objects in the model by decorating them with interfaces
