@@ -415,7 +415,7 @@ public static List<Person> SomeWierdQuery()
         .Where<Person>(x => x.Age, QueryOperators.LessThan, 50)
         .Where<Person>(x => x.Name, QueryOperators.Like, "Hans")
         .Where<Person>(x => x.BeardSize, 15)
-        .Where(DateParts.Year, new WhereCondition<Person> { Column = x => x.BirthDay, Operator = QueryOperators.In, Value = new List<int>{1985, 1987, 1989} })
+        .Where<Person>(DateParts.Year, x => x.BirthDay, QueryOperators.In, new List<int> { 1985, 1987, 1989 })
         .Where<Person>(x => x.MyLuckyNumber, QueryOperators.Contains, MagicNumber.Load(53))
         .WhereWithInnerOrClause
         (
