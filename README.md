@@ -302,7 +302,7 @@ And the following utility functions:
 * LoadDescendants
 * LoadRoots
 
-###Gems & GemCollections
+###Gems
 A gem is a value object, meaning an object not persisted by the current database like a type inheriting from dwarf. I.e. it can be a wrapper for a service or any other composed datatype. Dwarf objects will save the Id property as a reference. Here's a simple examble of a Gem type called MagicNumber
 ```csharp
 public class MagicNumber : Gem<MagicNumber>
@@ -339,7 +339,7 @@ To implement Number in or Dwarf class we can either chose to reference one objec
 public MagicNumber MyLuckyNumber { get; set; }
 ```
 
-Or a collection of objects
+Or a collection of Gems
 ```csharp
 public GemList<MagicNumber> MagicNumbers
 {
