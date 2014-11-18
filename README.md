@@ -34,6 +34,8 @@ var cfg = new DwarfConfiguration<Person>
 }.Configure();
 ```
 
+The type Person can be any arbitrary type residing in the same assembly as your domain model. Preferably use a type signifying your model.
+
 ####Global.asax
 If you're building web application, let your global.asax inherit from DwarfGlobal and thusly let Dwarf handle configuration tracking, error handling, request/context/cache handling, etc
 
