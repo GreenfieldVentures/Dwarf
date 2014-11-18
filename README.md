@@ -382,6 +382,7 @@ The query builder supports
 
 The QueryBuilder is your friend! Type-safety above all and let the compiler tell you when a change in the model will break a query, not at runtime! Don't rely on "search & replace" when updating your code.
 
+Some examples
 ```csharp
 public static List<Pet> LoadAllPetsNamed(string name)
 {
@@ -393,7 +394,7 @@ public static List<Pet> LoadAllPetsNamed(string name)
     return LoadReferencing<Pet>(query);
 } 
 
-public static List<Person> LoadAllPetsNamed(string name)
+public static List<Person> LoadAllPeopleWithPetsNamed(string name)
 {
     var query = new QueryBuilder()
         .Select<Person>()
