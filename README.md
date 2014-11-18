@@ -369,17 +369,18 @@ Note that GemLists don't need an attribute to be handled
 
 
 ###The QueryBuilder
-* The query builder supports 
+The query builder supports 
 * Nested queries
 * Inner and Left Outer Joins
 * Almost any Where-clause (are constructed with the WhereCondition-objects
-* Where's with inner or-clauses
+* "Where"s with inner or-clauses
 * Ordering
 * Grouping
 * Distinct queries
 * Can construct update & delete queries (though they ought to be rarely used)
 * All through a fluent interface. 
-* The QueryBuilder is your friend! Type-safety above all and let the compiler tell you when a change in the model will break a query. 
+
+The QueryBuilder is your friend! Type-safety above all and let the compiler tell you when a change in the model will break a query, not at runtime! Don't rely on "search & replace" when updating your code.
 
 ```csharp
 public static List<Pet> LoadAllPetsNamed(string name)
