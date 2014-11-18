@@ -8,7 +8,7 @@ public class Program
 {
     static void Main(string[] args)
     {
-        var cfg = new DwarfConfiguration<Program> { ConnectionString ="ConnectionString" }.Configure();
+        var cfg = new DwarfConfiguration<Program> { ConnectionString ="..." }.Configure();
         cfg.DatabaseScripts.ExecuteCreateScript();
         new Person { Name = "Carl" }.Save();
     }
@@ -232,7 +232,7 @@ public DwarfList<Memory> Memories
 }
 ```
 
-A OneToMany property where the foreign key in Memory is named other than the calling type. I.e. if the implementing type is Person, then Memory's foreign key must be named Person for Dwarf to automatically handle the relationship. Otherwise the foreign key must be specified as:
+A OneToMany property where the foreign key in the other type is named other than the calling type. I.e. if the implementing type is Person, then Memory's foreign key must be named Person for Dwarf to automatically handle the relationship. Otherwise the foreign key must be specified as:
 ```csharp
 [OneToMany]
 public DwarfList<Memory> Memories
@@ -257,6 +257,13 @@ public DwarfList<BirthdayParty> BirthdayParties
 {
     get { return OneToMany(x => x.Ordinal); }
 }
+```
+
+When adding objects to the collection you don't need to assign the foreign key. This is done automatically during save. An example:
+```csharp
+myPerson.Pets.Add(new Pet { Name = "Snoopy" });
+myPerson.save(); //during this step the foreign key property pet.Person will be set to myPerson
+
 ```
 
 ####Extension points
