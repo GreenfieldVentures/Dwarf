@@ -2,6 +2,24 @@ Dwarf
 =====
 Dwarf.Net is a light weight, highly competent, versatile, easy-to-use O/R-M framework. Since the project was initiated in 2008 its goal has always been to minimize boiler plate code while maintaining high performance and readability. Dwarf aims to never "get in your way" which makes it an excellent companion during all stages of your project! Dwarf is currently used in a multitude of applications spanning from single-user desktop apps to online api backends with thousands of users. 
 
+##Minimal example
+```csharp
+public class Program
+{
+    static void Main(string[] args)
+    {
+        new DwarfConfiguration<Program> { ConnectionString ="ConnectionString"}.Configure().DatabaseScripts.ExecuteCreateScript();
+            new Person { Name = "Carl" }.Save();
+    }
+}
+
+public class Person : Dwarf<Person>
+{
+    [DwarfProperty]
+    public string Name { get; set; }
+}
+```
+
 ##FAQ
 #####Does Dwarf use reflection?
 No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
