@@ -136,7 +136,7 @@ public class Person : Dwarf<Person>
 ```
 
 ####Properties
-Here are some examples of properties of different types and DwarfPropertyAttribute settings. Dwarf supports DateTime, Enum, int, decimal, double, bool, Type, byte[], IDwarf (foreign keys), IGoblin & IGoblinLists
+Here are some examples of properties of different types and DwarfPropertyAttribute settings. Dwarf supports DateTime, Enum, int, decimal, double, bool, Type, byte[], IDwarf (foreign keys), IGem & IGemLists
 ```csharp
 [DwarfProperty]
 public string Name { get; set; }
@@ -302,10 +302,10 @@ And the following utility functions:
 * LoadDescendants
 * LoadRoots
 
-###Goblins & GoblinCollections
-Lacking a better noun a Goblin is a value object, meaning an object not persisted by the current database like a type inheriting from dwarf. I.e. it can be a wrapper for a service or any other composed datatype. Dwarf objects will save the Id property as a reference. Here's a simple examble of a Goblin type called MagicNumber
+###Gems & GemCollections
+A gem is a value object, meaning an object not persisted by the current database like a type inheriting from dwarf. I.e. it can be a wrapper for a service or any other composed datatype. Dwarf objects will save the Id property as a reference. Here's a simple examble of a Gem type called MagicNumber
 ```csharp
-public class MagicNumber : Goblin<MagicNumber>
+public class MagicNumber : Gem<MagicNumber>
 {
     public override object Id
     {
@@ -341,12 +341,12 @@ public MagicNumber MyLuckyNumber { get; set; }
 
 Or a collection of objects
 ```csharp
-public GoblinList<MagicNumber> MagicNumbers
+public GemList<MagicNumber> MagicNumbers
 {
-    get { return Goblins(x => x.MagicNumbers); }
+    get { return Gems(x => x.MagicNumbers); }
 }
 ```
-Note that GoblinLists don't need an attribute to be handled
+Note that GemLists don't need an attribute to be handled
 
 
 ###The QueryBuilder
@@ -395,7 +395,7 @@ public static List<Person> SomeWierdQuery()
         .Where<Person>(x => x.Name, QueryOperators.Like, "Hans")
         .Where<Person>(x => x.BeardSize, 15)
         .Where(DateParts.Year, new WhereCondition<Person> { Column = x => x.BirthDay, Operator = QueryOperators.In, Value = new List<int>{1985, 1987, 1989} })
-        .Where<Person>(x => x.MagicNumber, QueryOperators.Contains, MagicNumber.Load(53))
+        .Where<Person>(x => x.MyLuckyNumber, QueryOperators.Contains, MagicNumber.Load(53))
         .WhereWithInnerOrClause
         (
             new WhereCondition<Pet>(x => x.Name, QueryOperators.IsNot, null),
