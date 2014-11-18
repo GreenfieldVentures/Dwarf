@@ -8,8 +8,8 @@ public class Program
 {
     static void Main(string[] args)
     {
-        new DwarfConfiguration<Program> { ConnectionString ="ConnectionString"}.Configure().DatabaseScripts.ExecuteCreateScript();
-            new Person { Name = "Carl" }.Save();
+        var cfg = new DwarfConfiguration<Program> { ConnectionString ="ConnectionString" }.Configure();                              cfg.DatabaseScripts.ExecuteCreateScript();
+        new Person { Name = "Carl" }.Save();
     }
 }
 
