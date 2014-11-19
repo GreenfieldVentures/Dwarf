@@ -2,6 +2,25 @@ Dwarf
 =====
 Dwarf.Net is a light weight, highly competent, versatile, easy-to-use O/R-M framework. Since the project was initiated in 2008 its goal has always been to minimize boiler plate code while maintaining high performance and readability. Dwarf aims to never "get in your way" which makes it an excellent companion during all stages of your project! Dwarf is currently used in a multitude of applications spanning from single-user desktop apps to online api backends with thousands of users. 
 
+##Minimal example
+```csharp
+public class Program
+{
+    static void Main(string[] args)
+    {
+        var cfg = new DwarfConfiguration<Program> { ConnectionString ="..." }.Configure();
+        cfg.DatabaseScripts.ExecuteCreateScript();
+        new Person { Name = "Carl" }.Save();
+    }
+}
+
+public class Person : Dwarf<Person>
+{
+    [DwarfProperty]
+    public string Name { get; set; }
+}
+```
+
 ##FAQ
 #####Does Dwarf use reflection?
 No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
@@ -33,6 +52,8 @@ var cfg = new DwarfConfiguration<Person>
     ConnectionString = "MyConnectionString",
 }.Configure();
 ```
+
+The type Person can be any arbitrary type residing in the same assembly as your domain model. Preferably use a type signifying your model.
 
 ####Global.asax
 If you're building web application, let your global.asax inherit from DwarfGlobal and thusly let Dwarf handle configuration tracking, error handling, request/context/cache handling, etc
@@ -211,7 +232,7 @@ public DwarfList<Memory> Memories
 }
 ```
 
-A OneToMany property where the foreign key in Memory is named other than the calling type. I.e. if the implementing type is Person, then Memory's foreign key must be named Person for Dwarf to automatically handle the relationship. Otherwise the foreign key must be specified as:
+A OneToMany property where the foreign key in the other type is named other than the calling type. I.e. if the implementing type is Person, then Memory's foreign key must be named Person for Dwarf to automatically handle the relationship. Otherwise the foreign key must be specified as:
 ```csharp
 [OneToMany]
 public DwarfList<Memory> Memories
@@ -236,6 +257,13 @@ public DwarfList<BirthdayParty> BirthdayParties
 {
     get { return OneToMany(x => x.Ordinal); }
 }
+```
+
+When adding objects to the collection you don't need to assign the foreign key. This is done automatically during save. An example:
+```csharp
+myPerson.Pets.Add(new Pet { Name = "Snoopy" });
+myPerson.save(); //during this step the foreign key property pet.Person will be set to myPerson
+
 ```
 
 ####Extension points
@@ -352,7 +380,7 @@ public class MagicNumber : Gem<MagicNumber>
 }
 ```
 
-To implement Number in or Dwarf class we can either chose to reference one object:
+To implement MagicNumber in or Dwarf class we can either chose to reference one object:
 ```csharp
 [DwarfProperty]
 public MagicNumber MyLuckyNumber { get; set; }
