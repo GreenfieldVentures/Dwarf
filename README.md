@@ -402,7 +402,7 @@ public class MagicNumber : Gem<MagicNumber>
 }
 ```
 
-To implement MagicNumber in or Dwarf class we can either chose to reference one object:
+To implement MagicNumber in or Dwarf class we can either chose to reference one Gem:
 ```csharp
 [DwarfProperty]
 public MagicNumber MyLuckyNumber { get; set; }
