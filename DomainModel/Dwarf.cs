@@ -300,12 +300,12 @@ namespace Dwarf
 
         #endregion BulkInsert
 
-        #region StoreManyToManyRelation
+        #region PersistManyToMany
 
         /// <summary>
         /// Saves a many2many relation
         /// </summary>
-        private static void StoreManyToManyRelation(IDwarf owner, IDwarf child, string alternateTableName = null)
+        private static void PersistManyToMany(IDwarf owner, IDwarf child, string alternateTableName = null)
         {
             try
             {
@@ -325,14 +325,14 @@ namespace Dwarf
             }
         }
 
-        #endregion StoreManyToManyRelation
+        #endregion PersistManyToMany
 
-        #region DeleteManyToManyRelation
+        #region DeleteManyToMany
 
         /// <summary>
-        /// Deletes a many2many relation
+        /// Deletes a Many2Many relationship
         /// </summary>
-        private static void DeleteManyToManyRelation(IDwarf owner, IDwarf child, string alternateTableName = null)
+        private static void DeleteManyToMany(IDwarf owner, IDwarf child, string alternateTableName = null)
         {
             try
             {
@@ -352,7 +352,7 @@ namespace Dwarf
             }
         }
 
-        #endregion DeleteManyToManyRelation
+        #endregion DeleteManyToMany
 
         #region Load
 
@@ -947,10 +947,10 @@ namespace Dwarf
                 var obj = (IDwarfList)pi.GetValue(this);
 
                 foreach (var deletedItem in obj.GetDeletedItems())
-                    DeleteManyToManyRelation(this, deletedItem, tableName);
+                    DeleteManyToMany(this, deletedItem, tableName);
 
                 foreach (var addedItem in obj.GetAddedItems())
-                    StoreManyToManyRelation(this, addedItem, tableName);
+                    PersistManyToMany(this, addedItem, tableName);
             }
         }
 
