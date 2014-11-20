@@ -253,9 +253,9 @@ public DwarfList<Memory> Memories
 By default the DwarfLists will use the containing object's id (or composite id) as a primary key, but an alternate key can be specified to be used when determining if an object should be added or not to the collection
 ```csharp
 [OneToMany]
-public DwarfList<BirthdayParty> BirthdayParties
+public DwarfList<BirthdayParty> Birthdays
 {
-    get { return OneToMany(x => x.Ordinal); }
+    get { return OneToMany(x => Birthdays, x => x.Ordinal); }
 }
 ```
 
