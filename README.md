@@ -186,7 +186,7 @@ public string PropertyTwo { get; set; }
 Notice that the IsNullable property on the attributes does not have to be set for nullable value types (i.e. int? double?, DateTime?, etc).
 
 ####ProjectionProperties
-Projection properties behaves like readonly properies where the data is fetched by a custom query. These properties are queryable like and other property (linq or the QueryBuilder). They serve as a means to avoid unnecessary round trips to the database
+Projection properties behaves like readonly properies where the data is fetched by a custom query. These properties are queryable like any other property (linq or the QueryBuilder). They serve as a means to avoid unnecessary round trips to the database
 ```csharp
 [DwarfProjectionProperty("select some_column from another_table at where at.personId = person.id")]
 public bool IsSomethingValid { get; set; }
