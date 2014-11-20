@@ -403,6 +403,8 @@ Note that GemLists don't need an attribute to be handled
 
 
 ###The QueryBuilder
+The QueryBuilder's purpose is to be able to create SQL-like queries in a C#-like fashion, thus preserving type safety.
+
 The query builder supports 
 * Nested queries
 * Inner and Left Outer Joins
