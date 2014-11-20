@@ -207,6 +207,7 @@ Projection properties behaves like readonly properies where the data is fetched 
 [DwarfProjectionProperty("select some_column from another_table at where at.personId = person.id")]
 public bool IsSomethingValid { get; set; }
 ```
+A ProjectionProperty is fetched as a column-query. Therefore keep in mind as this data is not dynamic that it might become stale if conditions change.
 
 ####OneToMany & ManyToMany collections
 Dwarf keeps track of all collection's added/removed/updated objects and will take care of the necessary database operations. 
