@@ -21,22 +21,6 @@ public class Person : Dwarf<Person>
 }
 ```
 
-##FAQ
-#####Does Dwarf use reflection?
-No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
-
-#####Does Dwarf support Lazy Loading?
-Yes. All relationships/collections implement Lazy Loading by design. Foreign key properties supports both lazy loading and eager loading. Either by decorating the property as virtual to let the proxy generator handle the lazy loading or set the EagerLoad property to true in the dwarf attribute.
-
-#####Which databases does Dwarf support?
-Dwarf has full support for Sql Server and Sql Ce. Its internals are highly extendable thus adding support for additional providers is fairly easy, though not yet requested.
-
-#####Configuration and Conventions?
-Dwarf is a wee bit opinionated and is built upon its own set of conventions, were some are overridable and some aren't. There are no mapping files, instead mapping is done via property attributes. Less files, less code and less scattered code without making the domain model unreadable.
-
-#####Linq?
-Over the years so many good developers have blown their poor feet off due to lack of understanding of abstractions made by frameworks at hand. We've decided never to create a linq provider for Dwarf mainly to make a clear separation between querying the database and querying collections. It takes some intellection to know what parts of a more complex query that is suitable for a database and what parts that are not. Thus we use the QueryBuilder (see below) to offer an easy way of constructing database queries and to make the distinction of what code is executed where more clear.
-
 ##Features
 ###The Config object
 In the initialization code of your application, e.g. Application_Start in global.asax in a web application, construct the DwarfConfiguration object. Then save the reference to this object so it's accessible throughout your code. The config object is your gateway to all bonus features of Dwarf (transactions, ad-hoc queries, database scripts, audit logging, error logging, etc.)
@@ -477,3 +461,19 @@ public static List<Person> SomeWierdNonsenseQuery()
     return LoadReferencing<Person>(query);
 } 
 ```
+
+##FAQ
+#####Does Dwarf use reflection?
+No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
+
+#####Does Dwarf support Lazy Loading?
+Yes. All relationships/collections implement Lazy Loading by design. Foreign key properties supports both lazy loading and eager loading. Either by decorating the property as virtual to let the proxy generator handle the lazy loading or set the EagerLoad property to true in the dwarf attribute.
+
+#####Which databases does Dwarf support?
+Dwarf has full support for Sql Server and Sql Ce. Its internals are highly extendable thus adding support for additional providers is fairly easy, though not yet requested.
+
+#####Configuration and Conventions?
+Dwarf is a wee bit opinionated and is built upon its own set of conventions, were some are overridable and some aren't. There are no mapping files, instead mapping is done via property attributes. Less files, less code and less scattered code without making the domain model unreadable.
+
+#####Linq?
+Over the years so many good developers have blown their poor feet off due to lack of understanding of abstractions made by frameworks at hand. We've decided never to create a linq provider for Dwarf mainly to make a clear separation between querying the database and querying collections. It takes some intellection to know what parts of a more complex query that is suitable for a database and what parts that are not. Thus we use the QueryBuilder (see below) to offer an easy way of constructing database queries and to make the distinction of what code is executed where more clear.
