@@ -110,9 +110,9 @@ namespace Dwarf
             {
                 if (DbContext.InvalidObjects != null && DbContext.InvalidObjects.Count > 0)
                 {
-                    var aggregatedData = DbContext.InvalidObjects.Aggregate(string.Empty, (s, x) => s + x.Value.Errors).Remove(0, 2);
+                    var aggregatedData = DbContext.InvalidObjects.Flatten(x => x.Value.Errors);//.Remove(0, 2);
                     DbContext.InvalidObjects.Clear();
-                    throw new DatabaseOperationException("The transaction contains objects with invalid foreign key values! " + aggregatedData, null);
+                    throw new MissingForeignKeyException("The transaction contains objects with invalid foreign key values! " + aggregatedData, null);
                 }
 
                 CommitTransaction();
@@ -224,7 +224,7 @@ namespace Dwarf
 
         internal static void RegisterInvalidObject(IDwarf obj, List<string> faultyForeignKeys)
         {
-            var value = faultyForeignKeys.Aggregate(string.Empty, (s, x) => s + "\r\n " + obj.GetType().Name + " - " + x);
+            var value = faultyForeignKeys.Flatten(x => obj.GetType().Name + "." + x + " is null");
 
             if (DbContext.InvalidObjects == null)
                 DbContext.InvalidObjects = new Dictionary<int, dynamic>();

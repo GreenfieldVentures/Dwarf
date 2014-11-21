@@ -303,7 +303,7 @@ namespace Dwarf
         #region PersistManyToMany
 
         /// <summary>
-        /// Saves a many2many relation
+        /// Saves a ManyToMany relationship
         /// </summary>
         private static void PersistManyToMany(IDwarf owner, IDwarf child, string alternateTableName = null)
         {
@@ -330,7 +330,7 @@ namespace Dwarf
         #region DeleteManyToMany
 
         /// <summary>
-        /// Deletes a Many2Many relationship
+        /// Deletes a ManyToMany relationship
         /// </summary>
         private static void DeleteManyToMany(IDwarf owner, IDwarf child, string alternateTableName = null)
         {

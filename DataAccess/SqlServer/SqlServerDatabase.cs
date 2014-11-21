@@ -196,29 +196,6 @@ namespace Dwarf.DataAccess
 
         #endregion SelectReferencing
 
-//        #region SelectAll
-//
-//        /// <summary>
-//        /// Builds and executes a select * statement and returns a list of the type T
-//        /// </summary>
-//        public List<T> SelectAll<T>() where T : Dwarf<T>, new()
-//        {
-//            return SelectAll<T, T>();
-//        }        
-//        
-//        /// <summary>
-//        /// Builds and executes a select * statement and returns a list of the type T
-//        /// </summary>
-//        /// <typeparam name="T">Executing Context</typeparam>
-//        /// <typeparam name="TY">Return type</typeparam>
-//        /// <returns></returns>
-//        public List<TY> SelectAll<T, TY>() where TY : Dwarf<TY>, new()
-//        {
-//            return SelectReferencing<T, TY>(new QueryBuilderLight().Select<TY>().From<TY>().ToQuery());
-//        }
-//
-//        #endregion SelectAll
-
         #region Update
 
         /// <summary>

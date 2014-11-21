@@ -15,7 +15,6 @@
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
-
   <!--NET40-->
   <PropertyGroup Condition=" '$(Framework)' == 'NET40' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <!-- Set the TargetFrameworkVersion here. This is the variable to tell ms build what .net framework to target.-->
@@ -41,7 +40,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
   <!--NET45-->
   <PropertyGroup Condition=" '$(Framework)' == 'NET45' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <!-- Set the TargetFrameworkVersion here. This is the variable to tell ms build what .net framework to target.-->
@@ -67,8 +65,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-
-
   <!--NET451-->
   <PropertyGroup Condition=" '$(Framework)' == 'NET451' And '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <!-- Set the TargetFrameworkVersion here. This is the variable to tell ms build what .net framework to target.-->
@@ -94,7 +90,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
@@ -122,6 +117,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataAccess\MissingForeignKeyException.cs" />
     <Compile Include="DataAccess\DbContext.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeDatabase.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeDatabaseScripts.cs" />
@@ -208,8 +204,7 @@
   <Target Name="BeforeBuild">
   </Target> -->
   <Target Name="AfterBuild">
-    <MSBuild Condition=" '$(Framework)' == 'NET45'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET40" RunEachTargetSeparately="true"  />
-    <MSBuild Condition=" '$(Framework)' == 'NET451'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET45" RunEachTargetSeparately="true"  />
+    <MSBuild Condition=" '$(Framework)' == 'NET45'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET40" RunEachTargetSeparately="true" />
+    <MSBuild Condition=" '$(Framework)' == 'NET451'" Projects="$(MSBuildProjectFile)" Properties="Framework=NET45" RunEachTargetSeparately="true" />
   </Target>
-
 </Project>
