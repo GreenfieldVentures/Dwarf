@@ -360,7 +360,7 @@ typeA.TypeCs.Add(typeC);
 typeB.TypeCs.Add(typeC);
 ```
 
-You cannot save typeC without first saving typeA or typeB, but since typeC is in both parent object's lists this will cause a bit of a problem (cascades will try to save typeC when you save typeA). In a lot of cases you'll not be able to save the parent objects separately and the other solution calls for a lot of nasty code. Dwarf will save you a headache by wrapping the save calls in a simple transaction. 
+You cannot save typeC without first saving typeA or typeB, but since typeC is in both parent object's lists this will cause a bit of a problem (cascades will try to save typeC when you save typeA). In a lot of cases you'll not be able to save the parent objects separately and the other solution calls for a lot of nasty code. Dwarf will save you a headache by taking care of this problem inside transactions. 
 ```csharp
 using (cfg.Database.OpenTransaction())
 {
