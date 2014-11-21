@@ -316,6 +316,60 @@ new DwarfList<Mountain>
 
 ```
 
+#####Foreign keys
+When saving bigger object graphs you can run into a rather common missing foreign key scenario where objects that depend on eachother are in a transient state. Dwarf keeps track of which objects that has missing foreign keys prior to issuing a save. If keys are missing the object is registered and the save aborted. Dwarf now relies on the same object being saved again via another path of the graph with its foreign keys properly set at this point. Any object remaining in this list upon committing the transaction will cause a ForeignKeyException to be thrown.
+
+######Example
+If this is our model
+```csharp
+public class TypeA : Dwarf<TypeA>
+{
+    [OneToMany]
+    public DwarfList<TypeC> TypeCs 
+    { 
+        get { return OneToMany(x => x.TypeCs); } 
+    }
+}
+
+public class TypeB : Dwarf<TypeB>
+{
+    [OneToMany]
+    public DwarfList<TypeC> TypeCs 
+    { 
+        get { return OneToMany(x => x.TypeCs); } 
+    }
+}    
+
+public class TypeC : Dwarf<TypeC>
+{
+    [DwarfProperty]
+    public virtual TypeA TypeA { get; set; }
+
+    [DwarfProperty]
+    public virtual TypeB TypeB { get; set; }
+}
+```
+
+And we instanciate the following
+```csharp
+var typeA = new TypeA();
+var typeB = new TypeB();
+var typeC = new TypeC();
+
+typeA.TypeCs.Add(typeC);
+typeB.TypeCs.Add(typeC);
+```
+
+You cannot save typeC without first saving typeA or typeB, but since typeC is in both parent object's lists this will cause a bit of a problem (cascades will try to save typeC when you save typeA). In a lot of cases you'll not be able to save the parent objects separately and the other solution calls for a lot of nasty code. Dwarf will save you a headache by wrapping the save calls in a simple transaction. 
+```csharp
+using (cfg.Database.OpenTransaction())
+{
+    typeA.Save();
+    typeB.Save();
+}
+```
+Remember that Dwarf wraps all saves and cascading saves inside a transaction by default thus the missing foreign key scenario will be handled frequently under the hood (in bigger object graphs) without ever bothering you about it. Therefore you seldom need to wrap saves in a transaction manually like in the example above.
+
 ####Load & LoadAll
 
 ```csharp
