@@ -11,7 +11,6 @@ namespace Dwarf.Interfaces
         IUserService UserService { get; set; }
         IDatabaseScripts DatabaseScripts { get; }
         IDwarfConfiguration Configure();
-        void Terminate();
         IDatabaseOperator Database { get; }
 
         void SuspendAuditLogging();

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
 using System.Web;
 using System.Web.Configuration;
-using Dwarf.DataAccess;
 using Dwarf.Utilities;
 
 namespace Dwarf.Web
@@ -60,18 +55,6 @@ namespace Dwarf.Web
         protected abstract void ApplicationStart();
 
         #endregion ApplicationStart
-
-        #region Application_End
-
-        /// <summary>
-        /// See base
-        /// </summary>
-        public void Application_End(object sender, EventArgs e)
-        {
-            ContextAdapter.Configurations().ForEach(x => x.Terminate());
-        }
-
-        #endregion Application_End
 
         #region Application_EndRequest
 

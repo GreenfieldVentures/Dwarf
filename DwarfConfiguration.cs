@@ -48,18 +48,6 @@ namespace Dwarf
 
         #endregion UseDefaultErrorLogService
 
-        #region Terminate
-
-        /// <summary>
-        /// Call to terminate the currently running Dwarf instance
-        /// </summary>
-        public virtual void Terminate()
-        {
-            
-        }
-
-        #endregion Terminate
-
         #region ErrorLogService
 
         /// <summary>

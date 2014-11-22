@@ -96,7 +96,7 @@ namespace Dwarf
             else
             {
                 foreach (var ep in DwarfHelper.GetPKProperties<T>(type))
-                    al.ObjectId += string.Format("[{0}: {1}]\t\r\n", ep.Name, ep.GetValue(obj));
+                    al.ObjectId += string.Format("[{0}: {1}]", ep.Name, ep.GetValue(obj));
             }
 
             if (auditLogType != AuditLogTypes.Created)
