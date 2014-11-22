@@ -269,6 +269,7 @@ Assign behavior to objects in the model by decorating them with interfaces
 * ICacheless - Objects of this type will not be subject to caching
 * ICompositeId - Discard the default Id-property and instead compose a primary key from all DwarfProperties with IsPrimaryKey = true
 * ITranscationless - Objects of this type will always be handled outside of and will not be affected by any ongoing transcation
+* IAuditLogless - Objects of this type will bypass all audit logging mechanisms
 
 ####Other Functions
 
