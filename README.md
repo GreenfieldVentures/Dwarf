@@ -257,10 +257,10 @@ myPerson.save(); //during this step the foreign key property pet.Person will be 
 
 ####Extension points
 There are two extension points each for the save and delete operations which can be overridden
-* PrependSave
-* AppendSave
-* PrependDelete
-* AppendDelete
+* OnBeforeSave
+* OnAfterSave
+* OnBeforeDelete
+* OnAfterDelete
 They all occur inside an ongoing transaction but prior to or after the command is sent to the database. 
 
 
@@ -375,7 +375,6 @@ Remember that Dwarf wraps all saves and cascading saves inside a transaction by 
 ```csharp
 //Load an object from the database 
 var pet = Pet.Load(myPetId);
-pet.Name = "Garfield";
 
 //Load all pets from the database
 var allPets = Pet.LoadAll();
@@ -532,4 +531,4 @@ Dwarf has full support for Sql Server and Sql Ce. Its internals are highly exten
 Dwarf is a wee bit opinionated and is built upon its own set of conventions, were some are overridable and some aren't. There are no mapping files, instead mapping is done via property attributes. Less files, less code and less scattered code without making the domain model unreadable.
 
 #####Linq?
-Over the years so many good developers have blown their poor feet off due to lack of understanding of abstractions made by frameworks at hand. We've decided never to create a linq provider for Dwarf mainly to make a clear separation between querying the database and querying collections. It takes some intellection to know what parts of a more complex query that is suitable for a database and what parts that are not. Thus we use the QueryBuilder (see below) to offer an easy way of constructing database queries and to make the distinction of what code is executed where more clear.
+Over the years so many good developers have blown their poor feet off due to lack of understanding of abstractions made by frameworks at hand. We've decided never to create a linq provider for Dwarf mainly to make a clear separation between querying the database and querying collections. It takes some intellection to know what parts of a more complex query that is suitable for a database and what parts that are not. Thus we use the QueryBuilder to offer an easy way of constructing database queries and to make the distinction of what code is executed where more clear. Then you may linq away on the resulting collection.
