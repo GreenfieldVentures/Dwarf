@@ -58,7 +58,7 @@ namespace Dwarf.DataAccess
             }
             catch (Exception e)
             {
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw new DatabaseOperationException(e.Message, e);
             }
             finally
@@ -100,7 +100,7 @@ namespace Dwarf.DataAccess
             }
             catch (Exception e)
             {
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
             }
             finally
             {
@@ -183,7 +183,7 @@ namespace Dwarf.DataAccess
             }
             catch (Exception e)
             {
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw new DatabaseOperationException(e.Message, e);
             }
             finally
@@ -399,7 +399,7 @@ namespace Dwarf.DataAccess
             }
             catch (Exception e)
             {
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw new DatabaseOperationException(e.Message, e);
             }
             finally
@@ -631,7 +631,7 @@ namespace Dwarf.DataAccess
                 }
                 catch (Exception e)
                 {
-                    ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                    DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                     throw new DatabaseOperationException(e.Message, e);
                 }
                 finally

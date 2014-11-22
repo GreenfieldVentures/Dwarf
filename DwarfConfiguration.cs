@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Threading.Tasks;
 using Dwarf.Attributes;
 using Dwarf.DataAccess.SqlCe;
 using Dwarf.Extensions;
@@ -117,7 +116,7 @@ namespace Dwarf
         /// </summary>
         public void SuspendAuditLogging()
         {
-            ContextAdapter<T>.GetDBContext().IsAuditLoggingSuspended = true;
+            DwarfContext<T>.GetDBContext().IsAuditLoggingSuspended = true;
         }
 
         #endregion SuspendAuditLogging
@@ -129,7 +128,7 @@ namespace Dwarf
         /// </summary>
         public void ResumeAuditLogging()
         {
-            ContextAdapter<T>.GetDBContext().IsAuditLoggingSuspended = false;
+            DwarfContext<T>.GetDBContext().IsAuditLoggingSuspended = false;
         }
 
         #endregion ResumeAuditLogging
@@ -141,7 +140,7 @@ namespace Dwarf
         /// </summary>
         public IDwarfConfiguration Configure()
         {
-            if (ContextAdapter<T>.IsConfigured())
+            if (DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("This assembly is already configured!");
 
             var assembly = typeof (T).Assembly;
@@ -177,7 +176,7 @@ namespace Dwarf
                 ErrorLogService = new ErrorLogService<T>();
 
             ConfigureServices();
-            ContextAdapter<T>.AddConfig(this);
+            DwarfContext<T>.AddConfig(this);
 
             InitializeExpressionTrees();
             

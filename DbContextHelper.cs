@@ -2,22 +2,29 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
 using Dwarf.DataAccess;
 using Dwarf.Extensions;
 using Dwarf.Interfaces;
 
 namespace Dwarf
 {
+    /// <summary>
+    /// Helper class for DbContextHelper
+    /// </summary>
     internal class DbContextHelper<T> : DbContextHelper<T, T>
     {
         
     }
 
+    /// <summary>
+    /// Translation facade between the current DbContext and the Dwarf Framework
+    /// </summary>
+    /// <typeparam name="T">Type inside the owning assembly</typeparam>
+    /// <typeparam name="TY">Type on which to perform operations</typeparam>
     internal class DbContextHelper<T, TY>
     {
+        #region Methods
+
         #region IsTransactionless
 
         private static bool IsTransactionless()
@@ -31,7 +38,7 @@ namespace Dwarf
 
         internal static IDbContext DbContext
         {
-            get { return ContextAdapter<T>.GetDBContext(); }
+            get { return DwarfContext<T>.GetDBContext(); }
         }
 
         #endregion DbContext
@@ -258,5 +265,7 @@ namespace Dwarf
         }
 
         #endregion ClearCacheForType
+
+        #endregion Methods
     }
 }

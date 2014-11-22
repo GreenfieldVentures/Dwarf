@@ -37,7 +37,7 @@ namespace Dwarf.Extensions
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally
@@ -72,7 +72,7 @@ namespace Dwarf.Extensions
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally

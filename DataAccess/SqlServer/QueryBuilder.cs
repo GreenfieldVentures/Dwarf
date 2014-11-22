@@ -400,12 +400,12 @@ namespace Dwarf.DataAccess
                 if (counter < 6)
                 {
                     columnClause.Append(ConvertToQueryColumn(insertIntoValue.Type, insertIntoValue.GetColumnName()) + separator);
-                    valuesClause.Append(ContextAdapter.GetDatabase(baseType).ValueToSqlString(insertIntoValue.Value) + separator);
+                    valuesClause.Append(DwarfContext.GetDatabase(baseType).ValueToSqlString(insertIntoValue.Value) + separator);
                 }
                 else
                 {
                     columnClause.Append("\r\n\t\t\t" + ConvertToQueryColumn(insertIntoValue.Type, insertIntoValue.GetColumnName()) + separator);
-                    valuesClause.Append("\r\n\t\t\t" + ContextAdapter.GetDatabase(baseType).ValueToSqlString(insertIntoValue.Value) + separator);
+                    valuesClause.Append("\r\n\t\t\t" + DwarfContext.GetDatabase(baseType).ValueToSqlString(insertIntoValue.Value) + separator);
                     counter = 0;
                 }
 
@@ -601,7 +601,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         internal string ConvertToQueryCondition(object obj, PropertyInfo pi)
         {
-            return ConvertToQueryCondition(obj.GetType(), GetColumnName(pi), ContextAdapter.GetDatabase(baseType).ValueToSqlString(pi.GetValue(obj, null)));
+            return ConvertToQueryCondition(obj.GetType(), GetColumnName(pi), DwarfContext.GetDatabase(baseType).ValueToSqlString(pi.GetValue(obj, null)));
         }
 
         /// <summary>
@@ -609,7 +609,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         internal string ConvertToQueryCondition(object obj, ExpressionProperty fp)
         {
-            return ConvertToQueryCondition(obj.GetType(), GetColumnName(fp.ContainedProperty), ContextAdapter.GetDatabase(baseType).ValueToSqlString(fp.GetValue(obj)));
+            return ConvertToQueryCondition(obj.GetType(), GetColumnName(fp.ContainedProperty), DwarfContext.GetDatabase(baseType).ValueToSqlString(fp.GetValue(obj)));
         }
 
         /// <summary>
@@ -617,7 +617,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         internal string ConvertToQueryCondition<T>(Expression<Func<T, object>> expression, object value)
         {
-            return ConvertToQueryCondition(typeof(T), ReflectionHelper.GetPropertyInfo(expression).Name, ContextAdapter<T>.GetDatabase().ValueToSqlString(value));
+            return ConvertToQueryCondition(typeof(T), ReflectionHelper.GetPropertyInfo(expression).Name, DwarfContext<T>.GetDatabase().ValueToSqlString(value));
         }
 
         #endregion ConvertToQueryCondition
@@ -689,7 +689,7 @@ namespace Dwarf.DataAccess
 
             if (condition.Operator == QueryOperators.Like)
             {
-                conditionValue = ContextAdapter.GetDatabase(bt).ValueToSqlString("%" + condition.Value + "%");
+                conditionValue = DwarfContext.GetDatabase(bt).ValueToSqlString("%" + condition.Value + "%");
             }
             else if (condition.Operator == QueryOperators.In || condition.Operator == QueryOperators.NotIn)
             {
@@ -704,7 +704,7 @@ namespace Dwarf.DataAccess
                 {
                     var values = condition.Value as IEnumerable;
 
-                    var aggItems = values.Cast<object>().Aggregate(string.Empty, (current, value) => current + (ContextAdapter.GetDatabase(bt).ValueToSqlString(value) + ", "));
+                    var aggItems = values.Cast<object>().Aggregate(string.Empty, (current, value) => current + (DwarfContext.GetDatabase(bt).ValueToSqlString(value) + ", "));
 
                     conditionValue = "(" + (aggItems.Length == 0 ? "''" : aggItems.TruncateEnd(2)) + ")";
                 }
@@ -715,12 +715,12 @@ namespace Dwarf.DataAccess
             }
             else
             {
-                conditionValue = ContextAdapter.GetDatabase(bt).ValueToSqlString(condition.Value);
+                conditionValue = DwarfContext.GetDatabase(bt).ValueToSqlString(condition.Value);
             }
 
             if (!condition.IsTimeIncluded && condition.Value is DateTime)
             {
-                conditionValue = ContextAdapter.GetDatabase(bt).ValueToSqlString(((DateTime)condition.Value).Date);
+                conditionValue = DwarfContext.GetDatabase(bt).ValueToSqlString(((DateTime)condition.Value).Date);
 
                 return "DATEADD(dd, 0, DATEDIFF(dd, 0, " + GetColumnName<T>(condition.GetColumn()) + ")) " + op + conditionValue + " ";
             }

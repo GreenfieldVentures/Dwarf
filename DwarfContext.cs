@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data.Odbc;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.Web;
-using Dwarf.DataAccess;
 using Dwarf.Extensions;
 using Dwarf.Interfaces;
 
 namespace Dwarf
 {
     /// <summary>
-    /// Helper for the genereic ContextAdapter
+    /// Helper for the genereic DwarfContext
     /// </summary>
-    internal abstract class ContextAdapter
+    internal abstract class DwarfContext
     {
         #region Variables
 
@@ -25,17 +20,7 @@ namespace Dwarf
 
         #endregion Variables
 
-        #region Configurations
-
-        /// <summary>
-        /// Returns a list of all configurations
-        /// </summary>
-        internal protected static List<IDwarfConfiguration> Configurations()
-        {
-            return configs.Values.ToList();
-        }
-
-        #endregion Configurations
+        #region Properties
 
         #region Items
 
@@ -58,6 +43,22 @@ namespace Dwarf
         }
 
         #endregion Items
+
+        #endregion Properties
+        
+        #region Methods
+        
+        #region Configurations
+
+        /// <summary>
+        /// Returns a list of all configurations
+        /// </summary>
+        internal protected static List<IDwarfConfiguration> Configurations()
+        {
+            return configs.Values.ToList();
+        }
+
+        #endregion Configurations
 
         #region DisposeContexts
 
@@ -83,12 +84,14 @@ namespace Dwarf
         }
 
         #endregion GetDatabase
+
+        #endregion Methods
     }
 
     /// <summary>
-    /// Helper class for communication between the domain model / dal and above tiers
+    /// Helper class for internal communication between the domain model and the data access layer
     /// </summary>
-    internal sealed class ContextAdapter<T>: ContextAdapter
+    internal sealed class DwarfContext<T>: DwarfContext
     {
         #region Methods
 
@@ -128,8 +131,6 @@ namespace Dwarf
 
         #endregion GetConfiguration
 
-        #endregion Methods
-
         #region GetDatabase
 
         internal static IDatabase GetDatabase()
@@ -154,5 +155,7 @@ namespace Dwarf
         }
 
         #endregion GetDBContext
+
+        #endregion Methods
     }
 }

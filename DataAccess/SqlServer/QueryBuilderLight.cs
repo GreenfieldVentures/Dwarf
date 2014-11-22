@@ -68,14 +68,14 @@ namespace Dwarf
 
         internal QueryBuilderLight Where(string column, object value, Type type)
         {
-            where.Append(string.Format("{0} {1} = {2} ", (where.Length == 0 ? "WHERE " : "AND "), column, ContextAdapter.GetDatabase(type).ValueToSqlString(value)));
+            where.Append(string.Format("{0} {1} = {2} ", (where.Length == 0 ? "WHERE " : "AND "), column, DwarfContext.GetDatabase(type).ValueToSqlString(value)));
 
             return this;
         }
 
         internal QueryBuilderLight Where<T>(string column, object value)
         {
-            where.Append(string.Format("{0} [{1}].[{2}] = {3} ", (where.Length == 0 ? "WHERE " : "AND "), typeof(T).Name, column, ContextAdapter<T>.GetDatabase().ValueToSqlString(value)));
+            where.Append(string.Format("{0} [{1}].[{2}] = {3} ", (where.Length == 0 ? "WHERE " : "AND "), typeof(T).Name, column, DwarfContext<T>.GetDatabase().ValueToSqlString(value)));
             
             return this;
         }

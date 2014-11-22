@@ -36,7 +36,7 @@ namespace Dwarf.Web
         /// </summary>
         public bool IsConfigured<T>()
         {
-            return ContextAdapter<T>.IsConfigured();
+            return DwarfContext<T>.IsConfigured();
         }
 
         #endregion IsConfigured
@@ -65,7 +65,7 @@ namespace Dwarf.Web
         {
             CacheManager.DisposeUserCache();
             ExceptionHandler.ClearErrors();
-            ContextAdapter.DisposeContexts();
+            DwarfContext.DisposeContexts();
         }
 
         #endregion Application_EndRequest

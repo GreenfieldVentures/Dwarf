@@ -19,7 +19,7 @@ namespace Dwarf
         /// </summary>
         public List<dynamic> ExecuteQuery(QueryBuilder queryBuilder)
         {
-            return ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>(queryBuilder);
+            return DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>(queryBuilder);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace Dwarf
         /// </summary>
         public TY ExecuteScalar<TY>(QueryBuilder queryBuilder)
         {
-            return ContextAdapter<T>.GetDatabase().ExecuteScalar<T, TY>(queryBuilder);
+            return DwarfContext<T>.GetDatabase().ExecuteScalar<T, TY>(queryBuilder);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Dwarf
         /// </summary>
         public void ExecuteNonQuery(QueryBuilder queryBuilder)
         {
-            ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(queryBuilder);
+            DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(queryBuilder);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace Dwarf
         /// </summary>
         public List<dynamic> ExecuteQuery(string query)
         {
-            return ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>(query);
+            return DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>(query);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Dwarf
         /// </summary>
         public TY ExecuteScalar<TY>(string query)
         {
-            return ContextAdapter<T>.GetDatabase().ExecuteScalar<T, TY>(query);
+            return DwarfContext<T>.GetDatabase().ExecuteScalar<T, TY>(query);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Dwarf
         /// </summary>
         public void ExecuteNonQuery(string query)
         {
-            ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(query);
+            DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(query);
         }
     }
 }

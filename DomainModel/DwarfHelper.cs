@@ -426,10 +426,10 @@ namespace Dwarf
 
             var typeList = baseType.Assembly.GetTypes().Where(type => type.Implements<IDwarf>() && !type.IsAbstract).ToList();
 
-            if (ContextAdapter<T>.GetConfiguration().AuditLogService is AuditLogService<T>)
+            if (DwarfContext<T>.GetConfiguration().AuditLogService is AuditLogService<T>)
                 typeList.Add(typeof(AuditLog));
 
-            if (ContextAdapter<T>.GetConfiguration().ErrorLogService is ErrorLogService<T>)
+            if (DwarfContext<T>.GetConfiguration().ErrorLogService is ErrorLogService<T>)
                 typeList.Add(typeof(ErrorLog));
 
             return typeList;

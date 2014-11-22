@@ -89,7 +89,7 @@ namespace Dwarf
 
             var error = new ErrorLog
             {
-                UserName = ContextAdapter<T>.GetConfiguration().UserService.CurrentUser != null ? ContextAdapter<T>.GetConfiguration().UserService.CurrentUser.UserName : "",
+                UserName = DwarfContext<T>.GetConfiguration().UserService.CurrentUser != null ? DwarfContext<T>.GetConfiguration().UserService.CurrentUser.UserName : "",
                 TimeStamp = DateTime.Now,
                 Message = e.Message,
                 Type = e.GetType().ToString(),
@@ -100,7 +100,7 @@ namespace Dwarf
             if (e.InnerException != null)
                 error.InnerException = Logg<T>(e.InnerException, suppressMessage);
 
-            ContextAdapter<T>.GetDatabase().Insert<T, ErrorLog>(error);
+            DwarfContext<T>.GetDatabase().Insert<T, ErrorLog>(error);
 
             if (!suppressMessage)
                 ExceptionHandler.Logg(error);
@@ -117,7 +117,7 @@ namespace Dwarf
         /// </summary>
         public static ErrorLog Load<T>(Guid id)
         {
-            return ContextAdapter<T>.GetDatabase().Select<T, ErrorLog>(id);
+            return DwarfContext<T>.GetDatabase().Select<T, ErrorLog>(id);
         }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace Dwarf
         /// </summary>
         public static List<ErrorLog> LoadAll<T>()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T, ErrorLog>();
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T, ErrorLog>();
         }
 
         /// <summary>

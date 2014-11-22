@@ -8,7 +8,7 @@ namespace Dwarf.DataAccess
     { 
         public string GetCreateScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             return SqlCeDatabaseScriptHelper.GetCreateScript<T>();
@@ -31,7 +31,7 @@ namespace Dwarf.DataAccess
         
         public void ExecuteCreateScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             SqlCeDatabaseScriptHelper.ExecuteCreateScript<T>();

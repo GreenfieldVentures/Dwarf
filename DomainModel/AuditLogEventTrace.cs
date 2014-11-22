@@ -125,7 +125,7 @@ namespace Dwarf
 
                         if (obj == null)
                         {
-                            var log = ContextAdapter<T>.GetConfiguration().AuditLogService.LoadAllReferencing(guid).FirstOrDefault(x => x.AuditLogType == AuditLogTypes.Deleted);
+                            var log = DwarfContext<T>.GetConfiguration().AuditLogService.LoadAllReferencing(guid).FirstOrDefault(x => x.AuditLogType == AuditLogTypes.Deleted);
 
                             if (log == null)
                                 continue;
@@ -161,7 +161,7 @@ namespace Dwarf
                 //Might be deleted... try to locate the deleted event and recreate the object
                 if (obj == null)
                 {
-                    var ev = ContextAdapter<T>.GetConfiguration().AuditLogService.LoadAllReferencing(id).FirstOrDefault(x => x.AuditLogType == AuditLogTypes.Deleted);
+                    var ev = DwarfContext<T>.GetConfiguration().AuditLogService.LoadAllReferencing(id).FirstOrDefault(x => x.AuditLogType == AuditLogTypes.Deleted);
 
                     if (ev != null)
                     {

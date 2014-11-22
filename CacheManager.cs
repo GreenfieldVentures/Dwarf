@@ -140,10 +140,10 @@ namespace Dwarf
 
         private static string GetUserKey(string key)
         {
-            if (ContextAdapter.Items["UserKey"] == null)
-                ContextAdapter.Items["UserKey"] = Guid.NewGuid().ToString();
+            if (DwarfContext.Items["UserKey"] == null)
+                DwarfContext.Items["UserKey"] = Guid.NewGuid().ToString();
 
-            return ContextAdapter.Items["UserKey"] + ":" + key;
+            return DwarfContext.Items["UserKey"] + ":" + key;
         }
 
         internal static string GetUserKey<T>(T obj, Guid? alternateId = null) where T : Dwarf<T>, new()

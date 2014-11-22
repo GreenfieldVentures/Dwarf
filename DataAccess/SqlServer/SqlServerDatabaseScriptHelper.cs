@@ -96,9 +96,9 @@ namespace Dwarf.DataAccess
             var constraints = GetDropConstraintsScript<T>();
 
             if (!string.IsNullOrEmpty(constraints))
-                ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(constraints);
+                DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(constraints);
 
-            ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(GetDropTablesScript<T>());
+            DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(GetDropTablesScript<T>());
         }
 
         #endregion ExecuteDropScript
@@ -112,12 +112,12 @@ namespace Dwarf.DataAccess
         {
             var sb = new StringBuilder();
 
-            var constraints = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT OBJECT_NAME(parent_object_id) AS TableName, OBJECT_NAME(OBJECT_ID) AS NameofConstraint FROM sys.objects WHERE type_desc LIKE '%CONSTRAINT' ORDER BY Type");
+            var constraints = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT OBJECT_NAME(parent_object_id) AS TableName, OBJECT_NAME(OBJECT_ID) AS NameofConstraint FROM sys.objects WHERE type_desc LIKE '%CONSTRAINT' ORDER BY Type");
 
             foreach (var constraint in constraints)
                 sb.AppendLine("ALTER TABLE [" + constraint.TableName + "] DROP CONSTRAINT [" + constraint.NameofConstraint + "] ");
 
-            var tables = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT OBJECT_NAME(OBJECT_ID) AS NameofConstraint FROM sys.objects WHERE type_desc LIKE 'USER_TABLE' ");
+            var tables = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT OBJECT_NAME(OBJECT_ID) AS NameofConstraint FROM sys.objects WHERE type_desc LIKE 'USER_TABLE' ");
 
             foreach (var table in tables)
                 sb.AppendLine("DROP TABLE [" + table.NameofConstraint + "] ");
@@ -137,9 +137,9 @@ namespace Dwarf.DataAccess
             var deleteCurrentDatabaseScript = GetDeleteCurrentDatabaseScript<T>();
 
             if (!string.IsNullOrEmpty(deleteCurrentDatabaseScript))
-                ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(deleteCurrentDatabaseScript);
+                DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(deleteCurrentDatabaseScript);
 
-            ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(GetCreateScript<T>(Cfg.ConnectionString[typeof(T).Assembly], true));
+            DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(GetCreateScript<T>(Cfg.ConnectionString[typeof(T).Assembly], true));
         }
 
         #endregion ExecuteCreateScript
@@ -202,7 +202,7 @@ namespace Dwarf.DataAccess
 
             var currentManyToManyTables = GetCurrentManyToManyTables(allCurrentDomainTypes).Distinct().ToList();
 
-            var existingDatabaseTables = ContextAdapter<T>.GetConfiguration().Database.ExecuteQuery("SELECT t.name FROM sys.tables t JOIN sys.schemas s ON s.schema_id = t.schema_id ").Select(x => x.name).ToList();
+            var existingDatabaseTables = DwarfContext<T>.GetConfiguration().Database.ExecuteQuery("SELECT t.name FROM sys.tables t JOIN sys.schemas s ON s.schema_id = t.schema_id ").Select(x => x.name).ToList();
 
             foreach (var existingTable in existingDatabaseTables.ToArray())
             {
@@ -212,7 +212,7 @@ namespace Dwarf.DataAccess
                     dropTables.AppendLine("IF EXISTS (SELECT * FROM dbo.sysobjects WHERE Id = OBJECT_ID(N'[" + existingTable + "]') AND OBJECTPROPERTY(Id, N'IsUserTable') = 1) DROP Table [" + existingTable + "] ");
                     existingDatabaseTables.Remove(existingTable);
 
-                    var constraints = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("select CONSTRAINT_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where TABLE_NAME = '" + existingTable + "' ");
+                    var constraints = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("select CONSTRAINT_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where TABLE_NAME = '" + existingTable + "' ");
 
                     foreach (var constraint in constraints)
                         AddDropConstraint(dropPKConstraints, dropFKConstraints, "IF EXISTS (SELECT 1 FROM sys.objects WHERE OBJECT_ID = OBJECT_ID(N'[" + constraint.CONSTRAINT_NAME + "]') AND PARENT_OBJECT_ID = OBJECT_ID('[" + existingTable + "]')) ALTER TABLE [" + existingTable + "] DROP CONSTRAINT [" + constraint.CONSTRAINT_NAME + "]");
@@ -237,7 +237,7 @@ namespace Dwarf.DataAccess
                 if (!allCurrentDomainTypes.Any(x => x.Name.Equals(existingTable)))
                     continue;
 
-                var existingColumns = (List<dynamic>)ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT c.name as name1, t.name as name2, c.max_length, c.is_nullable FROM sys.columns c inner join sys.types t on t.user_type_id = c.user_type_id WHERE object_id = OBJECT_ID('dbo." + existingTable + "') ");
+                var existingColumns = (List<dynamic>)DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT c.name as name1, t.name as name2, c.max_length, c.is_nullable FROM sys.columns c inner join sys.types t on t.user_type_id = c.user_type_id WHERE object_id = OBJECT_ID('dbo." + existingTable + "') ");
                 
                 var type = allCurrentDomainTypes.First(x => x.Name.Equals(existingTable));
                 var props = DwarfHelper.GetGemListProperties(type).Union(DwarfHelper.GetDBProperties(type)).ToList();
@@ -283,7 +283,7 @@ namespace Dwarf.DataAccess
                         if (pi.PropertyType.Implements<IDwarf>())
                         {
                             var fkName = "FK_" + type.Name + "_" + pi.Name + "Id";
-                            var constraintExists = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT t.name FROM sys.objects obj inner join sys.foreign_key_columns fk on obj.object_id = fk.constraint_object_id inner join sys.columns c on fk.referenced_object_id = c.object_id and fk.referenced_column_id = c.column_id inner join sys.tables t on t.object_id = c.object_id inner join sys.tables t2 on fk.parent_object_id = t2.object_id WHERE obj.type = 'F' and t2.name = '" + type.Name + "' and obj.name = '" + fkName + "' and t.name = '" + pi.PropertyType.Name + "'");
+                            var constraintExists = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT t.name FROM sys.objects obj inner join sys.foreign_key_columns fk on obj.object_id = fk.constraint_object_id inner join sys.columns c on fk.referenced_object_id = c.object_id and fk.referenced_column_id = c.column_id inner join sys.tables t on t.object_id = c.object_id inner join sys.tables t2 on fk.parent_object_id = t2.object_id WHERE obj.type = 'F' and t2.name = '" + type.Name + "' and obj.name = '" + fkName + "' and t.name = '" + pi.PropertyType.Name + "'");
 
                             if (!constraintExists.Any())
                             {
@@ -367,7 +367,7 @@ namespace Dwarf.DataAccess
 
             foreach (var existingTable in existingDatabaseTables)
             {
-                var uqConstraints = ((List<dynamic>)ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT obj.name FROM sys.objects obj inner join sys.tables t on obj.parent_object_id = t.object_id WHERE obj.type = 'UQ' and t.name = '" + existingTable + "'")).Select(x => x.name);
+                var uqConstraints = ((List<dynamic>)DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT obj.name FROM sys.objects obj inner join sys.tables t on obj.parent_object_id = t.object_id WHERE obj.type = 'UQ' and t.name = '" + existingTable + "'")).Select(x => x.name);
 
                 foreach (var uqConstraint in uqConstraints)
                 {
@@ -377,7 +377,7 @@ namespace Dwarf.DataAccess
 
                     if (type != null)
                     {
-                        var columns = (List<dynamic>)ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME = '" + uqConstraint + "'");
+                        var columns = (List<dynamic>)DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME = '" + uqConstraint + "'");
 
                         //Not a unique combination, but a unique column (right?)
                         if (columns.Count == 1)
@@ -422,7 +422,7 @@ namespace Dwarf.DataAccess
                     var piName = pi.Name + (pi.PropertyType.Implements<IDwarf>() ? "Id" : string.Empty);
                     var uqName = "UQ_" + type.Name + "_" + piName;
 
-                    var columns = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME = '" + uqName + "'");
+                    var columns = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME = '" + uqName + "'");
 
                     if (columns.Count == 0 && !addColumns.ToString().Contains(uqName) && !addTables.ToString().Contains(uqName))
                     {
@@ -435,7 +435,7 @@ namespace Dwarf.DataAccess
                 {
                     var pis = DwarfHelper.GetUniqueGroupProperties<T>(type, uniqueGroupName);
 
-                    var columns = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME = 'UQ_" + type.Name + "_" + uniqueGroupName + "'").Select(x => x.COLUMN_NAME).ToList();
+                    var columns = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME = 'UQ_" + type.Name + "_" + uniqueGroupName + "'").Select(x => x.COLUMN_NAME).ToList();
 
                     if (columns.Any())
                     {
@@ -455,7 +455,7 @@ namespace Dwarf.DataAccess
                     }
                 }
 
-                var uniqueColumns = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME, CONSTRAINT_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME like 'UQ_%' and CONSTRAINT_NAME like '%_' + COLUMN_NAME and TABLE_NAME = '" + type.Name + "' ");
+                var uniqueColumns = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("select COLUMN_NAME, CONSTRAINT_NAME from INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE where CONSTRAINT_NAME like 'UQ_%' and CONSTRAINT_NAME like '%_' + COLUMN_NAME and TABLE_NAME = '" + type.Name + "' ");
 
                 foreach (var uniqueColumn in uniqueColumns)
                 {
@@ -518,7 +518,7 @@ namespace Dwarf.DataAccess
 
         private static void DropDeadTableConstraints<T>(StringBuilder dropPKConstraints, StringBuilder dropFKConstraints, string deadTable)
         {
-            var fkContraints = ContextAdapter<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT obj.name as name1, t.name as name2, c.name as name3, t2.name as name4 FROM sys.objects obj inner join sys.foreign_key_columns fk on obj.object_id = fk.constraint_object_id inner join sys.columns c on fk.referenced_object_id = c.object_id and fk.referenced_column_id = c.column_id inner join sys.tables t on t.object_id = c.object_id inner join sys.tables t2 on fk.parent_object_id = t2.object_id WHERE obj.type = 'F' and t.name = '" + deadTable + "'");
+            var fkContraints = DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>("SELECT obj.name as name1, t.name as name2, c.name as name3, t2.name as name4 FROM sys.objects obj inner join sys.foreign_key_columns fk on obj.object_id = fk.constraint_object_id inner join sys.columns c on fk.referenced_object_id = c.object_id and fk.referenced_column_id = c.column_id inner join sys.tables t on t.object_id = c.object_id inner join sys.tables t2 on fk.parent_object_id = t2.object_id WHERE obj.type = 'F' and t.name = '" + deadTable + "'");
 
             foreach (var contraint in fkContraints)
             {

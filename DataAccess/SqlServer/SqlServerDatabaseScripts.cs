@@ -8,7 +8,7 @@ namespace Dwarf.DataAccess
     { 
         public string GetCreateScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             return SqlServerDatabaseScriptHelper.GetCreateScript<T>();
@@ -16,7 +16,7 @@ namespace Dwarf.DataAccess
 
         public string GetDropScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             return SqlServerDatabaseScriptHelper.GetDropScript<T>();
@@ -24,7 +24,7 @@ namespace Dwarf.DataAccess
 
         public string GetUpdateScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             return SqlServerDatabaseScriptHelper.GetUpdateScript<T>();
@@ -32,7 +32,7 @@ namespace Dwarf.DataAccess
         
         public string GetTransferScript(string otherDatabaseName, params ExpressionProperty[] toSkip)
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             return SqlServerDatabaseScriptHelper.GetTransferScript<T>(otherDatabaseName, toSkip);
@@ -40,7 +40,7 @@ namespace Dwarf.DataAccess
         
         public void ExecuteCreateScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             SqlServerDatabaseScriptHelper.ExecuteCreateScript<T>();
@@ -48,7 +48,7 @@ namespace Dwarf.DataAccess
 
         public void ExecuteDropScript()
         {
-            if (!ContextAdapter<T>.IsConfigured())
+            if (!DwarfContext<T>.IsConfigured())
                 throw new InvalidOperationException("Assembly must be initialized first");
 
             SqlServerDatabaseScriptHelper.ExecuteDropScript<T>();

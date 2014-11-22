@@ -67,7 +67,7 @@ namespace Dwarf.DataAccess
                 DbContextHelper<T>.FinalizeOperation(true);
 
                 if (!DisableExceptionLogging)
-                    ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(ex);
+                    DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(ex);
                 
                 throw;
             }
@@ -97,7 +97,7 @@ namespace Dwarf.DataAccess
             catch (Exception ex)
             {
                 if (!DisableExceptionLogging)
-                    ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(ex);
+                    DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(ex);
 
                 throw;
             }

@@ -86,7 +86,7 @@ namespace Dwarf
             {
                 ClassType = type.Name,
                 AuditLogType = auditLogType,
-                UserName = ContextAdapter<T>.GetConfiguration().UserService.CurrentUser != null ? ContextAdapter<T>.GetConfiguration().UserService.CurrentUser.ToString() : string.Empty,
+                UserName = DwarfContext<T>.GetConfiguration().UserService.CurrentUser != null ? DwarfContext<T>.GetConfiguration().UserService.CurrentUser.ToString() : string.Empty,
                 TimeStamp = DateTime.Now,
                 ObjectValue = obj.ToString(),
             };
@@ -110,7 +110,7 @@ namespace Dwarf
 
             }
 
-            ContextAdapter<T>.GetDatabase().Insert<T, AuditLog>(al);
+            DwarfContext<T>.GetDatabase().Insert<T, AuditLog>(al);
 
             return al;
         }
@@ -124,7 +124,7 @@ namespace Dwarf
         /// </summary>
         public static AuditLog GetCreatedEvent<T>(T obj) where T : Dwarf<T>, new()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T, AuditLog>
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T, AuditLog>
             (
                 new WhereCondition<AuditLog> { Column = x => x.ClassType, Value = obj.GetType().Name },
                 new WhereCondition<AuditLog> { Column = x => x.AuditLogType, Value = AuditLogTypes.Created },
@@ -141,7 +141,7 @@ namespace Dwarf
         /// </summary>
         public static List<AuditLog> GetAllEvents<T>(IDwarf obj)
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T, AuditLog>
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T, AuditLog>
             (
                 new WhereCondition<AuditLog> { Column = x => x.ClassType, Value = obj.GetType().Name },
                 new WhereCondition<AuditLog> { Column = x => x.ObjectId, Value = obj.Id }
@@ -153,7 +153,7 @@ namespace Dwarf
         /// </summary>
         public static List<AuditLog> GetAllEvents<T>(Guid id)
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T, AuditLog>
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T, AuditLog>
             (
                 new WhereCondition<AuditLog> { Column = x => x.ClassType, Value = typeof(T).Name },
                 new WhereCondition<AuditLog> { Column = x => x.ObjectId, Value = id }
@@ -169,7 +169,7 @@ namespace Dwarf
         /// </summary>
         public static AuditLog Load<T>(Guid id)
         {
-            return ContextAdapter<T>.GetDatabase().Select<T, AuditLog>(id);
+            return DwarfContext<T>.GetDatabase().Select<T, AuditLog>(id);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace Dwarf
         /// </summary>
         public static List<AuditLog> LoadAll<T>()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T, AuditLog>();
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T, AuditLog>();
         }
 
         /// <summary>

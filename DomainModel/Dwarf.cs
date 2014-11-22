@@ -241,12 +241,12 @@ namespace Dwarf
                 if (IsSaved)
                 {
                     if (traces.Length > 0) //IsDirty
-                        ContextAdapter<T>.GetDatabase().Update(this, traces.Select(x => PropertyHelper.GetProperty<T>(x.PropertyName)));
+                        DwarfContext<T>.GetDatabase().Update(this, traces.Select(x => PropertyHelper.GetProperty<T>(x.PropertyName)));
                 }
                 else
                 {
                     actionType = AuditLogTypes.Created;
-                    ContextAdapter<T>.GetDatabase().Insert<T, T>(this, Id);
+                    DwarfContext<T>.GetDatabase().Insert<T, T>(this, Id);
                 }
 
                 CreateAuditLog(actionType);
@@ -260,7 +260,7 @@ namespace Dwarf
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally
@@ -282,14 +282,14 @@ namespace Dwarf
             {
                 DbContextHelper<T>.BeginOperation();
 
-                ContextAdapter<T>.GetDatabase().BulkInsert(objects);
+                DwarfContext<T>.GetDatabase().BulkInsert(objects);
 
                 DbContextHelper<T>.FinalizeOperation(false);
             }
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally
@@ -310,13 +310,13 @@ namespace Dwarf
             try
             {
                 DbContextHelper<T>.BeginOperation();
-                ContextAdapter<T>.GetDatabase().InsertManyToMany<T>(owner, child, alternateTableName);
+                DwarfContext<T>.GetDatabase().InsertManyToMany<T>(owner, child, alternateTableName);
                 DbContextHelper<T>.FinalizeOperation(false);
             }
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally
@@ -337,13 +337,13 @@ namespace Dwarf
             try
             {
                 DbContextHelper<T>.BeginOperation();
-                ContextAdapter<T>.GetDatabase().DeleteManyToMany<T>(owner, child, alternateTableName);
+                DwarfContext<T>.GetDatabase().DeleteManyToMany<T>(owner, child, alternateTableName);
                 DbContextHelper<T>.FinalizeOperation(false);
             }
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally
@@ -364,7 +364,7 @@ namespace Dwarf
             if (typeof(T).Implements<ICompositeId>())
                 throw new InvalidOperationException("This method may not be used for ICompositeId types");
 
-            return ContextAdapter<T>.GetDatabase().Select<T>(id);
+            return DwarfContext<T>.GetDatabase().Select<T>(id);
         }
 
         /// <summary>
@@ -375,7 +375,7 @@ namespace Dwarf
             if (!typeof(T).Implements<ICompositeId>())
                 throw new InvalidOperationException("This method may only be used for ICompositeId types");
 
-            return ContextAdapter<T>.GetDatabase().Select(conditions);
+            return DwarfContext<T>.GetDatabase().Select(conditions);
         }
 
         #endregion Load
@@ -387,7 +387,7 @@ namespace Dwarf
         /// </summary>
         public static List<T> LoadAll()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T>();
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T>();
         }
 
         #endregion LoadAll
@@ -400,7 +400,7 @@ namespace Dwarf
         /// </summary>
         protected static List<TY> LoadReferencing<TY>(params WhereCondition<TY>[] conditions) where TY : Dwarf<TY>, new()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<T, TY>(conditions);
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T, TY>(conditions);
         }        
    
         /// <summary>
@@ -409,7 +409,7 @@ namespace Dwarf
         /// </summary>
         protected static List<TY> LoadReferencing<TY>(QueryBuilder queryBuilder, bool overrideSelect = true) where TY : Dwarf<TY>, new()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<TY>(queryBuilder, overrideSelect);
+            return DwarfContext<T>.GetDatabase().SelectReferencing<TY>(queryBuilder, overrideSelect);
         }
         /// <summary>
         /// Returns an object collection of the type T where 
@@ -417,7 +417,7 @@ namespace Dwarf
         /// </summary>
         protected static List<TY> LoadReferencing<TY>(QueryMergers queryMerger, params QueryBuilder[] queryBuilders) where TY : Dwarf<TY>, new()
         {
-            return ContextAdapter<T>.GetDatabase().SelectReferencing<TY>(queryMerger, queryBuilders);
+            return DwarfContext<T>.GetDatabase().SelectReferencing<TY>(queryMerger, queryBuilders);
         }
 
         #endregion LoadReferencing
@@ -430,7 +430,7 @@ namespace Dwarf
         /// </summary>
         private static List<TY> LoadManyToManyRelation<TY>(IDwarf ownerObject, string alternateTableName = null) where TY : Dwarf<TY>, new()
         {
-            return ContextAdapter<T>.GetDatabase().SelectManyToMany<TY>(ownerObject, alternateTableName);
+            return DwarfContext<T>.GetDatabase().SelectManyToMany<TY>(ownerObject, alternateTableName);
         }
 
         #endregion LoadManyToManyRelation
@@ -451,7 +451,7 @@ namespace Dwarf
 
                 OnBeforeDeleteInternal();
                 OnBeforeDelete();
-                ContextAdapter<T>.GetDatabase().Delete(this);
+                DwarfContext<T>.GetDatabase().Delete(this);
                 DbContextHelper<T>.FinalizeOperation(false);
                 OnAfterDeleteInternal();
                 OnAfterDelete();
@@ -459,7 +459,7 @@ namespace Dwarf
             catch (Exception e)
             {
                 DbContextHelper<T>.FinalizeOperation(true);
-                ContextAdapter<T>.GetConfiguration().ErrorLogService.Logg(e);
+                DwarfContext<T>.GetConfiguration().ErrorLogService.Logg(e);
                 throw;
             }
             finally
@@ -478,7 +478,7 @@ namespace Dwarf
         public void Refresh()
         {
             //Fetch the original values from the database (bypass the cache...)
-            var originalObject = ContextAdapter<T>.GetDatabase().SelectReferencing<T>(new QueryBuilder().Select<T>().From<T>().Where(this, Cfg.PKProperties[DwarfHelper.DeProxyfy(this)]), false, true).FirstOrDefault();
+            var originalObject = DwarfContext<T>.GetDatabase().SelectReferencing<T>(new QueryBuilder().Select<T>().From<T>().Where(this, Cfg.PKProperties[DwarfHelper.DeProxyfy(this)]), false, true).FirstOrDefault();
 
             if (originalObject != null)
             {
@@ -804,7 +804,7 @@ namespace Dwarf
                                    where oldValue != null && ((IList)oldValue).Count > 0
                                    select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue }).ToArray();
 
-            ContextAdapter<T>.GetConfiguration().AuditLogService.Logg(this, AuditLogTypes.Deleted, traces.Union(collectionTraces).Union(many2ManyTraces).ToArray());
+            DwarfContext<T>.GetConfiguration().AuditLogService.Logg(this, AuditLogTypes.Deleted, traces.Union(collectionTraces).Union(many2ManyTraces).ToArray());
         }
 
         #endregion OnBeforeDelete
@@ -840,10 +840,10 @@ namespace Dwarf
                 var traces = CreateAuditLogTraceEvents(true);
 
                 if (traces.Length > 0)
-                    ContextAdapter<T>.GetConfiguration().AuditLogService.Logg(this, auditLogType, traces);
+                    DwarfContext<T>.GetConfiguration().AuditLogService.Logg(this, auditLogType, traces);
             }
             else if (auditLogType == AuditLogTypes.Created)
-                ContextAdapter<T>.GetConfiguration().AuditLogService.Logg(this, auditLogType);
+                DwarfContext<T>.GetConfiguration().AuditLogService.Logg(this, auditLogType);
         }
 
         #endregion CreateAuditLog

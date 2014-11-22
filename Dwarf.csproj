@@ -124,7 +124,7 @@
     <Compile Include="DatabaseOperator.cs" />
     <Compile Include="DbContextHelper.cs" />
     <Compile Include="DomainModel\AuditLogEventTrace.cs" />
-    <Compile Include="ContextAdapter.cs" />
+    <Compile Include="DwarfContext.cs" />
     <Compile Include="DomainModel\AuditLogTypes.cs" />
     <Compile Include="DataAccess\DatabaseOperationException.cs" />
     <Compile Include="Interfaces\IDatabaseOperator.cs" />

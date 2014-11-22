@@ -53,7 +53,7 @@ namespace Dwarf.DataAccess
         internal static void ExecuteCreateScript<T>()
         {
             foreach (var s in GetCreateScriptArray<T>())
-                ContextAdapter<T>.GetDatabase().ExecuteNonQuery<T>(s);
+                DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(s);
         }
 
         #endregion ExecuteCreateScript
