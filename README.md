@@ -489,7 +489,7 @@ public static List<Person> LoadAllPeopleWithPetsNamed(string name)
     var query = new QueryBuilder()
         .Select<Person>()
         .From<Person>()
-        .InnerJoin<Pet, Person>(x => x.Owner, x => x)
+        .InnerJoin<Pet>()
         .Where<Pet>(x => x.Name, name)
         .OrderBy<Person>(x => x.Age);
 
@@ -501,7 +501,7 @@ public static List<Person> SomeWierdNonsenseQuery()
     var query = new QueryBuilder()
         .Select<Pet>()
         .From<Pet>()
-        .LeftOuterJoin<Person, Pet>(x => x, x => x.Owner)
+        .LeftOuterJoin<Person>()
         .Where<Person>(x => x.Age, QueryOperators.LessThan, 50)
         .Where<Person>(x => x.Name, QueryOperators.Like, "Hans")
         .Where<Person>(x => x.BeardSize, 15)
@@ -518,7 +518,59 @@ public static List<Person> SomeWierdNonsenseQuery()
 } 
 ```
 
+You can let the QueryBuilder figure out the relationship between types by not passing any parameters to the InnerJoin or LeftOuterJoin methods. Join always relies on that the previous type used is the one we'll join to, otherwise you must specify the type to join to as the second generic parameter:
+```csharp
+//Join Person with Pet
+...
+.From<Person>()
+.InnerJoin<Pet>()
+
+//Join Person with Home and Pet with Person
+...
+.From<Person>()
+.InnerJoin<Home>()
+.InnerJoin<Pet, Person>() //To tell the QueryBuilder we want to join with Person and not Home
+```
+You may of course specifiy the full relationship between the types. Same example as above but with column specification. This produces less fancy code, but saves you some cpu cycles.
+```csharp
+.From<Person>()
+.InnerJoin<Pet, Person>(x => x.Person, x => x) //x => x.Id would also have been acceptable
+
+//Join Person with Home and Pet with Person
+...
+.From<Person>()
+.InnerJoin<Home, Person>(x => x, x => x.Home)
+.InnerJoin<Pet, Person>(x => x.Person, x => x)
+```
+
+The QueryBuilder can of course be used for strongely typed ad-hoc queries. 
+Example:
+```csharp
+var qb = new QueryBuilder()
+    .Select<Person>(x => x.Name, x => x.MyLuckyNumber)
+    .Select<Pet>(SelectOperators.Count, x => x.Name)
+    .From<Person>()
+    .InnerJoin<Pet>()
+    .GroupBy<Person>(x => x.Name, x => x.MyLuckyNumber);
+
+dynamic result = cfg.Database.ExecuteQuery(qb);
+```
+All calculated queries will be named autoamtically according their operation and column, unless you specify the naming. Should two column names collide, like person.Name and pet.Name, you can supply an alternate name for any column
+Example with custom naming:
+```csharp
+var qb = new QueryBuilder()
+    .Select<Person>(x => x.Name, x => x.MyLuckyNumber)
+    .Select<Pet>(x => x.Name, "PetName")
+    .Select<Pet>(SelectOperators.Count, "PetsWithThisName", x => x.Name)
+    .From<Person>()
+    .InnerJoin<Pet>()
+    .GroupBy<Person>(x => x.Name, x => x.MyLuckyNumber)
+    .GroupBy<Pet>(x => x.Name);
+    
+dynamic result = cfg.Database.ExecuteQuery(qb);
+```
 ##FAQ
+
 #####Does Dwarf use reflection?
 No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
 
