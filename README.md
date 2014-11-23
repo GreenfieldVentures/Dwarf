@@ -489,7 +489,7 @@ public static List<Person> LoadAllPeopleWithPetsNamed(string name)
     var query = new QueryBuilder()
         .Select<Person>()
         .From<Person>()
-        .InnerJoin<Pet, Person>(x => x.Owner, x => x)
+        .InnerJoin<Pet>()
         .Where<Pet>(x => x.Name, name)
         .OrderBy<Person>(x => x.Age);
 
@@ -501,7 +501,7 @@ public static List<Person> SomeWierdNonsenseQuery()
     var query = new QueryBuilder()
         .Select<Pet>()
         .From<Pet>()
-        .LeftOuterJoin<Person, Pet>(x => x, x => x.Owner)
+        .LeftOuterJoin<Person>()
         .Where<Person>(x => x.Age, QueryOperators.LessThan, 50)
         .Where<Person>(x => x.Name, QueryOperators.Like, "Hans")
         .Where<Person>(x => x.BeardSize, 15)
@@ -516,6 +516,31 @@ public static List<Person> SomeWierdNonsenseQuery()
 
     return LoadReferencing<Person>(query);
 } 
+```
+
+You can let the QueryBuilder figure out the relationship between types by not passing any parameters to the InnerJoin or LeftOuterJoin functions. Join always rely on that the previous type used is the one we're join to, otherwise you can specify the type to join to as the second generic parameter:
+```csharp
+//Join Person with Pet
+...
+.From<Person>()
+.InnerJoin<Pet>()
+
+//Join Person with Home and Pet with Person
+...
+.From<Person>()
+.InnerJoin<Home>()
+.InnerJoin<Pet, Person>() //To tell the QueryBuilder we want to join with Person and not Home
+```
+You may of course specifiy the full relationship between the types. Same example as above but with column specification
+```csharp
+.From<Person>()
+.InnerJoin<Pet, Person>(x => x.Person, x => x) //x => x.Id would also have been acceptable
+
+//Join Person with Home and Pet with Person
+...
+.From<Person>()
+.InnerJoin<Home, Person>(x => x, x => x.Home)
+.InnerJoin<Pet, Person>(x => x.Person, x => x)
 ```
 
 ##FAQ
