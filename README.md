@@ -531,7 +531,7 @@ You can let the QueryBuilder figure out the relationship between types by not pa
 .InnerJoin<Home>()
 .InnerJoin<Pet, Person>() //To tell the QueryBuilder we want to join with Person and not Home
 ```
-You may of course specifiy the full relationship between the types. Same example as above but with column specification
+You may of course specifiy the full relationship between the types. Same example as above but with column specification. This produces less fancy code, but saves you some cpu cycles.
 ```csharp
 .From<Person>()
 .InnerJoin<Pet, Person>(x => x.Person, x => x) //x => x.Id would also have been acceptable
