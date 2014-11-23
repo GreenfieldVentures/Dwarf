@@ -1212,7 +1212,7 @@ namespace Dwarf.DataAccess
             var orgType = qb.GetLastType();
             
             var o2mRight = Cfg.OneToManyProperties[orgType].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == typeof(T));
-
+            
             if (o2mRight != null)
             {
                 qb.JoinInternal(new JoinCondition
