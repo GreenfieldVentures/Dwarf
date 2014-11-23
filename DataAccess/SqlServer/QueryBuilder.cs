@@ -44,7 +44,7 @@ namespace Dwarf.DataAccess
         private bool isOrderByDisabled;
         private int? limitOffset;
         private int? limitRows;
-        
+        private Type lastType;
         #region QueryTypes
 
         private enum QueryTypes
@@ -771,6 +771,16 @@ namespace Dwarf.DataAccess
         #endregion GetColumnName
 
         #endregion Methods
+
+        internal Type GetLastType()
+        {
+            return (lastType ?? baseType) ?? origianlBaseType;
+        }
+        
+        internal void SetLastType(Type type)
+        {
+            lastType = type;
+        }
     }
 
     #region QueryBuilderExtensions
@@ -1195,8 +1205,93 @@ namespace Dwarf.DataAccess
         #region Join
 
         /// <summary>
+        /// Performs an Inner Join between the two specified types. Lets the QueryBuilder best guess the relationship between the types.
+        /// </summary>
+        public static QueryBuilder InnerJoin<T>(this QueryBuilder qb)
+        {
+            var orgType = qb.GetLastType();
+            
+            var o2mRight = Cfg.OneToManyProperties[orgType].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == typeof(T));
+
+            if (o2mRight != null)
+            {
+                qb.JoinInternal(new JoinCondition
+                {
+                    LeftType = typeof (T),
+                    LeftColumnName = "[" + orgType.Name + "Id]",
+                    RightColumnName = "[Id]",
+                    RightType = orgType,
+                });
+
+                qb.SetLastType(typeof(T));
+                return qb;
+            }
+
+            var o2mLeft = Cfg.OneToManyProperties[typeof(T)].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == orgType);
+
+            if (o2mLeft != null)
+            {
+                qb.JoinInternal(new JoinCondition
+                {
+                    LeftType = typeof (T),
+                    LeftColumnName = "[Id]",
+                    RightColumnName = "[" + typeof(T).Name + "Id]",
+                    RightType = orgType,
+                });
+               
+                qb.SetLastType(typeof(T));
+                return qb;
+            }
+
+            string tableName = string.Empty;
+            var m2m = Cfg.ManyToManyProperties[orgType].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == typeof(T));
+
+            if (m2m != null)
+            {
+                tableName = ManyToManyAttribute.GetTableName(orgType, m2m.ContainedProperty);
+            }
+            else
+            {
+                m2m = Cfg.ManyToManyProperties[typeof(T)].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == orgType);
+
+                if (m2m != null)
+                    tableName = ManyToManyAttribute.GetTableName(typeof(T), m2m.ContainedProperty);
+            }
+
+            if (m2m != null)
+            { 
+                qb.JoinInternal(new JoinCondition
+                {
+                    LeftTypeName = "[" + tableName + "]",
+                    LeftColumnName = "[" + orgType.Name + "Id]",
+                    RightType = orgType,
+                    RightColumnName = "[Id]",
+                });                
+                
+                qb.JoinInternal(new JoinCondition
+                {
+                    LeftType = typeof(T),
+                    LeftColumnName = "[Id]",
+                    RightTypeName = "[" + tableName + "]",
+                    RightColumnName = "[" + typeof(T).Name + "Id]",
+                });
+
+                qb.SetLastType(typeof(T));
+                return qb;
+            }
+
+            throw new InvalidOperationException("A relationship between " + typeof(T).Name + " and " + orgType.Name + " can't be derived. Please specify the columns...");
+        }
+
+        /// <summary>
         /// Performs an Inner Join between the two specified types on the specified columns
         /// </summary>
+        public static QueryBuilder InnerJoin<T, TY>(this QueryBuilder qb)
+        {
+            qb.SetLastType(typeof(TY));
+            return InnerJoin<T>(qb);
+        }
+
         public static QueryBuilder InnerJoin<T, TY>(this QueryBuilder qb, Expression<Func<T, object>> leftCondition, Expression<Func<TY, object>> rightCondition)
         {
             qb.JoinInternal(new JoinCondition
@@ -1211,26 +1306,9 @@ namespace Dwarf.DataAccess
                         : ReflectionHelper.GetPropertyInfo(rightCondition),
                 IsLeftOuterJoin = false
             });
-
+            qb.SetLastType(typeof(T));
             return qb;
         }        
-        
-        /// <summary>
-        /// Performs an Inner Join between the two specified types on the specified columns
-        /// </summary>
-        public static QueryBuilder InnerJoin(this QueryBuilder qb, string leftTable, string leftColumn, string rightTable, string rightColumn)
-        {
-            qb.JoinInternal(new JoinCondition
-            {
-                LeftTypeName = leftTable,
-                LeftColumnName = leftColumn,
-                RightTypeName = rightTable,
-                RightColumnName = rightColumn,
-                IsLeftOuterJoin = false
-            });
-
-            return qb;
-        }
 
         /// <summary>
         /// Performs an Left Outer Join between the two specified types on the specified columns
@@ -1249,25 +1327,62 @@ namespace Dwarf.DataAccess
                         : ReflectionHelper.GetPropertyInfo(rightCondition),
                 IsLeftOuterJoin = true
             });
-
+            qb.SetLastType(typeof(T));
             return qb;
         }
 
         /// <summary>
         /// Performs an Inner Join between the two specified types on the specified columns
         /// </summary>
-        public static QueryBuilder LeftOuterJoin(this QueryBuilder qb, string leftTable, string leftColumn, string rightTable, string rightColumn)
+        public static QueryBuilder LeftOuterJoin<T, TY>(this QueryBuilder qb)
         {
-            qb.JoinInternal(new JoinCondition
-            {
-                LeftTypeName = leftTable,
-                LeftColumnName = leftColumn,
-                RightTypeName = rightTable,
-                RightColumnName = rightColumn,
-                IsLeftOuterJoin = true
-            });
+            qb.SetLastType(typeof(TY));
+            return LeftOuterJoin<T>(qb);
+        }
 
-            return qb;
+        /// <summary>
+        /// Performs a Left Outer between the two specified types. Lets the QueryBuilder best guess the relationship between the types.
+        /// </summary>
+        public static QueryBuilder LeftOuterJoin<T>(this QueryBuilder qb)
+        {
+            var orgType = qb.GetLastType(); 
+
+            var o2mRight = Cfg.OneToManyProperties[orgType].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == typeof (T));
+
+            if (o2mRight != null)
+            {
+                qb.JoinInternal(new JoinCondition
+                {
+                    LeftType = typeof (T),
+                    LeftColumnName = "[" + orgType.Name + "Id]",
+                    RightColumnName = "[Id]",
+                    RightType = orgType,
+                    IsLeftOuterJoin = true,
+                });
+
+                qb.SetLastType(typeof (T));
+                return qb;
+            }
+
+            var o2mLeft =
+                Cfg.OneToManyProperties[typeof (T)].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == orgType);
+
+            if (o2mLeft != null)
+            {
+                qb.JoinInternal(new JoinCondition
+                {
+                    LeftType = typeof (T),
+                    LeftColumnName = "[Id]",
+                    RightColumnName = "[" + typeof (T).Name + "Id]",
+                    RightType = orgType,
+                    IsLeftOuterJoin = true,
+                });
+
+                qb.SetLastType(typeof (T));
+                return qb;
+            }
+
+            throw new InvalidOperationException("A \"left outer join\"-able relationship between " + typeof(T).Name + " and " + orgType.Name + " can't be derived. Please specify the columns...");
         }
 
         #endregion Join
