@@ -518,7 +518,7 @@ public static List<Person> SomeWierdNonsenseQuery()
 } 
 ```
 
-You can let the QueryBuilder figure out the relationship between types by not passing any parameters to the InnerJoin or LeftOuterJoin functions. Join always rely on that the previous type used is the one we're join to, otherwise you can specify the type to join to as the second generic parameter:
+You can let the QueryBuilder figure out the relationship between types by not passing any parameters to the InnerJoin or LeftOuterJoin methods. Join always relies on that the previous type used is the one we'll join to, otherwise you must specify the type to join to as the second generic parameter:
 ```csharp
 //Join Person with Pet
 ...
