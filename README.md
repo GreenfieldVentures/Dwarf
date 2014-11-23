@@ -555,8 +555,8 @@ var qb = new QueryBuilder()
 
 dynamic result = cfg.Database.ExecuteQuery(qb);
 ```
-All calculated queries will be named autoamtically according their operation and column, unless you specify the naming. Should to column names collide, like person.Name and pet.Name, you can supply an alternate name for any column
-Same example as above, but extended and with custom naming
+All calculated queries will be named autoamtically according their operation and column, unless you specify the naming. Should two column names collide, like person.Name and pet.Name, you can supply an alternate name for any column
+Example with custom naming:
 ```csharp
 var qb = new QueryBuilder()
     .Select<Person>(x => x.Name, x => x.MyLuckyNumber)
