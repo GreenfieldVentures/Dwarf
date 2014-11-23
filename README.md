@@ -543,7 +543,34 @@ You may of course specifiy the full relationship between the types. Same example
 .InnerJoin<Pet, Person>(x => x.Person, x => x)
 ```
 
+The QueryBuilder can of course be used for strongely typed ad-hoc queries. 
+Example:
+```csharp
+var qb = new QueryBuilder()
+    .Select<Person>(x => x.Name, x => x.MyLuckyNumber)
+    .Select<Pet>(SelectOperators.Count, x => x.Name)
+    .From<Person>()
+    .InnerJoin<Pet>()
+    .GroupBy<Person>(x => x.Name, x => x.MyLuckyNumber);
+
+dynamic result = cfg.Database.ExecuteQuery(qb);
+```
+All calculated queries will be named autoamtically according their operation and column, unless you specify the naming. Should to column names collide, like person.Name and pet.Name, you can supply an alternate name for any column
+Same example as above, but extended and with custom naming
+```csharp
+var qb = new QueryBuilder()
+    .Select<Person>(x => x.Name, x => x.MyLuckyNumber)
+    .Select<Pet>(x => x.Name, "PetName")
+    .Select<Pet>(SelectOperators.Count, "PetsWithThisName", x => x.Name)
+    .From<Person>()
+    .InnerJoin<Pet>()
+    .GroupBy<Person>(x => x.Name, x => x.MyLuckyNumber)
+    .GroupBy<Pet>(x => x.Name);
+    
+dynamic result = cfg.Database.ExecuteQuery(qb);
+```
 ##FAQ
+
 #####Does Dwarf use reflection?
 No. Reflection is slow, therefore Dwarf instead relies heavily on compiled expressions to access all properties and methods.
 
