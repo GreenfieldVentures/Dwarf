@@ -860,6 +860,16 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Adds columns of the supplied type to the select clause 
         /// </summary>
+        public static QueryBuilder Select<T>(this QueryBuilder qb, Expression<Func<T, object>> column, string columnName)
+        {
+            qb.SelectInternal(QueryBuilder.GetColumnName<T>(ReflectionHelper.GetPropertyInfo(column)) + " AS " + columnName);
+
+            return qb;
+        }
+
+        /// <summary>
+        /// Adds columns of the supplied type to the select clause 
+        /// </summary>
         public static QueryBuilder Select<T, TY>(this QueryBuilder qb, params Expression<Func<T, TY>>[] columns)
         {
             foreach (var column in columns)
@@ -871,17 +881,65 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Adds an operation to the select clause
         /// </summary>
-        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, params Expression<Func<T, object>>[] expressions)
+        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, string columnName, params Expression<Func<T, object>>[] expressions)
         {
             if (expressions.Length == 0)
                 return qb;
+
+            if (querySeparatorOperaton == QuerySeparatorOperatons.None && expressions.Length > 0)
+                throw new Exception("Without a proper separator between the columns you may only supply one column");
 
             var clause = selectOperator.ToQuery() + "(";
 
             clause = expressions.Aggregate(clause, (current, expression) => current + (QueryBuilder.ConvertToQueryColumn(expression) + " " + querySeparatorOperaton.ToQuery() + " "));
             clause = clause.TruncateEnd(2);
 
-            qb.SelectInternal(clause.Trim() + ")");
+            if (string.IsNullOrEmpty(columnName))
+                columnName = selectOperator.ToQuery() + expressions.Flatten(x => "_" + ReflectionHelper.GetPropertyName(x));
+
+            qb.SelectInternal(clause.Trim() + ") AS " + columnName);
+
+            return qb;
+        }
+
+        /// <summary>
+        /// Adds an operation to the select clause
+        /// </summary>
+        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, params Expression<Func<T, object>>[] expressions)
+        {
+            return qb.Select(selectOperator, querySeparatorOperaton, null, expressions);
+        }
+
+        /// <summary>
+        /// Adds an operation to the select clause
+        /// </summary>
+        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, string columnName, params Expression<Func<T, object>>[] expressions)
+        {
+            return qb.Select(selectOperator, QuerySeparatorOperatons.None, columnName, expressions);
+        } 
+
+        /// <summary>
+        /// Adds an operation to the select clause
+        /// </summary>
+        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, params Expression<Func<T, object>>[] expressions)
+        {
+            return qb.Select(selectOperator, QuerySeparatorOperatons.None, expressions);
+        } 
+
+        /// <summary>
+        /// Adds an operation to the select clause
+        /// </summary>
+        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, string columnName, params string[] columns)
+        {
+            if (columns.Length == 0)
+                return qb;
+
+            var clause = selectOperator.ToQuery() + "(";
+
+            clause = columns.Aggregate(clause, (current, column) => current + (column + querySeparatorOperaton.ToQuery() + " "));
+            clause = clause.TruncateEnd(2);
+
+            qb.SelectInternal(clause.Trim() + ") AS " + columnName);
 
             return qb;
         } 
@@ -889,35 +947,20 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Adds an operation to the select clause
         /// </summary>
-        public static QueryBuilder Select<T>(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, params string[] columns)
+        public static QueryBuilder Select(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, string columnName, params string[] columns)
         {
             if (columns.Length == 0)
                 return qb;
+
+            if (querySeparatorOperaton == QuerySeparatorOperatons.None && columns.Length > 0)
+                throw new Exception("Without a proper separator between the columns you may only supply one column");
 
             var clause = selectOperator.ToQuery() + "(";
 
             clause = columns.Aggregate(clause, (current, column) => current + (column + " " + querySeparatorOperaton.ToQuery() + " "));
             clause = clause.TruncateEnd(2);
 
-            qb.SelectInternal(clause.Trim() + ")");
-
-            return qb;
-        } 
-
-        /// <summary>
-        /// Adds an operation to the select clause
-        /// </summary>
-        public static QueryBuilder Select(this QueryBuilder qb, SelectOperators selectOperator, QuerySeparatorOperatons querySeparatorOperaton, params string[] columns)
-        {
-            if (columns.Length == 0)
-                return qb;
-
-            var clause = selectOperator.ToQuery() + "(";
-
-            clause = columns.Aggregate(clause, (current, column) => current + (column + " " + querySeparatorOperaton.ToQuery() + " "));
-            clause = clause.TruncateEnd(2);
-
-            qb.SelectInternal(clause.Trim() + ")");
+            qb.SelectInternal(clause.Trim() + ") AS " + columnName);
 
             return qb;
         }       
