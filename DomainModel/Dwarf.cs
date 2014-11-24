@@ -54,13 +54,13 @@ namespace Dwarf
         #region IsDirty
 
         /// <summary>
-        /// Gets if this object has dirty (non-stored) values
+        /// Gets if this object has dirty (non-saved) values
         /// </summary>
         [IgnoreDataMember]
         [Unvalidatable]
         public bool IsDirty
         {
-            get { return CreateAuditLogTraceEvents(true, true).Length > 0; }
+            get { return CreateTraceEventsForProperties().Length + CreateTraceEventsForOneToMany().Count() + CreateTraceEventsForManyToMany().Count() > 0; }
         }
 
         #endregion IsDirty
@@ -236,7 +236,7 @@ namespace Dwarf
 
                 var actionType = AuditLogTypes.Updated;
               
-                var traces = CreateAuditLogTraceEvents();
+                var traces = CreateTraceEventsForProperties();
 
                 if (IsSaved)
                 {
@@ -249,7 +249,7 @@ namespace Dwarf
                     DwarfContext<T>.GetDatabase().Insert<T, T>(this, Id);
                 }
 
-                CreateAuditLog(actionType);
+                CreateAuditLog(actionType, traces);
                 PersistOneToManyCollections();
                 PersistManyToManyCollections(); 
 
@@ -545,7 +545,7 @@ namespace Dwarf
                     {
                         var propertiesMatch = DwarfHelper.GetDBProperties(type).Where(ep => ep.GetValue(this) != null && ep.GetValue(obj) != null).All(pi => pi.GetValue(this).Equals(pi.GetValue(obj)));
 
-                        var uniqueProps = DwarfHelper.GetUniqueDBProperties<T>(type);
+                        var uniqueProps = DwarfHelper.GetUniqueDBProperties<T>(type).ToList();
 
                         if (uniqueProps.Any())
                         {
@@ -620,94 +620,6 @@ namespace Dwarf
         }
 
         #endregion !=
-         
-        #region CreateAuditLogTraceEvents
-
-        /// <summary>
-        /// Creates and returns an AuditLogEventTrace object for every changed property
-        /// </summary>
-        private AuditLogEventTrace[] CreateAuditLogTraceEvents(bool includeManyToManyCollections = false, bool inclundeOneToManyCollections = false)
-        {
-            if (!IsSaved)
-                return new AuditLogEventTrace[0];
-
-            if (originalValues == null)
-            {
-                var fromDB = !typeof(T).Implements<ICompositeId>()
-                    ? Load(Id.Value)
-                    : Load(DwarfHelper.GetPKProperties<T>().Select(x => new WhereCondition<T> {ColumnPi = x.ContainedProperty, Value = x.GetValue(this)}).ToArray());
-                
-                if (fromDB == null)
-                    return new AuditLogEventTrace[0];
-                
-                originalValues = fromDB.originalValues;
-            }
-
-            var dbProps = from ep in DwarfHelper.GetDBProperties(GetType())
-                          let oldValue = originalValues[ep.Name]
-                          let x = ep.GetValue(this)
-                          let newValue = x is IDwarf ? ((IDwarf)ep.GetValue(this)).Id : ep.GetValue(this)
-                          where (oldValue != null && !oldValue.Equals(newValue)) || (oldValue == null && newValue != null)
-                          select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue, NewValue = newValue };
-
-            var collections = from ep in DwarfHelper.GetGemListProperties(GetType())
-                              where IsCollectionInitialized(ep.ContainedProperty)
-                              let x = (IGemList)ep.GetValue(this) 
-                              let newValue = x
-                              let oldValue = x.Parse((string)originalValues[ep.Name] ?? string.Empty)
-                              where (oldValue != null && !oldValue.ComparisonString.Equals(newValue.ComparisonString)) || (oldValue == null && newValue != null) 
-                              select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue, NewValue = newValue };
-
-            IEnumerable<AuditLogEventTrace> col = new AuditLogEventTrace[0];
-
-            if (includeManyToManyCollections)
-            {
-                var m2m = from ep in DwarfHelper.GetManyToManyProperties(this)
-                           where IsCollectionInitialized(ep.ContainedProperty)
-                           let list = ep.GetValue(this)
-                           let adds = ((IList)ep.PropertyType.GetMethod("GetAddedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
-                           let dels = ((IList)ep.PropertyType.GetMethod("GetDeletedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
-                           where adds.Count > 0 || dels.Count > 0
-                           let org = MergeLists(list, adds, dels)
-                           select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = org, NewValue = list };                
-
-                col = col.Concat(m2m);
-            }
-            
-            if (inclundeOneToManyCollections)
-            {
-                var o2m = from ep in DwarfHelper.GetOneToManyProperties(this)
-                    where IsCollectionInitialized(ep.ContainedProperty)
-                    let list = ep.GetValue(this)
-                    let adds = ((IList)ep.PropertyType.GetMethod("GetAddedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
-                    let dels = ((IList)ep.PropertyType.GetMethod("GetDeletedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
-                    where adds.Count > 0 || dels.Count > 0
-                    select new AuditLogEventTrace { PropertyName = ep.Name, NewValue = list };
-
-                col = col.Concat(o2m);
-            }
-
-            return dbProps.Concat(collections).Concat(col).ToArray();
-
-        }
-
-        #region MergeLists
-
-        private static List<IDwarf> MergeLists(object o, IEnumerable<IDwarf> adds, IEnumerable<IDwarf> dels)
-        {
-            var list = ((IList) o).Cast<IDwarf>().ToList();
-
-            foreach (var dwarf in adds)
-                list.Remove(dwarf);
-
-            list.AddRange(dels);
-
-            return list;
-        }
-
-        #endregion MergeLists
-
-        #endregion CreateAuditLogTraceEvents
 
         #region OnBeforeSave
 
@@ -786,7 +698,7 @@ namespace Dwarf
                 obj.SaveAllInternal<T>();
             }
 
-            if (DbContextHelper<T>.DbContext.IsAuditLoggingSuspended)
+            if (DbContextHelper<T>.DbContext.IsAuditLoggingSuspended || DwarfContext<T>.GetConfiguration().AuditLogService == null)
                 return;
 
             var traces = (from ep in DwarfHelper.GetDBProperties(GetType()).Where(x => !x.Name.Equals("Id"))
@@ -830,14 +742,14 @@ namespace Dwarf
 
         #region CreateAuditLog
 
-        private void CreateAuditLog(AuditLogTypes auditLogType)
+        private void CreateAuditLog(AuditLogTypes auditLogType, IEnumerable<AuditLogEventTrace> propertyTraces)
         {
-            if (DbContextHelper<T>.DbContext.IsAuditLoggingSuspended)
+            if (DbContextHelper<T>.DbContext.IsAuditLoggingSuspended || DwarfContext<T>.GetConfiguration().AuditLogService == null)
                 return;
 
             if (auditLogType == AuditLogTypes.Updated)
             {
-                var traces = CreateAuditLogTraceEvents(true);
+                var traces = propertyTraces.Union(CreateTraceEventsForManyToMany()).ToArray();
 
                 if (traces.Length > 0)
                     DwarfContext<T>.GetConfiguration().AuditLogService.Logg(this, auditLogType, traces);
@@ -847,6 +759,107 @@ namespace Dwarf
         }
 
         #endregion CreateAuditLog
+
+        #region CreateTraceEventsForProperties
+
+        /// <summary>
+        /// Creates and returns an AuditLogEventTrace object for every modified property
+        /// </summary>
+        private AuditLogEventTrace[] CreateTraceEventsForProperties()
+        {
+            if (!IsSaved)
+                return new AuditLogEventTrace[0];
+
+            if (originalValues == null)
+            {
+                var fromDB = !typeof(T).Implements<ICompositeId>()
+                    ? Load(Id.Value)
+                    : Load(DwarfHelper.GetPKProperties<T>().Select(x => new WhereCondition<T> { ColumnPi = x.ContainedProperty, Value = x.GetValue(this) }).ToArray());
+
+                if (fromDB == null)
+                    return new AuditLogEventTrace[0];
+
+                originalValues = fromDB.originalValues;
+            }
+
+            var dbProps = from ep in DwarfHelper.GetDBProperties(GetType())
+                          let oldValue = originalValues[ep.Name]
+                          let x = ep.GetValue(this)
+                          let newValue = x is IDwarf ? ((IDwarf)ep.GetValue(this)).Id : ep.GetValue(this)
+                          where (oldValue != null && !oldValue.Equals(newValue)) || (oldValue == null && newValue != null)
+                          select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue, NewValue = newValue };
+
+            var collections = from ep in DwarfHelper.GetGemListProperties(GetType())
+                              where IsCollectionInitialized(ep.ContainedProperty)
+                              let x = (IGemList)ep.GetValue(this)
+                              let newValue = x
+                              let oldValue = x.Parse((string)originalValues[ep.Name] ?? string.Empty)
+                              where (oldValue != null && !oldValue.ComparisonString.Equals(newValue.ComparisonString)) || (oldValue == null && newValue != null)
+                              select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = oldValue, NewValue = newValue };
+
+            return dbProps.Concat(collections).ToArray();
+        }
+
+        #endregion CreateTraceEventsForProperties
+
+        #region CreateTraceEventsForOneToMany
+
+        /// <summary>
+        /// Creates and returns an AuditLogEventTrace object for every modified OneToMany relationship
+        /// </summary>
+        private IEnumerable<AuditLogEventTrace> CreateTraceEventsForOneToMany()
+        {
+            if (!IsSaved)
+                return new AuditLogEventTrace[0];
+
+            return from ep in DwarfHelper.GetOneToManyProperties(this)
+                   where IsCollectionInitialized(ep.ContainedProperty)
+                   let list = ep.GetValue(this)
+                   let adds = ((IList)ep.PropertyType.GetMethod("GetAddedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
+                   let dels = ((IList)ep.PropertyType.GetMethod("GetDeletedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
+                   where adds.Count > 0 || dels.Count > 0
+                   select new AuditLogEventTrace { PropertyName = ep.Name, NewValue = list };
+        }
+
+        #endregion CreateTraceEventsForOneToMany
+
+        #region CreateTraceEventsForManyToMany
+
+        /// <summary>
+        /// Creates and returns an AuditLogEventTrace object for every modified ManyToMany relationship
+        /// </summary>
+        private IEnumerable<AuditLogEventTrace> CreateTraceEventsForManyToMany()
+        {
+            if (!IsSaved)
+                return new AuditLogEventTrace[0];
+
+            return from ep in DwarfHelper.GetManyToManyProperties(this)
+                   where IsCollectionInitialized(ep.ContainedProperty)
+                   let list = ep.GetValue(this)
+                   let adds = ((IList)ep.PropertyType.GetMethod("GetAddedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
+                   let dels = ((IList)ep.PropertyType.GetMethod("GetDeletedItems").Invoke(list, null)).Cast<IDwarf>().ToList()
+                   where adds.Count > 0 || dels.Count > 0
+                   let org = MergeLists(list, adds, dels)
+                   select new AuditLogEventTrace { PropertyName = ep.Name, OriginalValue = org, NewValue = list };
+        }
+
+        #region MergeLists
+
+        private static List<IDwarf> MergeLists(object o, IEnumerable<IDwarf> adds, IEnumerable<IDwarf> dels)
+        {
+            var list = ((IList)o).Cast<IDwarf>().ToList();
+
+            foreach (var dwarf in adds)
+                list.Remove(dwarf);
+
+            list.AddRange(dels);
+
+            return list;
+        }
+
+        #endregion MergeLists
+
+        #endregion CreateTraceEventsForManyToMany
 
         #region Clone
 

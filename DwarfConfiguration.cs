@@ -195,9 +195,6 @@ namespace Dwarf
         /// </summary>
         private void ConfigureServices()
         {
-            if (AuditLogService == null)
-                AuditLogService = new FakeAuditLogService();
-
             if (ErrorLogService == null)
                 ErrorLogService = new FakeErrorLogService();
 
@@ -344,48 +341,6 @@ namespace Dwarf
         }
 
         #endregion InitFKProperties
-
-        #region FakeAuditLogService
-
-        internal class FakeAuditLogService : IAuditLogService
-        {
-            public IAuditLog Logg(IDwarf obj, AuditLogTypes auditLogType)
-            {
-                return CreateInstance();
-            }
-
-            public IAuditLog Logg(IDwarf obj, AuditLogTypes auditLogType, params AuditLogEventTrace[] auditLogEventTraces)
-            {
-                return CreateInstance();
-            }
-
-            public IAuditLog CreateInstance()
-            {
-                return default(IAuditLog);
-            }
-
-            public IAuditLog Load(Guid id)
-            {
-                return default(IAuditLog);
-            }
-
-            public List<IAuditLog> LoadAll()
-            {
-                return new List<IAuditLog>();
-            }
-
-            public List<IAuditLog> LoadAllReferencing(IDwarf obj)
-            {
-                return new List<IAuditLog>();
-            }
-
-            public List<IAuditLog> LoadAllReferencing(Guid id)
-            {
-                return new List<IAuditLog>();
-            }
-        }
-
-        #endregion FakeAuditLogService
 
         #region FakeErrorLogService
 
