@@ -123,7 +123,7 @@
     <Compile Include="DataAccess\SqlCe\SqlCeDatabaseScripts.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeQueryConstructor.cs" />
     <Compile Include="DatabaseOperator.cs" />
-    <Compile Include="DbContextHelper.cs" />
+    <Compile Include="DataAccess\DbContextHelper.cs" />
     <Compile Include="DomainModel\AuditLogEventTrace.cs" />
     <Compile Include="DwarfContext.cs" />
     <Compile Include="DomainModel\AuditLogTypes.cs" />

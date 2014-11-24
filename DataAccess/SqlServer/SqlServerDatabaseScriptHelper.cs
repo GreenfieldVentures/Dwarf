@@ -180,6 +180,8 @@ namespace Dwarf.DataAccess
 
         #endregion GetTransferScript
 
+        #region GetUpdateScript
+
         /// <summary>
         /// Analyses the current domain model and database and generates update scripts in an attempt to synchronize them.
         /// Note that a few places might need manual coding, such as when columns become not nullable, when target types changes, etc. Look for "Warning!!"
@@ -504,6 +506,10 @@ namespace Dwarf.DataAccess
 
         }
 
+        #endregion GetUpdateScript
+
+        #region ColumnToProperty
+
         private static PropertyInfo ColumnToProperty(Type type, string columnName)
         {
             var pi = type.GetProperty(columnName);
@@ -513,6 +519,8 @@ namespace Dwarf.DataAccess
 
             return pi;
         }
+
+        #endregion ColumnToProperty
 
         #region DropDeadTableConstraints
 
