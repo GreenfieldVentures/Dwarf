@@ -150,18 +150,21 @@ namespace Dwarf
                 case DatabaseTypes.SqlServer:
                 {
                     Cfg.Databases[assembly] = new SqlServerDatabase();
+                    Cfg.QueryConstructors[assembly] = new SqlServerQueryConstructor();
                     scripts = new SqlServerDatabaseScripts<T>();
                     break;
                 }
                 case DatabaseTypes.SqlCe:
                 {
                     Cfg.Databases[assembly] = new SqlCeDatabase();
+                    Cfg.QueryConstructors[assembly] = new SqlServerQueryConstructor();
                     scripts = new SqlCeDatabaseScripts<T>();
                     break;
                 }
                 default:
                 {
                     Cfg.Databases[assembly] = new SqlServerDatabase();
+                    Cfg.QueryConstructors[assembly] = new SqlServerQueryConstructor();
                     scripts = new SqlServerDatabaseScripts<T>();
                     break;
                 }

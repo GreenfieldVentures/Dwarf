@@ -121,6 +121,7 @@
     <Compile Include="DataAccess\DbContext.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeDatabase.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeDatabaseScripts.cs" />
+    <Compile Include="DataAccess\SqlCe\SqlCeQueryConstructor.cs" />
     <Compile Include="DatabaseOperator.cs" />
     <Compile Include="DbContextHelper.cs" />
     <Compile Include="DomainModel\AuditLogEventTrace.cs" />
@@ -134,6 +135,8 @@
     <Compile Include="Interfaces\IDbContext.cs" />
     <Compile Include="Interfaces\ICompositeID.cs" />
     <Compile Include="DataAccess\SqlServer\SqlServerDatabaseScripts.cs" />
+    <Compile Include="Interfaces\IQueryConstructor.cs" />
+    <Compile Include="DataAccess\SqlServer\SqlServerQueryConstructor.cs" />
     <Compile Include="Utilities\ExceptionHandler.cs" />
     <Compile Include="Extensions\AuditLogExtensions.cs" />
     <Compile Include="Extensions\DwarfExtensions.cs" />
@@ -165,10 +168,10 @@
     <Compile Include="DataAccess\QueryBuilder\QueryMergers.cs" />
     <Compile Include="DataAccess\QueryBuilder\DateParts.cs" />
     <Compile Include="DataAccess\QueryBuilder\QueryOperators.cs" />
-    <Compile Include="DataAccess\SqlServer\QueryBuilder.cs" />
+    <Compile Include="DataAccess\QueryBuilder\QueryBuilder.cs" />
     <Compile Include="DataAccess\QueryBuilder\WhereSeparator.cs" />
     <Compile Include="DataAccess\QueryBuilder\QuerySeparatorOperatons.cs" />
-    <Compile Include="DataAccess\SqlServer\QueryStringHelper.cs" />
+    <Compile Include="DataAccess\QueryStringHelper.cs" />
     <Compile Include="DataAccess\QueryBuilder\SelectOperators.cs" />
     <Compile Include="DataAccess\TransactionWrapper.cs" />
     <Compile Include="DomainModel\AuditLog.cs" />

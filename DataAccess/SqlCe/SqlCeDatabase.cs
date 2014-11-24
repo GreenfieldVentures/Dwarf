@@ -33,15 +33,23 @@ namespace Dwarf.DataAccess.SqlCe
         internal static string PurifyQuery(string query)
         {
             return query
-                .Replace("[", "")
-                .Replace("]", "")
-                .Replace("dbo.", "")
                 .Replace("\t\t", " ")
                 .Replace("\t", "")
-                .Replace("varchar", "nvarchar")
                 .Replace("\r\n", " ");
         }
 
         #endregion PurifyQuery
+
+        #region PurifyScriptQuery
+
+        internal static string PurifyScriptQuery(string query)
+        {
+            return PurifyQuery(query)
+                .Replace("[", "")
+                .Replace("]", "")
+                .Replace("dbo.", " ");
+        }
+
+        #endregion PurifyScriptQuery
     }
 }

@@ -29,6 +29,8 @@ namespace Dwarf.DataAccess
     {
         #region Variables
 
+        private IQueryConstructor queryConstructor;
+
         private readonly List<string> selectColumns;
         protected Type baseType;
         protected Type origianlBaseType;
@@ -45,6 +47,7 @@ namespace Dwarf.DataAccess
         private int? limitOffset;
         private int? limitRows;
         private Type lastType;
+
         #region QueryTypes
 
         private enum QueryTypes
@@ -79,10 +82,29 @@ namespace Dwarf.DataAccess
 
         #region Properties
 
+        #region QueryConstructor
+
+        internal IQueryConstructor QueryConstructor
+        {
+            get
+            {
+                if (queryConstructor == null)
+                    queryConstructor = Cfg.QueryConstructors[(origianlBaseType ?? baseType).Assembly];
+                
+                return queryConstructor;
+            }
+        }
+
+        #endregion QueryConstructor
+
+        #region SortDirection
+
         /// <summary>
         /// Sort direction
         /// </summary>
         internal SortDirection? SortDirection { get; set; }
+
+        #endregion SortDirection
 
         #endregion properties
 
@@ -119,7 +141,7 @@ namespace Dwarf.DataAccess
             var selectClause = new StringBuilder();
             selectClause.Append("SELECT ");
             
-            selectClause.Append("\t\t" + (Top.HasValue ? ("TOP " + Top.Value) : "") + (isDistinctQuery ? "DISTINCT " : ""));
+            selectClause.Append("\t\t" + (Top.HasValue ? QueryConstructor.Top(Top.Value) : string.Empty) + (isDistinctQuery ? QueryConstructor.Distinct: string.Empty));
 
             var setCounter = 0;
 
@@ -174,7 +196,7 @@ namespace Dwarf.DataAccess
         internal void FromInternal(Type type)
         {
             baseType = type;
-            FromInternal("dbo.[" + type.Name + "]");
+            FromInternal(QueryConstructor.TableNamePrefix + QueryConstructor.LeftContainer + type.Name + QueryConstructor.RightContainer);
         }
 
         private string BuildFromClause()
@@ -194,7 +216,7 @@ namespace Dwarf.DataAccess
 
         internal void InsertIntoInternal(Type type)
         {
-            InsertIntoInternal("dbo.[" + type.Name + "]");
+            InsertIntoInternal(QueryConstructor.TableNamePrefix + QueryConstructor.LeftContainer + type.Name + QueryConstructor.RightContainer);
         }
 
         private string BuildInsertIntoClause()
@@ -214,19 +236,13 @@ namespace Dwarf.DataAccess
 
         internal void UpdateInternal(Type type)
         {
-            UpdateInternal("dbo.[" + type.Name + "]");
+            UpdateInternal(QueryConstructor.TableNamePrefix + QueryConstructor.LeftContainer + type.Name + QueryConstructor.RightContainer);
         }
 
         private string BuildUpdateClause()
         {
             return "UPDATE \t\t" + tableName + "\r\n";
         }
-
-//        internal QueryBuilder SetOwner<T>()
-//        {
-//            baseType = typeof (T);
-//            return this;
-//        }
 
         #endregion Update
 
@@ -278,7 +294,7 @@ namespace Dwarf.DataAccess
         internal void DeleteFromInternal(Type type)
         {
             baseType = type;
-            DeleteFromInternal("dbo.[" + type.Name + "]");
+            DeleteFromInternal(QueryConstructor.TableNamePrefix + QueryConstructor.LeftContainer + type.Name + QueryConstructor.RightContainer);
         }
 
         private string BuildDeleteClause()
@@ -310,7 +326,7 @@ namespace Dwarf.DataAccess
 
                 var jc = joinConditions[i];
 
-                joinClause.Append(jc.IsLeftOuterJoin ? "LEFT OUTER JOIN " : "INNER JOIN \t");
+                joinClause.Append((jc.IsLeftOuterJoin ? QueryConstructor.LeftOuterJoin : QueryConstructor.InnerJoin) + " \t");
 
                 joinClause.Append(string.Format("dbo.{0} ON {0}.{1} = {2}.{3}", jc.LeftTypeName, jc.LeftColumnName, jc.RightTypeName, jc.RightColumnName));
             }
@@ -495,9 +511,9 @@ namespace Dwarf.DataAccess
             if (limitOffset.HasValue && !Top.HasValue)
             {
                 if (string.IsNullOrEmpty(sort))
-                    sort = "[Id]";
+                    sort = QueryConstructor.LeftContainer + (baseType.Implements<ICompositeId>() ? Cfg.PropertyExpressions[baseType].First().Key : "Id") + QueryConstructor.RightContainer;
 
-                limit = " OFFSET " + limitOffset.Value + " ROWS FETCH NEXT " + limitRows.Value + " ROWS ONLY";
+                limit = QueryConstructor.Limit(limitOffset.Value, limitRows.Value);
             }
 
             return string.IsNullOrEmpty(sort) ? sort : ("\r\n\r\n" + string.Format("ORDER BY \t" + sort) + limit);
@@ -543,6 +559,44 @@ namespace Dwarf.DataAccess
 
         #endregion GroupBy
 
+        #region PrepareQueryConstructor
+
+        internal QueryBuilder PrepareQueryConstructor<T>()
+        {
+            if (queryConstructor == null)
+                queryConstructor = Cfg.QueryConstructors[typeof(T).Assembly];
+
+            return this;
+        }
+
+        internal QueryBuilder PrepareQueryConstructor(Type type)
+        {
+            if (queryConstructor == null)
+                queryConstructor = Cfg.QueryConstructors[(origianlBaseType ?? type).Assembly];
+
+            return this;
+        }
+
+        #endregion PrepareQueryConstructor
+
+        #region GetLastType
+
+        internal Type GetLastType()
+        {
+            return (lastType ?? baseType) ?? origianlBaseType;
+        }
+
+        #endregion GetLastType
+
+        #region SetLastType
+
+        internal void SetLastType(Type type)
+        {
+            lastType = type;
+        }
+
+        #endregion SetLastType
+
         #region ToQuery
 
         /// <summary>
@@ -550,7 +604,6 @@ namespace Dwarf.DataAccess
         /// </summary>
         public string ToQuery()
         {
-//            baseType <- switcha på denna?
             switch (queryType)
             {
                 case QueryTypes.Update:
@@ -593,7 +646,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         internal string ConvertToQueryCondition(Type type, string columnName, string value)
         {
-            return string.Format("[{0}].[{1}] = {2}", type.Name, columnName, value);
+            return string.Format("{0}{2}{1}.{0}{3}{1} = {4}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, type.Name, columnName, value);
         }
 
         /// <summary>
@@ -627,34 +680,34 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Converts the supplied object and property info to an sql compliant string
         /// </summary>
-        internal static string ConvertToQueryColumn(Type type, PropertyInfo pi)
+        internal string ConvertToQueryColumn(Type type, PropertyInfo pi)
         {
-            return string.Format("[{0}].[{1}]", type.Name, GetColumnName(pi));
+            return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, type.Name, GetColumnName(pi));
         }
 
         /// <summary>
         /// Converts the supplied object and property info to an sql compliant string
         /// </summary>
-        internal static string ConvertToQueryColumn(Type type, ExpressionProperty fp)
+        internal string ConvertToQueryColumn(Type type, ExpressionProperty fp)
         {
-            return string.Format("[{0}].[{1}]", type.Name, GetColumnName(fp.ContainedProperty));
+            return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, type.Name, GetColumnName(fp.ContainedProperty));
         }
 
         /// <summary>
         /// Converts the supplied object and property info to an sql compliant string
         /// </summary>
-        internal static string ConvertToQueryColumn(Type type, string columnName)
+        internal string ConvertToQueryColumn(Type type, string columnName)
         {
             if (type == null)
-                return "[" + columnName + "]";
+                return QueryConstructor.LeftContainer + columnName + QueryConstructor.RightContainer;
 
-            return string.Format("[{0}].[{1}]", type.Name, columnName);
+            return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, type.Name, columnName);
         }
 
         /// <summary>
         /// Converts the supplied object and expression to an sql compliant string
         /// </summary>
-        public static string ConvertToQueryColumn<T>(Expression<Func<T, object>> expression)
+        public string ConvertToQueryColumn<T>(Expression<Func<T, object>> expression)
         {
             return ConvertToQueryColumn(typeof (T), ReflectionHelper.GetPropertyInfo(expression));
         }
@@ -722,13 +775,13 @@ namespace Dwarf.DataAccess
             {
                 conditionValue = DwarfContext.GetDatabase(bt).ValueToSqlString(((DateTime)condition.Value).Date);
 
-                return "DATEADD(dd, 0, DATEDIFF(dd, 0, " + GetColumnName<T>(condition.GetColumn()) + ")) " + op + conditionValue + " ";
+                return queryConstructor.Date(GetColumnName<T>(condition.GetColumn())) + op + conditionValue + " ";
             }
 
             var column = GetColumnName<T>(condition.GetColumn());
 
             if (datePart.HasValue)
-                column = datePart.Value.ToQuery(column);
+                column = QueryConstructor.DatePart(datePart.Value, column);
 
             return column + op + conditionValue;
         }
@@ -740,16 +793,18 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Returns the proper column name for the supplied property info
         /// </summary>
-        internal static string GetColumnName<T>(PropertyInfo pi)
+        internal string GetColumnName<T>(PropertyInfo pi)
         {
+            PrepareQueryConstructor<T>();
+
             if (DwarfPropertyAttribute.GetAttribute(pi) != null)
-                return string.Format("[{0}].[{1}]", typeof(T).Name, pi.Name + ((DwarfPropertyAttribute.IsFK(pi)) ? "Id" : string.Empty));
+                return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, typeof(T).Name, pi.Name + ((DwarfPropertyAttribute.IsFK(pi)) ? "Id" : string.Empty));
 
             if (DwarfProjectionPropertyAttribute.GetAttribute(pi) != null)
                 return "(" + DwarfProjectionPropertyAttribute.GetAttribute(pi).Script + ")";
 
             if (pi.PropertyType.Implements<IGemList>())
-                return string.Format("[{0}].[{1}]", typeof(T).Name, pi.Name);
+                return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, typeof(T).Name, pi.Name);
 
             throw new InvalidOperationException("A queriable property must reside in the database too, right?");
         }
@@ -771,16 +826,6 @@ namespace Dwarf.DataAccess
         #endregion GetColumnName
 
         #endregion Methods
-
-        internal Type GetLastType()
-        {
-            return (lastType ?? baseType) ?? origianlBaseType;
-        }
-        
-        internal void SetLastType(Type type)
-        {
-            lastType = type;
-        }
     }
 
     #region QueryBuilderExtensions
@@ -806,7 +851,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder Select<T>(this QueryBuilder qb, PropertyInfo propertyInfo)
         {
-            qb.SelectInternal(QueryBuilder.GetColumnName<T>(propertyInfo));
+            qb.PrepareQueryConstructor<T>().SelectInternal(qb.GetColumnName<T>(propertyInfo));
             return qb;
         }
 
@@ -826,12 +871,12 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder Select(this QueryBuilder qb, Type type)
         {
-            qb.SelectInternal("[" + type.Name + "].*");
+            qb.PrepareQueryConstructor(type).SelectInternal(qb.QueryConstructor.LeftContainer + type.Name + qb.QueryConstructor.RightContainer + ".*");
 
             foreach (var pi in Cfg.ProjectionProperties[type])
             {
                 var script = DwarfProjectionPropertyAttribute.GetAttribute(pi.ContainedProperty).Script;
-                qb.SelectInternal("(" + script + ") AS [" + pi.Name + "]");
+                qb.SelectInternal("(" + script + ") AS " + qb.QueryConstructor.LeftContainer + pi.Name + qb.QueryConstructor.RightContainer);
             }
 
             return qb;
@@ -862,7 +907,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder Select<T>(this QueryBuilder qb, Expression<Func<T, object>> column, string columnName)
         {
-            qb.SelectInternal(QueryBuilder.GetColumnName<T>(ReflectionHelper.GetPropertyInfo(column)) + " AS " + columnName);
+            qb.SelectInternal(qb.GetColumnName<T>(ReflectionHelper.GetPropertyInfo(column)) + " AS " + columnName);
 
             return qb;
         }
@@ -891,7 +936,7 @@ namespace Dwarf.DataAccess
 
             var clause = selectOperator.ToQuery() + "(";
 
-            clause = expressions.Aggregate(clause, (current, expression) => current + (QueryBuilder.ConvertToQueryColumn(expression) + " " + querySeparatorOperaton.ToQuery() + " "));
+            clause = expressions.Aggregate(clause, (current, expression) => current + (qb.ConvertToQueryColumn(expression) + " " + querySeparatorOperaton.ToQuery() + " "));
             clause = clause.TruncateEnd(2);
 
             if (string.IsNullOrEmpty(columnName))
@@ -970,7 +1015,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder Select<T>(this QueryBuilder qb, DateParts datePart, Expression<Func<T, object>> expression)
         {
-            qb.SelectInternal(datePart.ToQuery(QueryBuilder.ConvertToQueryColumn(expression)));
+            qb.SelectInternal(qb.QueryConstructor.DatePart(datePart, qb.ConvertToQueryColumn(expression)));
 
             return qb;
         }
@@ -1113,7 +1158,7 @@ namespace Dwarf.DataAccess
         public static QueryBuilder Values<T>(this QueryBuilder qb, Expression<Func<T, object>> column, object value) where T : Dwarf<T>, new()
         {
             var pi = ReflectionHelper.GetPropertyInfo(column);
-            qb.ValuesInternal(new InsertIntoValue { ColumnName = QueryBuilder.ConvertToQueryColumn(typeof(T), pi), Value = value});
+            qb.ValuesInternal(new InsertIntoValue { ColumnName = qb.ConvertToQueryColumn(typeof(T), pi), Value = value});
 
             return qb;
         }
@@ -1258,11 +1303,11 @@ namespace Dwarf.DataAccess
             
             if (o2mRight != null)
             {
-                qb.JoinInternal(new JoinCondition
+                qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
                 {
                     LeftType = typeof (T),
-                    LeftColumnName = "[" + orgType.Name + "Id]",
-                    RightColumnName = "[Id]",
+                    LeftColumnName = qb.QueryConstructor.LeftContainer + orgType.Name + "Id" + qb.QueryConstructor.RightContainer,
+                    RightColumnName = qb.QueryConstructor.LeftContainer + "Id" + qb.QueryConstructor.RightContainer,
                     RightType = orgType,
                 });
 
@@ -1274,11 +1319,11 @@ namespace Dwarf.DataAccess
 
             if (o2mLeft != null)
             {
-                qb.JoinInternal(new JoinCondition
+                qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
                 {
                     LeftType = typeof (T),
-                    LeftColumnName = "[Id]",
-                    RightColumnName = "[" + typeof(T).Name + "Id]",
+                    LeftColumnName = qb.QueryConstructor.LeftContainer + "Id" + qb.QueryConstructor.RightContainer,
+                    RightColumnName = qb.QueryConstructor.LeftContainer + typeof(T).Name + "Id" + qb.QueryConstructor.RightContainer,
                     RightType = orgType,
                 });
                
@@ -1302,21 +1347,21 @@ namespace Dwarf.DataAccess
             }
 
             if (m2m != null)
-            { 
-                qb.JoinInternal(new JoinCondition
+            {
+                qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
                 {
-                    LeftTypeName = "[" + tableName + "]",
-                    LeftColumnName = "[" + orgType.Name + "Id]",
+                    LeftTypeName = qb.QueryConstructor.LeftContainer + tableName  + qb.QueryConstructor.RightContainer,
+                    LeftColumnName = qb.QueryConstructor.LeftContainer + orgType.Name + "Id" + qb.QueryConstructor.RightContainer,
                     RightType = orgType,
-                    RightColumnName = "[Id]",
-                });                
-                
-                qb.JoinInternal(new JoinCondition
+                    RightColumnName = qb.QueryConstructor.LeftContainer + "Id" + qb.QueryConstructor.RightContainer,
+                });
+
+                qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
                 {
                     LeftType = typeof(T),
-                    LeftColumnName = "[Id]",
-                    RightTypeName = "[" + tableName + "]",
-                    RightColumnName = "[" + typeof(T).Name + "Id]",
+                    LeftColumnName = qb.QueryConstructor.LeftContainer + "Id" + qb.QueryConstructor.RightContainer,
+                    RightTypeName = qb.QueryConstructor.LeftContainer + tableName  + qb.QueryConstructor.RightContainer,
+                    RightColumnName = qb.QueryConstructor.LeftContainer + typeof(T).Name + "Id" + qb.QueryConstructor.RightContainer,
                 });
 
                 qb.SetLastType(typeof(T));
@@ -1337,7 +1382,7 @@ namespace Dwarf.DataAccess
 
         public static QueryBuilder InnerJoin<T, TY>(this QueryBuilder qb, Expression<Func<T, object>> leftCondition, Expression<Func<TY, object>> rightCondition)
         {
-            qb.JoinInternal(new JoinCondition
+            qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
             {
                 LeftType = typeof (T),
                 LeftColumn = leftCondition.Body.NodeType == ExpressionType.Parameter
@@ -1358,7 +1403,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         public static QueryBuilder LeftOuterJoin<T, TY>(this QueryBuilder qb, Expression<Func<T, object>> leftCondition, Expression<Func<TY, object>> rightCondition)
         {
-            qb.JoinInternal(new JoinCondition
+            qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
             {
                 LeftType = typeof(T),
                 LeftColumn = leftCondition.Body.NodeType == ExpressionType.Parameter
@@ -1394,11 +1439,11 @@ namespace Dwarf.DataAccess
 
             if (o2mRight != null)
             {
-                qb.JoinInternal(new JoinCondition
+                qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
                 {
                     LeftType = typeof (T),
-                    LeftColumnName = "[" + orgType.Name + "Id]",
-                    RightColumnName = "[Id]",
+                    LeftColumnName = qb.QueryConstructor.LeftContainer + orgType.Name + "Id" + qb.QueryConstructor.RightContainer,
+                    RightColumnName = qb.QueryConstructor.LeftContainer+ "Id" + qb.QueryConstructor.RightContainer,
                     RightType = orgType,
                     IsLeftOuterJoin = true,
                 });
@@ -1407,16 +1452,15 @@ namespace Dwarf.DataAccess
                 return qb;
             }
 
-            var o2mLeft =
-                Cfg.OneToManyProperties[typeof (T)].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == orgType);
+            var o2mLeft = Cfg.OneToManyProperties[typeof (T)].FirstOrDefault(x => x.ContainedProperty.PropertyType.GetGenericArguments()[0] == orgType);
 
             if (o2mLeft != null)
             {
-                qb.JoinInternal(new JoinCondition
+                qb.JoinInternal(new JoinCondition(qb.QueryConstructor)
                 {
                     LeftType = typeof (T),
-                    LeftColumnName = "[Id]",
-                    RightColumnName = "[" + typeof (T).Name + "Id]",
+                    LeftColumnName = qb.QueryConstructor.LeftContainer + "Id" + qb.QueryConstructor.RightContainer,
+                    RightColumnName = qb.QueryConstructor.LeftContainer + typeof(T).Name + "Id" + qb.QueryConstructor.RightContainer,
                     RightType = orgType,
                     IsLeftOuterJoin = true,
                 });
@@ -1597,7 +1641,7 @@ namespace Dwarf.DataAccess
         public static QueryBuilder OrderBy<T>(this QueryBuilder qb, params PropertyInfo[] propertyInfos)
         {
             foreach (var pi in propertyInfos)
-                qb.OrderByInternal(QueryBuilder.ConvertToQueryColumn(typeof(T), pi));
+                qb.OrderByInternal(qb.ConvertToQueryColumn(typeof(T), pi));
 
             return qb;
         }        
@@ -1614,9 +1658,9 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Adds columns to the order by clause
         /// </summary>
-        public static QueryBuilder OrderBy<T>(this QueryBuilder qb, DateParts dateParts, Expression<Func<T, object>> expression)
+        public static QueryBuilder OrderBy<T>(this QueryBuilder qb, DateParts datePart, Expression<Func<T, object>> expression)
         {
-            qb.OrderByInternal(dateParts.ToQuery(QueryBuilder.ConvertToQueryColumn(expression)));
+            qb.OrderByInternal(qb.QueryConstructor.DatePart(datePart, qb.ConvertToQueryColumn(expression)));
             return qb;
         }
 
@@ -1664,7 +1708,7 @@ namespace Dwarf.DataAccess
         public static QueryBuilder GroupBy<T>(this QueryBuilder qb, params PropertyInfo[] propertyInfos)
         {
             foreach (var pi in propertyInfos)
-                qb.GroupBy(QueryBuilder.GetColumnName<T>(pi));
+                qb.GroupBy(qb.GetColumnName<T>(pi));
 
             return qb;
         }
@@ -1694,7 +1738,7 @@ namespace Dwarf.DataAccess
         public static QueryBuilder GroupBy(this QueryBuilder qb, Type type)
         {
             foreach (var pi in DwarfHelper.GetDBProperties(type).OrderBy(p => p.Name))
-                qb.GroupByInternal(QueryBuilder.ConvertToQueryColumn(type, pi));
+                qb.GroupByInternal(qb.ConvertToQueryColumn(type, pi));
 
             return qb;
         }
@@ -1711,28 +1755,34 @@ namespace Dwarf.DataAccess
     /// </summary>
     internal class JoinCondition
     {
+        private IQueryConstructor qc;
+        internal JoinCondition(IQueryConstructor QueryConstructor)
+        {
+            qc = QueryConstructor;
+        }
+
         public string LeftTypeName { get; set; }
         public Type LeftType
         {
-            set { LeftTypeName = "[" + value.Name + "]"; }
+            set { LeftTypeName = qc.LeftContainer + value.Name + qc.RightContainer; }
         }
 
         public string LeftColumnName { get; set; } 
         public PropertyInfo LeftColumn
         {
-            set { LeftColumnName = "[" + QueryBuilder.GetColumnName(value) + "]"; }
+            set { LeftColumnName = qc.LeftContainer + QueryBuilder.GetColumnName(value) + qc.RightContainer; }
         }        
         
         public string RightTypeName { get; set; }
         public Type RightType
         {
-            set { RightTypeName = "[" + value.Name + "]"; }
+            set { RightTypeName = qc.LeftContainer + value.Name + qc.RightContainer; }
         }
 
         public string RightColumnName { get; set; } 
         public PropertyInfo RightColumn
         {
-            set { RightColumnName = "[" + QueryBuilder.GetColumnName(value) + "]"; }
+            set { RightColumnName = qc.LeftContainer + QueryBuilder.GetColumnName(value) + qc.RightContainer; }
         }
 
         public bool IsLeftOuterJoin { get; set; }

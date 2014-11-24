@@ -600,19 +600,19 @@ namespace Dwarf.DataAccess
             else if (pi.PropertyType.Implements<DateTime?>())
                 value = "datetime";
             else if (pi.PropertyType == typeof(string))
-                value = "varchar";
+                value = "nvarchar";
             else if (pi.PropertyType.IsEnum())
-                value = "varchar";
+                value = "nvarchar";
             else if (pi.PropertyType.Implements<bool?>())
                 value = "bit";
             else if (pi.PropertyType.Implements<Guid?>())
                 value = "uniqueidentifier";
             else if (pi.PropertyType.Implements<IGem>())
-                value = "varchar";
+                value = "nvarchar";
             else if (pi.PropertyType.Implements<IGemList>())
-                value = "varchar";
+                value = "nvarchar";
             else if (pi.PropertyType.Implements<Type>())
-                value = "varchar";
+                value = "nvarchar";
             else if (pi.PropertyType.Implements<byte[]>())
                 value = "varbinary";
 

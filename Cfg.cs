@@ -79,6 +79,11 @@ namespace Dwarf
         internal static Dictionary<Assembly, IDatabase> Databases = new Dictionary<Assembly, IDatabase>();
 
         /// <summary>
+        /// Gets or Sets the database's query constructor for the domain model
+        /// </summary>
+        internal static Dictionary<Assembly, IQueryConstructor> QueryConstructors = new Dictionary<Assembly, IQueryConstructor>();
+
+        /// <summary>
         /// The list of proxy types constructor functions
         /// </summary>
         internal static Dictionary<Type, Func<object>> ProxyTypeConstructors = new Dictionary<Type, Func<object>>();

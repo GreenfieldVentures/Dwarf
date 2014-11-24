@@ -35,10 +35,10 @@ namespace Dwarf.DataAccess
             var alters = scripts.Substring(center, (scripts.Length - 1 - center)).Split(new[] { "ALTER" }, StringSplitOptions.RemoveEmptyEntries);
 
             for (var i = 0; i < tables.Length; i++)
-                tables[i] = SqlCeDatabase.PurifyQuery("CREATE" + tables[i]);
+                tables[i] = SqlCeDatabase.PurifyScriptQuery("CREATE" + tables[i]);
 
             for (var i = 0; i < alters.Length; i++)
-                alters[i] = SqlCeDatabase.PurifyQuery("ALTER" + alters[i]);
+                alters[i] = SqlCeDatabase.PurifyScriptQuery("ALTER" + alters[i]);
 
             return tables.ToList().Union(alters).ToArray();
         }

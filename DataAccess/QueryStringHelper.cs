@@ -120,14 +120,6 @@
         }
 
         /// <summary>
-        /// Converts a QueryOperator to a string
-        /// </summary>
-        public static string ToQuery(this DateParts dp, string targetColumn)
-        {
-            return string.Format("DATEPART({0}, {1})", dp.ToQuery(), targetColumn);
-        }
-
-        /// <summary>
         /// Converts a QueryMerger to a string
         /// </summary>
         public static string ToQuery(this QueryMergers qm)

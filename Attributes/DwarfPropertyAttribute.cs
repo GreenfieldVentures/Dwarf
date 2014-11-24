@@ -37,7 +37,7 @@ namespace Dwarf.Attributes
         #region UseMaxLength
 
         /// <summary>
-        /// Gets or Sets if a varchar should be decleared as varchar(max) instead of varchar(255) 
+        /// Gets or Sets if a nvarchar should be decleared as nvarchar(max) instead of nvarchar(255) 
         /// </summary>
         public bool UseMaxLength { get; set; }
 
