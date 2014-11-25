@@ -12,7 +12,7 @@ namespace Dwarf.Attributes
     [AttributeUsage(AttributeTargets.Property)]
     public class DwarfProjectionPropertyAttribute : Attribute
     {
-        #region DwarfProjectionPropertyAttribute
+        #region Constructors
 
         /// <summary>
         /// Default constructor
@@ -22,7 +22,7 @@ namespace Dwarf.Attributes
             Script = script;
         }
 
-        #endregion DwarfProjectionPropertyAttribute
+        #endregion Constructors
 
         #region Properties
 

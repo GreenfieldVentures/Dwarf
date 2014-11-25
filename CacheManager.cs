@@ -18,6 +18,9 @@ namespace Dwarf
 
         #region Cache
 
+        /// <summary>
+        /// Gets HttpRuntime.Cache
+        /// </summary>
         internal static Cache Cache
         {
             get { return HttpRuntime.Cache; }
@@ -71,7 +74,7 @@ namespace Dwarf
         /// <summary>
         /// Inserts an item into the Cache
         /// </summary>
-        private static object Insert<T>(string key, object value, CacheDependency dependencies)
+        private static object Insert(string key, object value, CacheDependency dependencies)
         {
             var item = Cache[key];
 
@@ -106,7 +109,7 @@ namespace Dwarf
             if (Cache == null)
                 return value;
 
-            return (T)Insert<T>(GetUserKey(key), value, AggregateCacheDependencies<T>());
+            return (T)Insert(GetUserKey(key), value, AggregateCacheDependencies<T>());
         }
 
         #endregion SetCache
@@ -184,9 +187,9 @@ namespace Dwarf
             if (Cache == null)
                 return list;
 
-            var result = list.Select(x => (T)Insert<T>(GetUserKey(x), x, AggregateCacheDependencies<T>())).ToList();
+            var result = list.Select(x => (T)Insert(GetUserKey(x), x, AggregateCacheDependencies<T>())).ToList();
 
-            Insert<T>(GetUserKey(key), result, AggregateCacheDependencies<T>());
+            Insert(GetUserKey(key), result, AggregateCacheDependencies<T>());
 
             return result;
         }
@@ -199,7 +202,7 @@ namespace Dwarf
             if (Cache == null)
                 return list;
 
-            Insert<T>(key, list, AggregateCacheDependencies<T>());
+            Insert(key, list, AggregateCacheDependencies<T>());
 
             return list;
         }
@@ -288,19 +291,22 @@ namespace Dwarf
 
         internal static void SetCollectionCache<T>(string key, DwarfList<T> list) where T : Dwarf<T>, new()
         {
-            Insert<T>(key, list, AggregateCacheDependencies<T>());
+            Insert(key, list, AggregateCacheDependencies<T>());
         }
 
         #endregion SetCollectionCache
 
         #endregion Methods
 
-        #region Class: NullObject
+        #region Type: NullObject
 
+        /// <summary>
+        /// Helper class since HttpCache doesn't allow null as a value
+        /// </summary>
         private class NullObject
         {
         }
 
-        #endregion Class: NullObject
+        #endregion Type: NullObject
     }
 }

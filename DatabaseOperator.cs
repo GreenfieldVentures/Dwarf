@@ -6,6 +6,10 @@ namespace Dwarf
 {
     internal class DatabaseOperator<T> : IDatabaseOperator
     {
+        #region Methods
+
+        #region OpenTransaction
+
         /// <summary>
         /// Opens a new transction
         /// </summary>
@@ -13,6 +17,10 @@ namespace Dwarf
         {
             return TransactionWrapper<T>.BeginTransaction();
         }
+
+        #endregion OpenTransaction
+
+        #region ExecuteQuery
 
         /// <summary>
         /// Executes a SQL statement against a connection object and returns a list of dynamic objects
@@ -22,6 +30,10 @@ namespace Dwarf
             return DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>(queryBuilder);
         }
 
+        #endregion ExecuteQuery
+
+        #region ExecuteScalar
+
         /// <summary>
         /// Executes the query and returns the first column of the first row in the result set returned by the query. All other columns and rows are ignored.
         /// </summary>
@@ -29,6 +41,10 @@ namespace Dwarf
         {
             return DwarfContext<T>.GetDatabase().ExecuteScalar<T, TY>(queryBuilder);
         }
+
+        #endregion ExecuteScalar
+
+        #region ExecuteNonQuery
 
         /// <summary>
         /// Executes a SQL statement against a connection object.
@@ -38,6 +54,10 @@ namespace Dwarf
             DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(queryBuilder);
         }
 
+        #endregion ExecuteNonQuery
+
+        #region ExecuteQuery
+
         /// <summary>
         /// Executes a SQL statement against a connection object and returns a list of dynamic objects
         /// </summary>
@@ -45,6 +65,10 @@ namespace Dwarf
         {
             return DwarfContext<T>.GetDatabase().ExecuteCustomQuery<T>(query);
         }
+
+        #endregion ExecuteQuery
+
+        #region ExecuteScalar
 
         /// <summary>
         /// Executes the query and returns the first column of the first row in the result set returned by the query. All other columns and rows are ignored.
@@ -54,6 +78,10 @@ namespace Dwarf
             return DwarfContext<T>.GetDatabase().ExecuteScalar<T, TY>(query);
         }
 
+        #endregion ExecuteScalar
+
+        #region ExecuteNonQuery
+
         /// <summary>
         /// Executes a SQL statement against a connection object.
         /// </summary>
@@ -61,5 +89,9 @@ namespace Dwarf
         {
             DwarfContext<T>.GetDatabase().ExecuteNonQuery<T>(query);
         }
+
+        #endregion ExecuteNonQuery
+
+        #endregion Methods
     }
 }

@@ -1033,7 +1033,7 @@ namespace Dwarf
         /// <summary>
         /// Used internally to retrieve original values
         /// </summary>
-        internal TY GetOriginalValue<TY>(Expression<Func<T, TY>> property)
+        internal protected TY GetOriginalValue<TY>(Expression<Func<T, TY>> property)
         {
             var key = ReflectionHelper.GetPropertyName(property);
 

@@ -87,6 +87,9 @@ namespace Dwarf
 
         private IDatabaseScripts scripts;
 
+        /// <summary>
+        /// Gets the object for database scripts
+        /// </summary>
         public IDatabaseScripts DatabaseScripts
         {
             get { return scripts; }
@@ -98,6 +101,9 @@ namespace Dwarf
 
         private DatabaseOperator<T> database;
 
+        /// <summary>
+        /// Object for performing various database operations
+        /// </summary>
         public IDatabaseOperator Database
         {
             get { return database ?? (database = new DatabaseOperator<T>()); }
@@ -384,29 +390,10 @@ namespace Dwarf
 
         internal class FakeUser : IUser
         {
-            private static readonly Guid id = Guid.NewGuid();
-
-            public Guid? Id
-            {
-                get { return id; }
-                set { throw new NotImplementedException(); }
-            }
-
             public string UserName
             {
                 get { return ""; }
                 set { throw new NotImplementedException(); }
-            }
-
-            public string Password
-            {
-                get { throw new NotImplementedException(); }
-                set { throw new NotImplementedException(); }
-            }
-
-            public override string ToString()
-            {
-                return UserName;
             }
         }
 

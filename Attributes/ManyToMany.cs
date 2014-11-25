@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Dwarf.DataAccess;
 using Dwarf.Extensions;
 using Dwarf.Interfaces;
 using Dwarf.Utilities;
@@ -76,16 +75,6 @@ namespace Dwarf.Attributes
             return GetManyToManyTableName(type, pi.PropertyType.GetGenericArguments()[0]);
         }
 
-        #region GetTableName
-
-        internal static string GetManyToManyTableName(Type type1, Type type2, string alternateTableName = null)
-        {
-            return alternateTableName ??
-                new[] { type1, type2 }.OrderBy(x => x.Name).Aggregate(string.Empty, (s, x) => s + "To" + x.Name).TruncateStart(2);
-        }
-
-        #endregion GetTableName
-
         /// <summary>
         /// Returns the ManyToMany table name for the supplied criteria
         /// </summary>
@@ -93,7 +82,13 @@ namespace Dwarf.Attributes
         {
             var pi = PropertyHelper.GetProperty(DwarfHelper.DeProxyfy(typeof(T)), ReflectionHelper.GetPropertyName(exp));
 
-            return GetTableName(typeof (T), pi.ContainedProperty);
+            return GetTableName(typeof(T), pi.ContainedProperty);
+        }
+
+        internal static string GetManyToManyTableName(Type type1, Type type2, string alternateTableName = null)
+        {
+            return alternateTableName ??
+                new[] { type1, type2 }.OrderBy(x => x.Name).Flatten(x => "To" + x.Name).TruncateStart(2);
         }
 
         #endregion GetTableName

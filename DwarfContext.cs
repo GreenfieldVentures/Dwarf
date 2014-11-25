@@ -62,6 +62,9 @@ namespace Dwarf
 
         #region DisposeContexts
 
+        /// <summary>
+        /// Calls Dispose on every DbContext active on the current request
+        /// </summary>
         internal static void DisposeContexts()
         {
             if (Items["DbContexts"] != null)
@@ -78,6 +81,9 @@ namespace Dwarf
 
         #region GetDatabase
 
+        /// <summary>
+        /// Returns the database object for the supplied type
+        /// </summary>
         internal static IDatabase GetDatabase(Type type)
         {
             return Cfg.Databases[type.Assembly];
@@ -124,6 +130,10 @@ namespace Dwarf
         
         #region GetConfiguration
 
+        /// <summary>
+        /// Returns the underlying dwarf configuration object
+        /// </summary>
+        /// <returns></returns>
         public static IDwarfConfiguration GetConfiguration()
         {
             return configs.ContainsKey(typeof(T).Assembly) ? configs[typeof(T).Assembly] : null;
@@ -133,6 +143,9 @@ namespace Dwarf
 
         #region GetDatabase
 
+        /// <summary>
+        /// Returns the database object
+        /// </summary>
         internal static IDatabase GetDatabase()
         {
             return GetDatabase(typeof (T));
@@ -142,6 +155,10 @@ namespace Dwarf
 
         #region GetDBContext
 
+        /// <summary>
+        /// Returns the DbContext object for the current request
+        /// </summary>
+        /// <returns></returns>
         internal static IDbContext GetDBContext()
         {
             var contexts = (Items["DbContexts"] ?? (Items["DbContexts"] = new Dictionary<Assembly, IDbContext>())) as Dictionary<Assembly, IDbContext>;

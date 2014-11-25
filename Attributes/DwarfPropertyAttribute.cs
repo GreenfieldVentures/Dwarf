@@ -137,7 +137,7 @@ namespace Dwarf.Attributes
         /// </summary>
         public static bool IsFK(ExpressionProperty ep)
         {
-            return ep.ContainedProperty.PropertyType.Implements<IDwarf>();
+            return ep.PropertyType.Implements<IDwarf>();
         }
 
         #endregion IsFK
