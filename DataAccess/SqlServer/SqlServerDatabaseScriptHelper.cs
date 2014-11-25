@@ -278,7 +278,7 @@ namespace Dwarf.DataAccess
                         if (typeChanged | nullableChanged | lengthChanged)
                         {
                             addColumns.AppendLine("-- WARNING! TYPE CONVERSION MIGHT FAIL!!! ");
-                            addColumns.AppendLine("ALTER TABLE [" + type.Name + "] ALTER COLUMN " + TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty).TruncateEnd(2));
+                            addColumns.AppendLine("ALTER TABLE [" + type.Name + "] ALTER COLUMN " + TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty, true).TruncateEnd(2));
                             addColumns.AppendLine("GO ");
                         }
 
@@ -311,7 +311,7 @@ namespace Dwarf.DataAccess
                                     addColumns.AppendLine("-- WARNING! Value is probably wrong. Correct before you execute! ");
                                     addColumns.AppendLine("UPDATE [" + type.Name + "] SET " + TypeToColumnName(pi) + " = " + database.ValueToSqlString(value) + " ");
                                     addColumns.AppendLine("GO ");
-                                    addColumns.AppendLine("ALTER TABLE [" + type.Name + "] ALTER COLUMN " + TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty).TruncateEnd(2));
+                                    addColumns.AppendLine("ALTER TABLE [" + type.Name + "] ALTER COLUMN " + TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty, true).TruncateEnd(2));
                                     addColumns.AppendLine("GO ");
 
                                 }
@@ -347,7 +347,7 @@ namespace Dwarf.DataAccess
                             addColumns.AppendLine("-- WARNING! Value is probably wrong. Correct before you execute! ");
                             addColumns.AppendLine("UPDATE [" + type.Name + "] SET " + TypeToColumnName(pi) + " = " + database.ValueToSqlString(value) + " ");
                             addColumns.AppendLine("GO ");
-                            addColumns.AppendLine("ALTER TABLE [" + type.Name + "] ALTER COLUMN " + TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty).TruncateEnd(2));
+                            addColumns.AppendLine("ALTER TABLE [" + type.Name + "] ALTER COLUMN " + TypeToColumnName(pi) + " " + TypeToColumnConstruction(type, pi.ContainedProperty, true).TruncateEnd(2));
                             addColumns.AppendLine("GO ");
                         }
 
@@ -637,7 +637,7 @@ namespace Dwarf.DataAccess
         /// <summary>
         /// Returns the sql needed to construct the supplied property as a column
         /// </summary>
-        internal static string TypeToColumnConstruction(Type type, PropertyInfo pi)
+        internal static string TypeToColumnConstruction(Type type, PropertyInfo pi, bool skipConstraint = false)
         {
             var value = TypeToColumnType(pi);
 
@@ -665,7 +665,12 @@ namespace Dwarf.DataAccess
                 value += " NOT NULL";
 
             if (att != null && att.IsUnique)
-                value += string.Format(" CONSTRAINT [UQ_{0}_{1}{2}] UNIQUE", type.Name, pi.Name, DwarfPropertyAttribute.IsFK(pi) ? "Id" : string.Empty);
+            {
+                if (!skipConstraint)
+                    value += string.Format(" CONSTRAINT [UQ_{0}_{1}{2}] UNIQUE", type.Name, pi.Name, DwarfPropertyAttribute.IsFK(pi) ? "Id" : string.Empty);
+                else
+                    value += "/* WARNING! You might manually have to drop and recreate any Unique Constraint*/";
+            }
 
             if (string.IsNullOrEmpty(value))
                 throw new InvalidOperationException(type.Name + "." + pi.Name + "'s type (" + pi.PropertyType + ") isn't supported.");

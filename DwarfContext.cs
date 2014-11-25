@@ -86,7 +86,7 @@ namespace Dwarf
         /// </summary>
         internal static IDatabase GetDatabase(Type type)
         {
-            return Cfg.Databases[type.Assembly];
+            return Cfg.Databases[DwarfHelper.DeProxyfy(type).Assembly];
         }
 
         #endregion GetDatabase
