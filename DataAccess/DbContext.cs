@@ -21,10 +21,10 @@ namespace Dwarf
         public void Dispose()
         {
             if (Connection != null && Connection.State != ConnectionState.Closed)
-                Connection.Close();
+                Connection.Dispose();
 
             if (TransactionlessConnection != null && TransactionlessConnection.State != ConnectionState.Closed)
-                TransactionlessConnection.Close();
+                TransactionlessConnection.Dispose();
         }
     }
 }

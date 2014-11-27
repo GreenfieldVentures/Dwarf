@@ -31,18 +31,18 @@ namespace Dwarf.DataAccess
 
         private IQueryConstructor queryConstructor;
 
-        private readonly List<string> selectColumns;
+        private List<string> selectColumns;
         protected Type baseType;
         protected Type origianlBaseType;
         private QueryTypes queryType;
         private string tableName;
         private bool isDistinctQuery;
-        private readonly List<string> whereConditions;
-        private readonly List<string> setConditions;
-        private readonly List<string> orderByColumns;
-        private readonly List<string> groupByColumns;
-        private readonly List<JoinCondition> joinConditions;
-        private readonly List<InsertIntoValue> insertIntoValues;
+        private List<string> whereConditions;
+        private List<string> setConditions;
+        private List<string> orderByColumns;
+        private List<string> groupByColumns;
+        private List<JoinCondition> joinConditions;
+        private List<InsertIntoValue> insertIntoValues;
         private bool isOrderByDisabled;
         private int? limitOffset;
         private int? limitRows;
@@ -61,24 +61,6 @@ namespace Dwarf.DataAccess
         #endregion QueryTypes
 
         #endregion Variables
-
-        #region Constructors
-
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public QueryBuilder()
-        {
-            selectColumns = new List<string>();
-            setConditions = new List<string>();
-            whereConditions = new List<string>();
-            joinConditions = new List<JoinCondition>();
-            insertIntoValues = new List<InsertIntoValue>();
-            groupByColumns = new List<string>();
-            orderByColumns = new List<string>();
-        }
-
-        #endregion Constructors
 
         #region Properties
 
@@ -114,6 +96,9 @@ namespace Dwarf.DataAccess
 
         internal void SelectInternal(string columnName)
         {
+            if (selectColumns == null)
+                selectColumns = new List<string>();
+
             queryType = QueryTypes.Select;
             selectColumns.Add(columnName);
         }
@@ -132,7 +117,8 @@ namespace Dwarf.DataAccess
         /// </summary>
         internal QueryBuilder ClearSelect()
         {
-            selectColumns.Clear();
+            if (selectColumns != null)
+                selectColumns.Clear();
             return this;
         }
 
@@ -250,12 +236,15 @@ namespace Dwarf.DataAccess
 
         internal void SetInternal(string setCondition)
         {
+            if (setConditions == null)
+                setConditions = new List<string>();
+
             setConditions.Add(setCondition);
         }
 
         private string BuildSetClause()
         {
-            if (setConditions.Count == 0)
+            if (setConditions.IsNullOrEmpty())
                 return string.Empty;
 
             var setClause = new StringBuilder();
@@ -308,12 +297,15 @@ namespace Dwarf.DataAccess
 
         internal void JoinInternal(JoinCondition joinCondition)
         {
+            if (joinConditions == null)
+                joinConditions = new List<JoinCondition>();
+
             joinConditions.Add(joinCondition);
         }
 
         private string BuildJoinClause()
         {
-            if (joinConditions.Count == 0)
+            if (joinConditions.IsNullOrEmpty())
                 return string.Empty;
 
             var joinClause = new StringBuilder();
@@ -340,6 +332,9 @@ namespace Dwarf.DataAccess
 
         internal void WhereInternal(string condition)
         {
+            if (whereConditions == null)
+                whereConditions = new List<string>();
+
             whereConditions.Add(condition);
         }
 
@@ -366,7 +361,7 @@ namespace Dwarf.DataAccess
 
         private string BuildWhereClause()
         {
-            if (whereConditions.Count == 0)
+            if (whereConditions.IsNullOrEmpty())
                 return string.Empty;
 
             var whereClause = new StringBuilder();
@@ -394,6 +389,9 @@ namespace Dwarf.DataAccess
 
         internal void ValuesInternal(InsertIntoValue value)
         {
+            if (insertIntoValues == null)
+                insertIntoValues = new List<InsertIntoValue>();
+
             insertIntoValues.Add(value);
         }
 
@@ -444,7 +442,7 @@ namespace Dwarf.DataAccess
         /// </summary>
         internal bool HasOrderByClause()
         {
-            return orderByColumns.Any();
+            return orderByColumns != null && orderByColumns.Any();
         }
 
         /// <summary>
@@ -458,6 +456,9 @@ namespace Dwarf.DataAccess
 
         internal void OrderByInternal(string column)
         {
+            if (orderByColumns == null)
+                orderByColumns = new List<string>();
+
             orderByColumns.Add(column);
         }
 
@@ -474,7 +475,7 @@ namespace Dwarf.DataAccess
 
             var sort = string.Empty;
 
-            if (orderByColumns.Count > 0)
+            if (orderByColumns != null && orderByColumns.Count > 0)
             {
                 var orderByClause = new StringBuilder();
 
@@ -525,12 +526,15 @@ namespace Dwarf.DataAccess
 
         internal void GroupByInternal(string column)
         {
+            if (groupByColumns == null)
+                groupByColumns = new List<string>();
+
             groupByColumns.Add(column);
         }
 
         private string BuildGroupByClause()
         {
-            if (groupByColumns.Count == 0)
+            if (groupByColumns.IsNullOrEmpty())
                 return string.Empty;
 
             var groupByClause = new StringBuilder();
@@ -982,7 +986,7 @@ namespace Dwarf.DataAccess
             var clause = selectOperator.ToQuery() + "(";
 
             clause = columns.Aggregate(clause, (current, column) => current + (column + querySeparatorOperaton.ToQuery() + " "));
-            clause = clause.TruncateEnd(2);
+            clause = querySeparatorOperaton == QuerySeparatorOperatons.None ? clause.TrimEnd() : clause.TruncateEnd(2);
 
             qb.SelectInternal(clause.Trim() + ") AS " + columnName);
 

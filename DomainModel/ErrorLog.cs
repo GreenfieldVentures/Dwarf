@@ -37,8 +37,12 @@ namespace Dwarf
 
         #endregion StackTrace
 
+        #region InnerException
+
         [DwarfProperty(IsNullable = true, DisableDeleteCascade = true)]
         public virtual ErrorLog InnerException { get; set; }
+
+        #endregion InnerException
 
         #region Type
 
@@ -50,7 +54,11 @@ namespace Dwarf
 
         #endregion Type
 
+        #region Exception
+
         public Exception Exception { get; set; }
+
+        #endregion Exception
 
         #region UserName
 

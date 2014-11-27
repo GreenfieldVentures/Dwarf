@@ -24,6 +24,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Release\Dwarf\$(Framework)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -37,6 +38,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\$(Configuration)\$(Framework)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>NET40</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -49,6 +51,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Release\Dwarf\$(Framework)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -62,6 +65,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\$(Configuration)\$(Framework)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>NET45</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -74,6 +78,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\Release\Dwarf\$(Framework)\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>NET451</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
@@ -87,6 +92,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\$(Configuration)\$(Framework)\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>NET451</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>

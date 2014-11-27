@@ -319,7 +319,7 @@ namespace Dwarf.DataAccess
             copy.WriteToServer(dt);
 
             if (con != DbContextHelper<T>.Connection)
-                con.Close();
+                con.Dispose();
 
             objects.ForEachX(x => x.IsSaved = true);
         }
@@ -525,7 +525,7 @@ namespace Dwarf.DataAccess
             finally
             {
                 if (con != DbContextHelper<T, TY>.Connection)
-                    con.Close();
+                    con.Dispose();
             }
         }
 
@@ -585,7 +585,7 @@ namespace Dwarf.DataAccess
             finally
             {
                 if (con != DbContextHelper<T, TY>.Connection)
-                    con.Close();
+                    con.Dispose();
             }
         }
 
@@ -647,7 +647,7 @@ namespace Dwarf.DataAccess
             finally
             {
                 if (con != DbContextHelper<T>.Connection)
-                    con.Close();
+                    con.Dispose();
             }
 
             return result;
@@ -698,7 +698,7 @@ namespace Dwarf.DataAccess
             finally
             {
                 if (con != DbContextHelper<T, TY>.Connection)
-                    con.Close();
+                    con.Dispose();
             }
 
             if (result is TY)
