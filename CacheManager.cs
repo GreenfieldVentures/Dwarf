@@ -270,6 +270,9 @@ namespace Dwarf
         /// </summary>
         public static void DisposeUserCache()
         {
+            if (!DwarfContext.Items.Contains("UserKey"))
+                return;
+
             var key = GetUserCacheRegion();
 
             if (key != null)
