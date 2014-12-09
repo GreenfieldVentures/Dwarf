@@ -163,7 +163,7 @@ namespace Dwarf
                 case DatabaseTypes.SqlCe:
                 {
                     Cfg.Databases[assembly] = new SqlCeDatabase();
-                    Cfg.QueryConstructors[assembly] = new SqlServerQueryConstructor();
+                    Cfg.QueryConstructors[assembly] = new SqlCeQueryConstructor();
                     scripts = new SqlCeDatabaseScripts<T>();
                     break;
                 }

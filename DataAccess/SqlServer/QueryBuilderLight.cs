@@ -2,6 +2,7 @@
 using System.Text;
 using Dwarf.Attributes;
 using Dwarf.DataAccess;
+using Dwarf.Interfaces;
 
 namespace Dwarf
 {
@@ -37,13 +38,14 @@ namespace Dwarf
 
         internal QueryBuilderLight Select<T>()
         {
+            var qc = Cfg.QueryConstructors[typeof(T).Assembly];
             type = typeof (T);
-            select = string.Format("SELECT [{0}].*", typeof(T).Name);
+            select = string.Format("SELECT {0}{1}{2}.*", qc.LeftContainer, typeof(T).Name, qc.RightContainer);
 
             foreach (var pi in Cfg.ProjectionProperties[type])
             {
                 var script = DwarfProjectionPropertyAttribute.GetAttribute(pi.ContainedProperty).Script;
-                select += ", " + "(" + script + ") AS [" + pi.Name + "]";
+                select += ", " + "(" + script + ") AS " + qc.LeftContainer + pi.Name + qc.RightContainer;
             }
 
             select += " ";
@@ -57,7 +59,9 @@ namespace Dwarf
 
         internal QueryBuilderLight From<T>()
         {
-            from = string.Format("FROM dbo.[{0}] ", typeof(T).Name);
+            var qc = Cfg.QueryConstructors[typeof (T).Assembly];
+
+            from = string.Format("FROM {0}{1}{2}{3} ", qc.TableNamePrefix, qc.LeftContainer, typeof(T).Name, qc.RightContainer);
             
             return this;
         }

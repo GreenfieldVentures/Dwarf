@@ -320,7 +320,7 @@ namespace Dwarf.DataAccess
 
                 joinClause.Append((jc.IsLeftOuterJoin ? QueryConstructor.LeftOuterJoin : QueryConstructor.InnerJoin) + " \t");
 
-                joinClause.Append(string.Format("dbo.{0} ON {0}.{1} = {2}.{3}", jc.LeftTypeName, jc.LeftColumnName, jc.RightTypeName, jc.RightColumnName));
+                joinClause.Append(string.Format("{0}{1} ON {1}.{2} = {3}.{4}", QueryConstructor.TableNamePrefix, jc.LeftTypeName, jc.LeftColumnName, jc.RightTypeName, jc.RightColumnName));
             }
 
             return joinClause.ToString();
