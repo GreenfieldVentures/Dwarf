@@ -713,6 +713,8 @@ namespace Dwarf.DataAccess
         /// </summary>
         public string ConvertToQueryColumn<T>(Expression<Func<T, object>> expression)
         {
+            PrepareQueryConstructor<T>();
+
             return ConvertToQueryColumn(typeof (T), ReflectionHelper.GetPropertyInfo(expression));
         }
 
@@ -935,7 +937,7 @@ namespace Dwarf.DataAccess
             if (expressions.Length == 0)
                 return qb;
 
-            if (querySeparatorOperaton == QuerySeparatorOperatons.None && expressions.Length > 0)
+            if (querySeparatorOperaton == QuerySeparatorOperatons.None && expressions.Length != 1)
                 throw new Exception("Without a proper separator between the columns you may only supply one column");
 
             var clause = selectOperator.ToQuery() + "(";
