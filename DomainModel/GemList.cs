@@ -82,7 +82,7 @@ namespace Dwarf
         /// </summary>
         public override string ToString()
         {
-            var value = this.OrderBy(x => x.ToString()).Select(x => x.ToString() + ", ").ToList();
+            var value = Items.OrderBy(x => x.ToString()).Select(x => x.ToString() + ", ").ToList();
 
             return value.Any() ? value.Flatten().TruncateEnd(2) : string.Empty;
         }
@@ -98,7 +98,7 @@ namespace Dwarf
         {
             get
             {
-                var value = this.OrderBy(x => x.Id).Select(x => x.Id + ", ").ToList();
+                var value = Items.OrderBy(x => x.Id).Select(x => x.Id + ", ").ToList();
 
                 return value.Any() ? value.Flatten().TruncateEnd(2) : string.Empty;   
             }
@@ -166,7 +166,7 @@ namespace Dwarf
         {
             writer.WriteStartElement("List");
 
-            foreach (var obj in this)
+            foreach (var obj in Items)
             {
                 writer.WriteStartElement("Item");
                 writer.WriteValue(obj.Id);

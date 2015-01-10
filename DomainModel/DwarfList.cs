@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using Dwarf.Interfaces;
@@ -9,16 +10,33 @@ using Dwarf.Utilities;
 
 namespace Dwarf
 {
+    //TODO! Sortering fallerar....
+
     /// <summary>
     /// Generic IList extension for handling object relationships. If an alternatePrimary key isn't specified
     /// the default Equality comparer will be used
     /// </summary>
-    public class DwarfList<T> : List<T>, IList<T>, IDwarfList
+    [DebuggerDisplay("Count = {Count}")]
+//    [DebuggerTypeProxy(typeof(Mscorlib_CollectionDebugView<>))]
+//    [__DynamicallyInvokable]
+//    [Serializable]
+    public class DwarfList<T> : /*List<T>, */IList<T>, IDwarfList
     {
+        internal protected Dictionary<object, T>.ValueCollection Items { get { return items.Values; } }
+//            [NonSerialized]
+//            private object _syncRoot;
+
+
+        //IDE 
+        //Nyckel/Index-lista Dic[Key, Index]
+        //Lista för själva item
+        //Insert
+
         #region Variables
 
-        private readonly List<T> deletedItems = new List<T>();
-        private readonly List<T> addedItems = new List<T>();
+        private readonly Dictionary<object, T> deletedItems = new Dictionary<object, T>();
+        private readonly Dictionary<object, T> addedItems = new Dictionary<object, T>();
+        private readonly Dictionary<object, T> items = new Dictionary<object, T>();
         private readonly Expression<Func<T, object>> alternatePrimaryKey;
 
         #endregion Variables
@@ -42,8 +60,7 @@ namespace Dwarf
         /// <summary>
         /// Constructor that initializes the collection with a predefined List of Ts
         /// </summary>
-        public DwarfList(IEnumerable<T> list)
-            : this()
+        public DwarfList(IEnumerable<T> list): this()
         {
             InitializeList(list);
         }
@@ -52,9 +69,9 @@ namespace Dwarf
         /// Constructor that initializes the collection with a predefined List of Ts and uniqueColumns
         /// </summary>
         public DwarfList(IEnumerable<T> list, Expression<Func<T, object>> alternatePrimaryKey)
-            : this(list)
         {
             this.alternatePrimaryKey = alternatePrimaryKey;
+            InitializeList(list);
         }
 
         #endregion Constructors
@@ -67,6 +84,8 @@ namespace Dwarf
         /// Gets or Sets if the DwarfList should be in ReadOnly mode
         /// </summary>
         public bool IsReadOnly { get; set; }
+
+        public bool IsFixedSize { get; private set; }
 
         #endregion IsReadOnly
 
@@ -85,7 +104,7 @@ namespace Dwarf
         /// <param name="match">The <see cref="T:System.Predicate`1"/> delegate that defines the conditions of the elements to remove.</param><exception cref="T:System.ArgumentNullException"><paramref name="match"/> is null.</exception>
         public new int RemoveAll(Predicate<T> match)
         {
-            var toRemove = this.Where(x => match(x)).ToList();
+            var toRemove = items.Values.Where(x => match(x)).ToList();
 
             foreach (var item in toRemove)
                 Remove(item);
@@ -113,121 +132,174 @@ namespace Dwarf
         /// <summary>
         /// See base
         /// </summary>
-        public new void Add(T item)
+        public void Add(T item)
         {
             if (IsReadOnly)
                 throw new ReadOnlyException("The DwarfList is in a ReadOnly state. The operation is not possible at this point.");
+            
+            var key = GetKey(item);
 
-            if (Contains(this, item))
+            if (items.ContainsKey(key))
                 return;
 
-            if (Contains(deletedItems, item))
+            if (deletedItems.ContainsKey(key))
             {
-                item = GetItem(deletedItems, item);
+                item = deletedItems[key];
                 deletedItems.Remove(item);
             }
             else
-                addedItems.Add(item);
+                addedItems[key] = item;
 
-            base.Add(item);
+            items[key] = item;
         }
 
         /// <summary>
         /// See base
         /// </summary>
-        public new void AddRange(IEnumerable<T> collection)
+        public void AddRange(IEnumerable<T> collection)
         {
             foreach (var item in collection)
                 Add(item);
         }
 
+        public int Add(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(object value)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// See base
         /// </summary>
-        public new void Clear()
+        public void Clear()
         {
             if (IsReadOnly)
                 throw new ReadOnlyException("The DwarfList is in a ReadOnly state. The operation is not possible at this point.");
 
-            foreach (var item in this)
-            {
-                if (!Contains(deletedItems, item))
-                    deletedItems.Add(item);
-            }
+            foreach (var kvp in items)
+                deletedItems[kvp.Key] = kvp.Value;
 
-            base.Clear();
+            items.Clear();
             addedItems.Clear();
         }
 
-        /// <summary>
-        /// See base
-        /// </summary>
-        public new bool Contains(T item)
+        public int IndexOf(object value)
         {
-            return Contains(this, item);
+            throw new NotImplementedException();
+        }
+
+        public void Insert(int index, object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(object value)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// See base
         /// </summary>
-        protected bool Contains(IEnumerable<T> list, T item)
+        public bool Contains(T item)
         {
-            if (!typeof(T).IsGenericType && typeof(T).IsValueType) 
-                return !GetItem(list, item).Equals(default(T));
+            return items.ContainsKey(GetKey(item));
+        }
 
-            return GetItem(list, item) != null;
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// See base
         /// </summary>
-        public new bool Remove(T item)
+        public bool Remove(T item)
         {
             if (IsReadOnly)
                 throw new ReadOnlyException("The DwarfList is in a ReadOnly state. The operation is not possible at this point.");
 
-            if (!Contains(this, item))
+            var key = GetKey(item);
+
+            if (!items.ContainsKey(key))
                 return false;
 
-            if (!Contains(deletedItems, item))
-                deletedItems.Add(item);
+            if (!deletedItems.ContainsKey(key))
+                deletedItems[key] = item;
 
-            addedItems.Remove(item);
-            base.Remove(item);
+            addedItems.Remove(key);
+            items.Remove(key);
 
             return true;
         }
 
-        /// <summary>
-        /// See base
-        /// </summary>
-        public new void Insert(int index, T item)
+        public void CopyTo(Array array, int index)
         {
-            if (IsReadOnly)
-                throw new ReadOnlyException("The DwarfList is in a ReadOnly state. The operation is not possible at this point.");
+            throw new NotImplementedException();
+        }
 
-            if (Contains(this, item))
-                return;
-
-            base.Insert(index, item);
-            addedItems.Add(item);
-            deletedItems.Remove(item);
+        public int IndexOf(T item)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
         /// See base
         /// </summary>
-        public new void RemoveAt(int index)
+        public void Insert(int index, T item)
         {
-            if (IsReadOnly)
-                throw new ReadOnlyException("The DwarfList is in a ReadOnly state. The operation is not possible at this point.");
-
-            var item = this[index];
-
-            deletedItems.Add(item);
-            addedItems.Remove(item);
-            base.RemoveAt(index);
+            throw new Exception("DwarList does not support inserting by index");
         }
+
+        /// <summary>
+        /// See base
+        /// </summary>
+        public void RemoveAt(int index)
+        {
+            throw new Exception("DwarList does not support removing by index");
+        }
+
+        object IList.this[int index]
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
+        public T this[int index]
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
+
+//        public int Count
+//        {
+//            get { return Count; }
+//        }
+
+        int ICollection.Count
+        {
+            get { return items.Values.Count; }
+        }
+
+        public object SyncRoot{get { throw new NotImplementedException(); }}
+//        {
+//            get
+//            {
+//                return _syncRoot;
+//            }
+//        }
+
+        public bool IsSynchronized { get { throw new NotImplementedException(); } }
+        public int Count
+        {
+            get { return items.Values.Count; }
+        }
+
 
         #endregion IList Members
 
@@ -289,17 +361,31 @@ namespace Dwarf
             if (IsReadOnly)
                 throw new ReadOnlyException("The DwarfList is in a ReadOnly state. The operation is not possible at this point.");
 
-            if (!Contains(this, item))
+            var key = GetKey(item);
+
+            if (!items.ContainsKey(key))
                 return false;
 
-            deletedItems.Remove(item);
-            addedItems.Remove(item);
-            base.Remove(item);
+            deletedItems.Remove(key);
+            addedItems.Remove(key);
+            items.Remove(key);
 
             return true;
         }
 
         #endregion RemoveWithoutTrace
+
+        #region GetKey
+
+        private object GetKey(T item)
+        {
+            if (alternatePrimaryKey == null)
+                return item;
+
+            return PropertyHelper.GetValue(item, ReflectionHelper.GetPropertyName(alternatePrimaryKey));
+        }
+
+        #endregion GetKey
 
         #region InitializeList
 
@@ -308,60 +394,18 @@ namespace Dwarf
         /// </summary>
         protected void InitializeList(IEnumerable<T> collection)
         {
-            base.AddRange(collection);
+            foreach (var item in collection)
+                items[GetKey(item)] = item;
         }
 
         #endregion InitializeList
 
-        #region AddIntersection
-
-        /// <summary>
-        /// Works just like AddRange, but dwarfs that already resides in the list who's 
-        /// primary keys aren't present in the supplied collection will be removed.
-        /// </summary>
-        public void AddIntersection(IEnumerable<T> collection)
-        {
-            var col = collection.ToList();
-
-            foreach (var item in ToArray())
-            {
-                if (alternatePrimaryKey == null)
-                {
-                    if (!col.Any(x => x.Equals(item)))
-                        Remove(item);
-                }
-                else
-                {
-                    if (!col.Any(x => PropertyHelper.GetValue(x, ReflectionHelper.GetPropertyName(alternatePrimaryKey)).Equals(PropertyHelper.GetValue(item, ReflectionHelper.GetPropertyName(alternatePrimaryKey)))))
-                        Remove(item);
-                }
-            }
-
-            foreach (var item in col)
-            {
-                if (Contains(item))
-                    continue;
-
-                base.Add(item);
-                addedItems.Add(item);
-            }
-        }
-
-        #endregion AddIntersection
-
         #region GetItem
 
-        /// <summary>
-        /// If the supplied item (or an equal one) is contained in the supplied list, list's item will be returned
-        /// </summary>
-        private T GetItem(IEnumerable<T> list, T item)
+        private T GetItem(Dictionary<object, T> dictionary, T item)
         {
-            if (alternatePrimaryKey == null)
-                return list.FirstOrDefault(x => x.Equals(item));
-
-            var propName = ReflectionHelper.GetPropertyName(alternatePrimaryKey);
-
-            return list.FirstOrDefault(x => PropertyHelper.GetValue(x, propName).Equals(PropertyHelper.GetValue(item, propName)));
+            var key = GetKey(item);
+            return dictionary.ContainsKey(key) ? items[key] : default(T);
         }
 
         /// <summary>
@@ -369,7 +413,7 @@ namespace Dwarf
         /// </summary>
         public T GetItem(T item)
         {
-            return GetItem(this, item);
+            return GetItem(items, item);
         }
 
         #endregion GetItem
@@ -390,5 +434,15 @@ namespace Dwarf
         #endregion Cast
 
         #endregion Methods
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return items.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return items.Values.GetEnumerator();
+        }
     }
 }

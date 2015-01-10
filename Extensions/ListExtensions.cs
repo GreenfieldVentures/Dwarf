@@ -16,7 +16,7 @@ namespace Dwarf.Extensions
         /// <summary>
         /// Calls SaveInternal() for all objects in the collection
         /// </summary>
-        public static List<T> SaveAll<T>(this List<T> list) where T : IDwarf
+        public static IList<T> SaveAll<T>(this IList<T> list) where T : IDwarf
         {
             SaveAllInternal<T>(list);
 
@@ -53,7 +53,7 @@ namespace Dwarf.Extensions
         /// <summary>
         /// Deletes all objects in the collection
         /// </summary>
-        public static void DeleteAll<T>(this List<T> list) where T : IDwarf
+        public static void DeleteAll<T>(this IList<T> list) where T : IDwarf
         {
             DeleteAllInternal<T>(list);
         }
