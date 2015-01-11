@@ -249,7 +249,15 @@ namespace Dwarf
         /// <summary>
         /// Returns the first property with the DefaultSort property enabled
         /// </summary>
-        internal static ExpressionProperty GetOrderByProperty<T>(Type type)
+        internal static ExpressionProperty GetOrderByProperty<T>()
+        {
+            return GetOrderByProperty(typeof(T));
+        }
+
+        /// <summary>
+        /// Returns the first property with the DefaultSort property enabled
+        /// </summary>
+        internal static ExpressionProperty GetOrderByProperty(Type type)
         {
             DeProxyfy(ref type);
 
@@ -268,10 +276,12 @@ namespace Dwarf
         
         #region GetOrderByDirection
 
-        /// <summary>
-        /// Returns the first property with the DefaultSort property enabled
-        /// </summary>
-        internal static string GetOrderByDirection<T>(Type type)
+        internal static string GetOrderByDirection<T>()
+        {
+            return GetOrderByDirection(typeof (T));
+        }
+
+        internal static string GetOrderByDirection(Type type)
         {
             DeProxyfy(ref type);
 

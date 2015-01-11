@@ -43,7 +43,7 @@ namespace Dwarf.DataAccess
             if (typeof(TY).Implements<ICompositeId>())
                 throw new InvalidOperationException("Use SelectReferencing for CompositeId types");
 
-            var command = new QueryBuilderLight().Select<TY>().From<TY>().Where<TY>("Id", id).ToQuery(true);
+            var command = new QueryBuilderLight().Select<TY>().From<TY>().Where<TY>("Id", id).ToQuery();
 
             TY result;
 

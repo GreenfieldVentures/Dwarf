@@ -499,14 +499,6 @@ namespace Dwarf.DataAccess
                 sort = orderByClause + (SortDirection.HasValue && SortDirection.Value == System.Web.UI.WebControls.SortDirection.Descending ? " DESC" : string.Empty);
             }
 
-            if (string.IsNullOrEmpty(sort))
-            {
-                if (baseType == null)
-                    return string.Empty;
-
-                sort = Cfg.OrderBySql[baseType];
-            }
-
             var limit = string.Empty;
 
             if (limitOffset.HasValue && !Top.HasValue)

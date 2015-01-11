@@ -49,11 +49,6 @@ namespace Dwarf
         internal static Dictionary<Type, List<ExpressionProperty>> ProjectionProperties = new Dictionary<Type, List<ExpressionProperty>>();
         
         /// <summary>
-        /// Pre composed order by clauses per type
-        /// </summary>
-        internal static Dictionary<Type, string> OrderBySql = new Dictionary<Type, string>();
-
-        /// <summary>
         /// The list of post-"compiled" expressions used to deflect reflection for Dwarf.Load
         /// </summary>
         internal static Dictionary<Type, Func<Guid, object>> LoadExpressions = new Dictionary<Type, Func<Guid, object>>();

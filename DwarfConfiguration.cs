@@ -262,14 +262,6 @@ namespace Dwarf
 
                 ProxyGenerator.Create(validType, fkPropertiesToOverride);
 
-                var pi = DwarfHelper.GetOrderByProperty<T>(validType);
-
-                if (pi != null)
-                    Cfg.OrderBySql[validType] = "[" + validType.Name + "].[" + QueryBuilder.GetColumnName(pi.ContainedProperty) + "] " + DwarfHelper.GetOrderByDirection<T>(validType);
-                else
-                    Cfg.OrderBySql[validType] = String.Empty;
-
-
                 if (validType.Implements<IErrorLog>() || validType.Implements<IAuditLog>())
                     continue;
                 
