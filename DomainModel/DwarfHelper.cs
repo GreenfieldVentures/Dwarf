@@ -367,7 +367,7 @@ namespace Dwarf
         /// </summary>
         internal static string GetUniqueKeyForCompositeId<T>(WhereCondition<T>[] conditions) where T : IDwarf 
         {
-            if (typeof(T).Implements<ICompositeId>())
+            if (!typeof(T).Implements<ICompositeId>())
                 throw new InvalidOperationException(typeof(T).Name + " does not implement ICompositeId");
 
             var objectKey = "CompositeId";
