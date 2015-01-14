@@ -110,9 +110,16 @@ namespace Dwarf
 
         #region ToQuery
 
-        internal string ToQuery()
+        internal string ToQuery(bool disableSort = false)
         {
-            return select + from + joins + where;
+            if (!disableSort)
+            {
+                var sort = Cfg.OrderBySql[type];
+
+                if (!string.IsNullOrEmpty(sort))
+                    orderBy = "ORDER BY " + sort;
+            }
+            return select + from + joins + where + orderBy;
         }
 
         #endregion ToQuery
