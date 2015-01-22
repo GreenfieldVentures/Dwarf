@@ -65,6 +65,18 @@ namespace Dwarf
 
         #endregion IsDirty
 
+        #region Database
+
+        /// <summary>
+        /// A shortcut to the configuration object's Database property
+        /// </summary>
+        public static IDatabaseOperator Database
+        {
+            get { return DwarfContext<T>.GetConfiguration().Database; }
+        }
+
+        #endregion Database
+
         #endregion Properties
 
         #region Methods
