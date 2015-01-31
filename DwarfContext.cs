@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Web;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// Helper for the genereic DwarfContext

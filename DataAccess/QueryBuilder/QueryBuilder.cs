@@ -7,12 +7,12 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Web.UI.WebControls;
-using Dwarf.Attributes;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Attributes;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     internal class QueryBuilder<T>: QueryBuilder
     {

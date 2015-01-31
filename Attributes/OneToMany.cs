@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf.Attributes
+namespace Evergreen.Dwarf.Attributes
 {
     /// <summary>
     /// Attribute for OneToMany properies in Dwarf derived types.

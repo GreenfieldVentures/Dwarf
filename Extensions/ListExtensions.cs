@@ -2,9 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Holds extension methods for collections of objects derived from IDwarf 

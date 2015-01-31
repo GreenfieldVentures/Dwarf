@@ -4,13 +4,13 @@ using System.Collections;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dwarf.Attributes;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Attributes;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 using System.Dynamic;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Utility class for generating sql scripts from the current domain model

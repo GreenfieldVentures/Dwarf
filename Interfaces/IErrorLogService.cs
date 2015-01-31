@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Interface for implementing the PersistanceFoundation's error log service

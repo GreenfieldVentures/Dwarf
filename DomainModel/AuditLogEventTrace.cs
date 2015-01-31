@@ -8,11 +8,11 @@ using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using Dwarf.DataAccess;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// Class that represnts a change in an object

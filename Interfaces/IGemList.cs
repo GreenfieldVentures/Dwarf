@@ -1,6 +1,6 @@
 using System.Collections;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// An interface for the DwarfList extension for gems

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Extension methods for various IDwarf types

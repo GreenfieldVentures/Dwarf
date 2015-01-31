@@ -1,8 +1,8 @@
 using System;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     public class SqlCeDatabaseScripts<T> : IDatabaseScripts
     { 

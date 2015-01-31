@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Dwarf.Attributes;
-using Dwarf.DataAccess.SqlCe;
-using Dwarf.Extensions;
-using Dwarf.DataAccess;
-using Dwarf.Interfaces;
-using Dwarf.Proxy;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Attributes;
+using Evergreen.Dwarf.DataAccess.SqlCe;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Proxy;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// Configuration object for the Dwarf framework
@@ -221,13 +221,11 @@ namespace Dwarf
                 var statics = validType.GetProperties(BindingFlags.Public | BindingFlags.Static);
                 var props = validType.GetProperties().Where(x => !statics.Contains(x)).ToList();
 
-                if (typeof(T).Implements<ICompositeId>())
+                if (validType.Implements<ICompositeId>())
                     props.Remove(props.FirstOrDefault(x => x.Name.Equals("Id")));
 
                 foreach (var propertyInfo in props)
                     Cfg.PropertyExpressions[validType][propertyInfo.Name] = new ExpressionProperty(propertyInfo);
-
-
 
                 Cfg.ProjectionProperties[validType] = DwarfHelper.GetProjectionProperties<T>(validType).ToList();
                 Cfg.DBProperties[validType] = InitDBProperties(validType).ToList();

@@ -1,6 +1,6 @@
-﻿using Dwarf.Utilities;
+﻿using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     public interface IDatabaseScripts
     {

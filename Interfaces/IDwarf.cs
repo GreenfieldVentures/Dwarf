@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Base interface for all persistance objects.

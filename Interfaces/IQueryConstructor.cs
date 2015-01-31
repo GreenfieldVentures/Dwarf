@@ -1,6 +1,6 @@
-﻿using Dwarf.DataAccess;
+﻿using Evergreen.Dwarf.DataAccess;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     internal interface IQueryConstructor
     {

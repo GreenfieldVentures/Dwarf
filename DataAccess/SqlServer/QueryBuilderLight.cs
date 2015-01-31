@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Text;
-using Dwarf.Attributes;
-using Dwarf.DataAccess;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Attributes;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// A simplified version of the QueryBuilder, but for internal use only

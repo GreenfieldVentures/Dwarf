@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Holds extension methods for Enumerables

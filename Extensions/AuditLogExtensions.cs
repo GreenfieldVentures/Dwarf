@@ -4,10 +4,10 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Xml.Linq;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Extension methods for AuditLogs

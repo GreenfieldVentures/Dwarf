@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Static class for holding extension methods for Types

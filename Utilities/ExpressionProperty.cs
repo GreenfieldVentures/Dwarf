@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Dwarf.Extensions;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Utilities
+namespace Evergreen.Dwarf.Utilities
 {
     /// <summary>
     /// Class that wraps a PropertyInfo and handles getting and setting of property values via expressions instead for speed

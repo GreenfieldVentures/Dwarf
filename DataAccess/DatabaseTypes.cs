@@ -1,4 +1,4 @@
-﻿namespace Dwarf
+﻿namespace Evergreen.Dwarf
 {
     /// <summary>
     /// The different database types supported by the framework

@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using Dwarf.DataAccess;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// Helper class for DbContextHelper

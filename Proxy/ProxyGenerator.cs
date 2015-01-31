@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Reflection.Emit;
-using Dwarf.DataAccess;
-using Dwarf.Extensions;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Proxy
+namespace Evergreen.Dwarf.Proxy
 {    
     /// <summary>
     /// Static helper class for generating proxy classes

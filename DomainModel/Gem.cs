@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// An object, referenced by a persisted Dwarf, that itself is persisted elsewhere.

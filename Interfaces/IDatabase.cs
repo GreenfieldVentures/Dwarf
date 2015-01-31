@@ -4,10 +4,10 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dwarf.DataAccess;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     public interface IDatabase
     {

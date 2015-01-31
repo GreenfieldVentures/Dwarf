@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Reflection;
 
-namespace Dwarf.Attributes
+namespace Evergreen.Dwarf.Attributes
 {
     /// <summary>
     /// Attribute for properies in Dwarf derived types that 

@@ -2,10 +2,10 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Represents a where condition to an sql query

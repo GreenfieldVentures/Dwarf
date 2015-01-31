@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
-using Dwarf.DataAccess;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// Internal static object containing all wired up lists to make the framework more responsive...

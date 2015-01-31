@@ -1,4 +1,4 @@
-﻿namespace Dwarf.Interfaces
+﻿namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Interface for implementing the PersistanceFoundation's user service

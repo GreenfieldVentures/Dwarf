@@ -1,7 +1,7 @@
 ﻿using System;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf.Attributes
+namespace Evergreen.Dwarf.Attributes
 {
     /// <summary>
     /// Lets other mechanisms know not to invoke properties with this attribute during validation

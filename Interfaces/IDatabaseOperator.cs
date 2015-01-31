@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Dwarf.DataAccess;
+using Evergreen.Dwarf.DataAccess;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     public interface IDatabaseOperator
     {

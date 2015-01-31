@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Web.UI.WebControls;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Attribute for properies in Dwarf derived types

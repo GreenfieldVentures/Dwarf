@@ -7,11 +7,11 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// A DwarfList extension for gems

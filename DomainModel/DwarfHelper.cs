@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
-using Dwarf.Attributes;
-using Dwarf.Extensions;
-using Dwarf.DataAccess;
-using Dwarf.Interfaces;
-using Dwarf.Proxy;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Attributes;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Proxy;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     /// <summary>
     /// Helper class for extracting metadata about the Dwarfs

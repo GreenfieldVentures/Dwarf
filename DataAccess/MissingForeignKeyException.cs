@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Is thrown whenever an foreign key is still missing upon transcation commit

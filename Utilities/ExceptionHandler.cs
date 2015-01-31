@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf.Utilities
+namespace Evergreen.Dwarf.Utilities
 {
     /// <summary>
     /// Helper class logging errors

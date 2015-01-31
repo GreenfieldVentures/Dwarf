@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Dwarf.DataAccess;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf
+namespace Evergreen.Dwarf
 {
     internal class SqlCeQueryConstructor : IQueryConstructor
     {

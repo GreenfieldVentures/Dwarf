@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Static class for holding extension methods for Streams

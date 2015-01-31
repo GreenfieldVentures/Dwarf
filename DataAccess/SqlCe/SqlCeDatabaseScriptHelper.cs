@@ -4,12 +4,12 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Dwarf.DataAccess;
-using Dwarf.DataAccess.SqlCe;
-using Dwarf.Extensions;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.DataAccess.SqlCe;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Utility class for generating sql ce scripts from the current domain model

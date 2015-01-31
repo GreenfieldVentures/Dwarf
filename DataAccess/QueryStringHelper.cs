@@ -1,4 +1,4 @@
-﻿namespace Dwarf.DataAccess
+﻿namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Helpers class for converting query enumerator to their SQL representative

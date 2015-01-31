@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Dwarf.DataAccess.SqlCe
+namespace Evergreen.Dwarf.DataAccess.SqlCe
 {
     internal class SqlCeDatabase: SqlServerDatabase
     {

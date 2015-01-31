@@ -1,4 +1,4 @@
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Interface for defining a system user

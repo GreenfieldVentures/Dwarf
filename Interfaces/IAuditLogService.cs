@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dwarf.DataAccess;
+using Evergreen.Dwarf.DataAccess;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Interface for implementing the PersistanceFoundation's Audit log service

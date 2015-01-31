@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web;
 using System.Web.Configuration;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.Web
+namespace Evergreen.Dwarf.Web
 {
     /// <summary>
     /// Implements default Global.asax functions for Dwarf projects

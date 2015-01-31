@@ -1,4 +1,4 @@
-﻿namespace Dwarf.Interfaces
+﻿namespace Evergreen.Dwarf.Interfaces
 {
     /// <summary>
     /// Represents a where condition to an sql query

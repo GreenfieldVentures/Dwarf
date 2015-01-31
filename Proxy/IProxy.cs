@@ -1,4 +1,4 @@
-﻿namespace Dwarf.Proxy
+﻿namespace Evergreen.Dwarf.Proxy
 {
     /// <summary>
     /// Interface for Proxy classes

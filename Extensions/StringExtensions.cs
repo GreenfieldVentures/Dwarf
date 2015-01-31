@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 
-namespace Dwarf.Extensions
+namespace Evergreen.Dwarf.Extensions
 {
     /// <summary>
     /// Holds extension methods for strings

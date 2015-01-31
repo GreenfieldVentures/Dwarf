@@ -1,4 +1,4 @@
-﻿namespace Dwarf
+﻿namespace Evergreen.Dwarf
 {
     #region AuditLogTypes
 

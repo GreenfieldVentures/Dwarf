@@ -11,12 +11,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Caching;
 using System.Web.Management;
-using Dwarf.Attributes;
-using Dwarf.Extensions;
-using Dwarf.Interfaces;
-using Dwarf.Utilities;
+using Evergreen.Dwarf.Attributes;
+using Evergreen.Dwarf.Extensions;
+using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Utilities;
 
-namespace Dwarf.DataAccess
+namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Main database class for handling object/database operations

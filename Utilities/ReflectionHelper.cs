@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 
-namespace Dwarf.Utilities
+namespace Evergreen.Dwarf.Utilities
 {
     /// <summary>
     /// Helper class for .Net Reflection

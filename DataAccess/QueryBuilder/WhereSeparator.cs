@@ -1,4 +1,4 @@
-﻿namespace Dwarf.DataAccess
+﻿namespace Evergreen.Dwarf.DataAccess
 {
     /// <summary>
     /// Different operators available inside combined Where clauses

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using Dwarf.DataAccess;
-using Dwarf.Interfaces;
+using Evergreen.Dwarf.DataAccess;
+using Evergreen.Dwarf.Interfaces;
 
-namespace Dwarf.Interfaces
+namespace Evergreen.Dwarf.Interfaces
 {
     public interface IDwarfConfiguration
     {
