@@ -86,7 +86,7 @@ namespace Evergreen.Dwarf
             {
                 ClassType = type.Name,
                 AuditLogType = auditLogType,
-                UserName = DwarfContext<T>.GetConfiguration().UserService.CurrentUser != null ? DwarfContext<T>.GetConfiguration().UserService.CurrentUser.ToString() : string.Empty,
+                UserName = DwarfContext<T>.GetConfiguration().UserService.CurrentUser != null ? DwarfContext<T>.GetConfiguration().UserService.CurrentUser.UserName : string.Empty,
                 TimeStamp = DateTime.Now,
                 ObjectValue = obj.ToString(),
             };

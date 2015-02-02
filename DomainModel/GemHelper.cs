@@ -6,7 +6,7 @@ namespace Evergreen.Dwarf
     /// <summary>
     /// Helper class for gems
     /// </summary>
-    public static class GemList
+    public static class GemHelper
     {
         #region Methods
 

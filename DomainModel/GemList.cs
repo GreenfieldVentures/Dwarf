@@ -145,7 +145,7 @@ namespace Evergreen.Dwarf
                     reader.ReadStartElement("Item");
                     
                     reader.MoveToContent();
-                    items.Add((T)GemList.Load(typeof(T), reader.ReadContentAsObject()));
+                    items.Add((T)GemHelper.Load(typeof(T), reader.ReadContentAsObject()));
                     reader.ReadToNextSibling("Item");
                 }
 
