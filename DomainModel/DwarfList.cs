@@ -37,8 +37,11 @@ namespace Evergreen.Dwarf
         /// </summary>
         public DwarfList()
         {
-            sortProperty = DwarfHelper.GetOrderByProperty<T>();
-            sortAsc = DwarfHelper.GetOrderByDirection<T>().IsNullOrEmpty();
+            if (typeof (T).Implements<IDwarf>())
+            {
+                sortProperty = DwarfHelper.GetOrderByProperty<T>();
+                sortAsc = DwarfHelper.GetOrderByDirection<T>().IsNullOrEmpty();
+            }
         }
 
         /// <summary>
@@ -358,7 +361,6 @@ namespace Evergreen.Dwarf
 
         public IEnumerator<T> GetEnumerator()
         {
-
             if (sortProperty != null)
             {
                 if (sortAsc)
