@@ -10,6 +10,6 @@ namespace Evergreen.Dwarf.Interfaces
         /// <summary>
         /// Returns the Id of the instance
         /// </summary>
-        object Id { get; }
+        string Id { get; }
     }
 }

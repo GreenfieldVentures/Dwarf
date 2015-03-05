@@ -24,7 +24,7 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// Returns the Id of the instance
         /// </summary>
-        public virtual object Id { get; set; }
+        public virtual string Id { get; set; }
 
         #endregion Id
 
@@ -37,12 +37,12 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// Returns an object with the specified id
         /// </summary>
-        public abstract T LoadImplementation(object id);
+        public abstract T LoadImplementation(string id);
 
         /// <summary>
         /// Returns an object with the specified id
         /// </summary>
-        public static T Load(object id)
+        public static T Load(string id)
         {
             var type = typeof (T);
 

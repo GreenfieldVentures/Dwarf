@@ -278,10 +278,10 @@ namespace Evergreen.Dwarf
 
             foreach (var validType in typeof(T).Assembly.GetTypes().Where(type => type.Implements<IGem>() && !type.IsAbstract))
             {
-                var value = Expression.Parameter(typeof(object), "value");
+                var value = Expression.Parameter(typeof(string), "value");
 
-                var mi = validType.FindMethodRecursively("Load", (BindingFlags.Static | BindingFlags.Public), new[] { typeof(object) });
-                Cfg.LoadGem[validType] = Expression.Lambda<Func<object, object>>(Expression.Call(mi, value), new[] { value }).Compile();
+                var mi = validType.FindMethodRecursively("Load", (BindingFlags.Static | BindingFlags.Public), new[] { typeof(string) });
+                Cfg.LoadGem[validType] = Expression.Lambda<Func<string, object>>(Expression.Call(mi, value), new[] { value }).Compile();
             }
         }
 

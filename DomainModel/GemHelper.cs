@@ -15,7 +15,7 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// Utilize the compiled Load expresseion (use instead of reflection wherever possible
         /// </summary>
-        public static object Load(Type type, object id)
+        public static object Load(Type type, string id)
         {
             return Cfg.LoadGem[type](id);
         }

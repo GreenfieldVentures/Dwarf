@@ -61,7 +61,7 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// The list of post-"compiled" expressions used to deflect reflection for Gem.Load
         /// </summary>
-        internal static Dictionary<Type, Func<object, object>> LoadGem = new Dictionary<Type, Func<object, object>>();
+        internal static Dictionary<Type, Func<string, object>> LoadGem = new Dictionary<Type, Func<string, object>>();
 
         /// <summary>
         /// The list of post-"compiled" expressions used to deflect reflection 
