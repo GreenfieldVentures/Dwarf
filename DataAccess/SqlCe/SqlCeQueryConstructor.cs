@@ -15,6 +15,7 @@ namespace Evergreen.Dwarf
         private const string innerJoin = "INNER JOIN ";
         private const string leftOuterJoin = "LEFT OUTER JOIN ";
         private const string limit = " OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY";
+        private const string offset = " OFFSET {0} ROWS";
         private const string date = "DATEADD(dd, 0, DATEDIFF(dd, 0, {0})) ";
         private const string datePart = "DATEPART({0}, {1})";
 
@@ -23,9 +24,14 @@ namespace Evergreen.Dwarf
             return string.Format(top, i);
         }
 
-        public string Limit(int offset, int rows)
+        public string Limit(int offsetRows, int rows)
         {
-            return string.Format(limit, offset, rows);
+            return string.Format(limit, offsetRows, rows);
+        }
+
+        public string Offset(int offsetRows)
+        {
+            return string.Format(offset, offsetRows);
         }
 
         public string Distinct { get { return distinct; } }

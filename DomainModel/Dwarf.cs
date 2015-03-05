@@ -70,12 +70,24 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// A shortcut to the configuration object's Database property
         /// </summary>
-        public static IDatabaseOperator Database
+        protected static IDatabaseOperator Database
         {
             get { return DwarfContext<T>.GetConfiguration().Database; }
         }
 
         #endregion Database
+
+        #region Configuration
+
+        /// <summary>
+        /// A shortcut to the configuration object's Database property
+        /// </summary>
+        protected static IDwarfConfiguration Configuration
+        {
+            get { return DwarfContext<T>.GetConfiguration(); }
+        }
+
+        #endregion Configuration
 
         #endregion Properties
 
@@ -408,24 +420,53 @@ namespace Evergreen.Dwarf
 
         /// <summary>
         /// Returns an object collection of the type T where 
-        /// the supplied value matches the supplied value(s)
+        /// the object's value(s) matches the supplied value(s)
+        /// </summary>
+        protected static List<TY> LoadReferencing<TY>(Expression<Func<TY, object>> column, object value) where TY : Dwarf<TY>, new()
+        {
+            return LoadReferencing(new WhereCondition<TY> { Column = column, Value = value });
+        }
+
+        /// <summary>
+        /// Returns an object collection of the type T where 
+        /// the object's value(s) matches the supplied value(s)
+        /// </summary>
+        protected static List<TY> LoadReferencing<TY>(Expression<Func<TY, object>> column, QueryOperators queryOperator, object value) where TY : Dwarf<TY>, new()
+        {
+            return LoadReferencing(new WhereCondition<TY> {Column = column, Operator = queryOperator, Value = value});
+        }
+
+
+        /// <summary>
+        /// Returns an object collection of the type T where 
+        /// the object's value(s) matches the supplied value(s)
         /// </summary>
         protected static List<TY> LoadReferencing<TY>(params WhereCondition<TY>[] conditions) where TY : Dwarf<TY>, new()
         {
             return DwarfContext<T>.GetDatabase().SelectReferencing<T, TY>(conditions);
-        }        
-   
+        }
+
         /// <summary>
         /// Returns an object collection of the type T where 
-        /// the supplied value matches the supplied value(s)
+        /// the object's value(s) matches the supplied value(s)
         /// </summary>
         protected static List<TY> LoadReferencing<TY>(QueryBuilder queryBuilder, bool overrideSelect = true) where TY : Dwarf<TY>, new()
         {
             return DwarfContext<T>.GetDatabase().SelectReferencing<TY>(queryBuilder, overrideSelect);
         }
+
         /// <summary>
         /// Returns an object collection of the type T where 
-        /// the supplied value matches the supplied value(s)
+        /// the object's value(s) matches the supplied value(s)
+        /// </summary>
+        public static List<T> LoadReferencing(QueryBuilder queryBuilder)
+        {
+            return DwarfContext<T>.GetDatabase().SelectReferencing<T>(queryBuilder);
+        }
+
+        /// <summary>
+        /// Returns an object collection of the type T where 
+        /// the object's value(s) matches the supplied value(s)
         /// </summary>
         protected static List<TY> LoadReferencing<TY>(QueryMergers queryMerger, params QueryBuilder[] queryBuilders) where TY : Dwarf<TY>, new()
         {

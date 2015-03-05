@@ -10,7 +10,7 @@ namespace Evergreen.Dwarf.Utilities
     /// <summary>
     /// Helper class for .Net Reflection
     /// </summary>
-    internal static class ReflectionHelper
+    public static class ReflectionHelper
     {
         #region GetPropertyInfo
 

@@ -752,7 +752,7 @@ namespace Evergreen.Dwarf.DataAccess
 
             var keys = String.Empty;
 
-            foreach (var propertyInfo in DwarfHelper.GetPKProperties<T>(type))
+            foreach (var propertyInfo in DwarfHelper.GetPKProperties(type))
                 keys += TypeToColumnName(propertyInfo) + ", ";
 
             if (!string.IsNullOrEmpty(keys))

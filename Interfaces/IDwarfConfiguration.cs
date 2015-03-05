@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Evergreen.Dwarf.DataAccess;
 using Evergreen.Dwarf.Interfaces;
@@ -13,6 +14,8 @@ namespace Evergreen.Dwarf.Interfaces
         IDwarfConfiguration Configure();
         IDatabaseOperator Database { get; }
 
+        IEnumerable<Type> GetDwarfTypes();
+        IEnumerable<Type> GetGemTypes();
         void SuspendAuditLogging();
         void ResumeAuditLogging();
     }

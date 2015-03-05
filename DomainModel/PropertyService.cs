@@ -6,7 +6,7 @@ using Evergreen.Dwarf.Utilities;
 
 namespace Evergreen.Dwarf
 {
-    internal static class PropertyHelper
+    public static class PropertyHelper
     {
         #region GetValue
 
@@ -77,6 +77,14 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// Returns true if the supplied object contains a property by the specified name
         /// </summary>
+        public static bool HasProperty<T>(string propertyName)
+        {
+            return HasProperty(typeof(T), propertyName);
+        }
+
+        /// <summary>
+        /// Returns true if the supplied object contains a property by the specified name
+        /// </summary>
         public static bool HasProperty(object obj, string propertyName)
         {
             return HasProperty(obj.GetType(), propertyName);
@@ -116,7 +124,7 @@ namespace Evergreen.Dwarf
 
         #region GetProperty
 
-        internal static ExpressionProperty GetProperty(Type type, string propertyName)
+        public static ExpressionProperty GetProperty(Type type, string propertyName)
         {
             DwarfHelper.DeProxyfy(ref type);
 
@@ -125,7 +133,7 @@ namespace Evergreen.Dwarf
                        : null;
         }
 
-        internal static ExpressionProperty GetProperty<T>(string propertyName)
+        public static ExpressionProperty GetProperty<T>(string propertyName)
         {
             return GetProperty(typeof (T), propertyName);
         }

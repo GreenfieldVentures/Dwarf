@@ -147,7 +147,7 @@ namespace Evergreen.Dwarf
         public IDwarfConfiguration Configure()
         {
             if (DwarfContext<T>.IsConfigured())
-                throw new InvalidOperationException("This assembly is already configured!");
+                return this;
 
             var assembly = typeof (T).Assembly;
 
@@ -395,6 +395,30 @@ namespace Evergreen.Dwarf
         }
 
         #endregion FakeUserService
+
+        #region GetDwarfTypes
+
+        /// <summary>
+        /// The bound model's IDwarfs
+        /// </summary>
+        public IEnumerable<Type> GetDwarfTypes()
+        {
+            return DwarfHelper.GetValidTypes<T>();
+        }
+
+        #endregion GetDwarfTypes
+
+        #region GetGemTypes
+
+        /// <summary>
+        /// The bound model's public Gems
+        /// </summary>
+        public IEnumerable<Type> GetGemTypes()
+        {
+            return typeof(T).Assembly.GetTypes().Where(type => type.Implements<IGem>() && !type.IsAbstract).ToList();
+        }
+
+        #endregion GetGemTypes
 
         #endregion Methods
     }

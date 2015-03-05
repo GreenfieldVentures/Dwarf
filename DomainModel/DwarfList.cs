@@ -100,6 +100,11 @@ namespace Evergreen.Dwarf
 
         #region Methods
 
+        public void ForEach(Action<T> action)
+        {
+            items.Values.ToList().ForEach(action);
+        }
+
         #region RemoveAll
 
         /// <summary>
@@ -387,31 +392,40 @@ namespace Evergreen.Dwarf
 
         #endregion GetEnumerator
 
+        #region CopyTo
+
+        /// <summary>
+        /// Copies the elements of the collection to an array, starting at a particular array index.
+        /// </summary>
+        public void CopyTo(Array array, int index)
+        {
+            Array.Copy(items.Values.ToArray(), 0, array, index, items.Count);
+        }
+
+        /// <summary>
+        /// Copies the elements of the collection to an array, starting at a particular array index.
+        /// </summary>
+        public void CopyTo(T[] array, int arrayIndex)
+        {
+            CopyTo((Array)array, arrayIndex);
+        }
+
+        #endregion CopyTo
+
         #endregion Methods
 
         #region NotImplemented
-
-        public void CopyTo(Array array, int index)
-        {
-            throw new NotImplementedException();
-        }
 
         public int IndexOf(T item)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// See base
-        /// </summary>
         public void Insert(int index, T item)
         {
             throw new NotImplementedException();
         }
 
-        /// <summary>
-        /// See base
-        /// </summary>
         public void RemoveAt(int index)
         {
             throw new NotImplementedException();
@@ -437,11 +451,6 @@ namespace Evergreen.Dwarf
             throw new NotImplementedException();
         }
         public int Add(object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CopyTo(T[] array, int arrayIndex)
         {
             throw new NotImplementedException();
         }

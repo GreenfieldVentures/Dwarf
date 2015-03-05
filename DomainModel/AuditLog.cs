@@ -95,7 +95,7 @@ namespace Evergreen.Dwarf
                 al.ObjectId = obj.Id.ToString();
             else
             {
-                foreach (var ep in DwarfHelper.GetPKProperties<T>(type))
+                foreach (var ep in DwarfHelper.GetPKProperties(type))
                     al.ObjectId += string.Format("[{0}: {1}]", ep.Name, ep.GetValue(obj));
             }
 

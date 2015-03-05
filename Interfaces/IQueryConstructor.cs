@@ -6,6 +6,7 @@ namespace Evergreen.Dwarf.Interfaces
     {
         string Top(int i);
         string Limit(int offset, int rows);
+        string Offset(int offset);
         string Distinct { get; }
         string LeftContainer { get; }
         string RightContainer { get; }

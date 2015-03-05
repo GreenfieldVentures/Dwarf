@@ -736,7 +736,7 @@ namespace Evergreen.Dwarf.DataAccess
                 if (propertyValue is DBNull)
                     propertyValue = pi.ContainedProperty.PropertyType == typeof(string) ? string.Empty : null;
                 else if (pi.PropertyType.Implements<IGem>())
-                    propertyValue = Cfg.LoadGem[pi.PropertyType](propertyValue);
+                    propertyValue = Cfg.LoadGem[pi.PropertyType](propertyValue.ToString());
                 else if (pi.PropertyType.IsEnum() && propertyValue != null)
                     propertyValue = Enum.Parse(pi.PropertyType.GetTrueEnumType(), propertyValue.ToString());
                 else if (pi.PropertyType.Implements<Type>())

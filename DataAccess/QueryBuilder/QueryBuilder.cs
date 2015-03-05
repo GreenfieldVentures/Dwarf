@@ -468,6 +468,11 @@ namespace Evergreen.Dwarf.DataAccess
             limitRows = rows;
         }
 
+        internal void Offset(int offset)
+        {
+            limitOffset = offset;
+        }
+
         private string BuildOrderByClause()
         {
             if (isOrderByDisabled)
@@ -514,7 +519,10 @@ namespace Evergreen.Dwarf.DataAccess
                 if (string.IsNullOrEmpty(sort))
                     sort = QueryConstructor.LeftContainer + (baseType.Implements<ICompositeId>() ? Cfg.PropertyExpressions[baseType].First().Key : "Id") + QueryConstructor.RightContainer;
 
-                limit = QueryConstructor.Limit(limitOffset.Value, limitRows.Value);
+                if (limitRows.HasValue)
+                    limit = QueryConstructor.Limit(limitOffset.Value, limitRows.Value);
+                else
+                    limit = QueryConstructor.Offset(limitOffset.Value);
             }
 
             return string.IsNullOrEmpty(sort) ? sort : ("\r\n\r\n" + string.Format("ORDER BY \t" + sort) + limit);
@@ -1051,6 +1059,20 @@ namespace Evergreen.Dwarf.DataAccess
         public static QueryBuilder Limit(this QueryBuilder qb, int offset, int rows)
         {
             qb.Limit(offset, rows);
+            return qb;
+        }
+
+        #endregion Limit      
+
+        #region Limit
+
+        /// <summary>
+        /// Limits the query result to the supplied range
+        /// ONLY WORKS IN SQL 2012 AND ABOVE!!!
+        /// </summary>
+        public static QueryBuilder Offset(this QueryBuilder qb, int offset)
+        {
+            qb.Offset(offset);
             return qb;
         }
 

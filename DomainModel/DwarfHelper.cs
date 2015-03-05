@@ -139,9 +139,8 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// Returns all Primary keys of the supplied type
         /// </summary>
-        internal static IEnumerable<ExpressionProperty> GetPKProperties<T>(Type type)
+        internal static IEnumerable<ExpressionProperty> GetPKProperties(Type type)
         {
-
             DeProxyfy(ref type);
 
             return Cfg.PKProperties[type];
@@ -152,7 +151,7 @@ namespace Evergreen.Dwarf
         /// </summary>
         internal static IEnumerable<ExpressionProperty> GetPKProperties<T>()
         {
-            return GetPKProperties<T>(typeof (T));
+            return GetPKProperties(typeof (T));
         }
 
         #endregion GetPKProperties

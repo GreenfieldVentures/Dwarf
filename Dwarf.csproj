@@ -9,7 +9,7 @@
     <ProjectGuid>{8AC96572-0105-47A3-83AA-3FD6061FBD06}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dwarf</RootNamespace>
+    <RootNamespace>Evergreen.Dwarf</RootNamespace>
     <AssemblyName>Dwarf</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -137,6 +137,7 @@
     <Compile Include="DwarfContext.cs" />
     <Compile Include="DomainModel\AuditLogTypes.cs" />
     <Compile Include="DataAccess\DatabaseOperationException.cs" />
+    <Compile Include="Extensions\EnumHelper.cs" />
     <Compile Include="Interfaces\IDatabaseOperator.cs" />
     <Compile Include="Interfaces\IDwarfConfiguration.cs" />
     <Compile Include="Interfaces\IDatabaseScripts.cs" />

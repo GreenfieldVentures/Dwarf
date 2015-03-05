@@ -29,26 +29,6 @@ namespace Evergreen.Dwarf.Interfaces
         Exception Exception { get; set; }
 
         /// <summary>
-        /// Gets or sets ex.StackTrace
-        /// </summary>
-//        IErrorLog InnerException { get; set; }
-//
-//        /// <summary>
-//        /// Gets or sets ex.InnerMessage
-//        /// </summary>
-//        string InnerMessage { get; set; }
-//
-//        /// <summary>
-//        /// Gets or sets ex.InnerException.Tostring()
-//        /// </summary>
-//        string InnerException { get; set; }
-//
-//        /// <summary>
-//        /// Gets or sets ex.InnerException.StackTrace
-//        /// </summary>
-//        string InnerStackTrace { get; set; }
-
-        /// <summary>
         /// Gets or sets the name of the currently logged in user
         /// </summary>
         string UserName { get; set; }
@@ -57,5 +37,7 @@ namespace Evergreen.Dwarf.Interfaces
         /// Gets or sets the time of the incident
         /// </summary>
         DateTime TimeStamp { get; set; }
+
+        ErrorLog InnerException { get; set; }
     }
 }
