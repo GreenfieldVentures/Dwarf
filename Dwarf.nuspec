@@ -5,7 +5,7 @@
     <version>$version$</version>
     <title>$title$</title>
     <authors>$author$</authors>
-    <owners>Greenfield Sweden</owners>
+    <owners>$author$</owners>
     <licenseUrl>https://raw.githubusercontent.com/GreenfieldVentures/Dwarf/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/GreenfieldVentures/Dwarf</projectUrl>
     <iconUrl>http://i.imgur.com/fyFlOMf.png</iconUrl>
@@ -17,14 +17,14 @@
     <tags>ORM dwarf object relational mapper o/rm database entity entities DAL ado.net</tags>
   </metadata>
   <files>
-    <file src="C:\code\dwarf\Release\Dwarf\NET40\Dwarf.dll" target="lib\net40" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET40\Dwarf.pdb" target="lib\net40" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET40\Dwarf.xml" target="lib\net40" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET45\Dwarf.dll" target="lib\net45" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET45\Dwarf.pdb" target="lib\net45" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET45\Dwarf.xml" target="lib\net45" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET451\Dwarf.dll" target="lib\net451" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET451\Dwarf.pdb" target="lib\net451" />
-    <file src="C:\code\dwarf\Release\Dwarf\NET451\Dwarf.xml" target="lib\net451" />
+    <file src="..\Release\Dwarf\NET40\Dwarf.dll" target="lib\net40" />
+    <file src="..\Release\Dwarf\NET40\Dwarf.pdb" target="lib\net40" />
+    <file src="..\Release\Dwarf\NET40\Dwarf.xml" target="lib\net40" />
+    <file src="..\Release\Dwarf\NET45\Dwarf.dll" target="lib\net45" />
+    <file src="..\Release\Dwarf\NET45\Dwarf.pdb" target="lib\net45" />
+    <file src="..\Release\Dwarf\NET45\Dwarf.xml" target="lib\net45" />
+    <file src="..\Release\Dwarf\NET451\Dwarf.dll" target="lib\net451" />
+    <file src="..\Release\Dwarf\NET451\Dwarf.pdb" target="lib\net451" />
+    <file src="..\Release\Dwarf\NET451\Dwarf.xml" target="lib\net451" />
   </files>
 </package>

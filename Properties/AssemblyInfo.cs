@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Dwarf")]
 [assembly: AssemblyDescription("Dwarf is a light weight, highly competent, versatile, easy-to-use O/R-M framework 'that doesn't get in your way'. Configured in the blink of an eye and is packed with features")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Greenfield Sweden")]
+[assembly: AssemblyCompany("Greenfield Ventures")]
 [assembly: AssemblyProduct("Dwarf")]
-[assembly: AssemblyCopyright("Copyright © Greenfield Sweden 2014")]
+[assembly: AssemblyCopyright("Copyright © Greenfield Ventures 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.15")]
-[assembly: AssemblyFileVersion("1.0.15")]
+[assembly: AssemblyVersion("1.0.16")]
+[assembly: AssemblyFileVersion("1.0.16")]
