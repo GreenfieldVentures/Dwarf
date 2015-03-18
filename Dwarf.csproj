@@ -126,6 +126,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\JsonIdOnlyAttribute.cs" />
     <Compile Include="DataAccess\MissingForeignKeyException.cs" />
     <Compile Include="DataAccess\DbContext.cs" />
     <Compile Include="DataAccess\SqlCe\SqlCeDatabase.cs" />
@@ -168,8 +169,8 @@
     <Compile Include="Interfaces\IUnvalidatable.cs" />
     <Compile Include="Attributes\UnvalidatableAttribute.cs" />
     <Compile Include="Attributes\DwarfProjectionPropertyAttribute.cs" />
-    <Compile Include="Attributes\ManyToMany.cs" />
-    <Compile Include="Attributes\OneToMany.cs" />
+    <Compile Include="Attributes\ManyToManyAttribute.cs" />
+    <Compile Include="Attributes\OneToManyAttribute.cs" />
     <Compile Include="Attributes\DwarfPropertyAttribute.cs" />
     <Compile Include="Cfg.cs" />
     <Compile Include="DataAccess\DatabaseTypes.cs" />

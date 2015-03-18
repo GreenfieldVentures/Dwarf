@@ -812,7 +812,7 @@ namespace Evergreen.Dwarf.DataAccess
             PrepareQueryConstructor<T>();
 
             if (DwarfPropertyAttribute.GetAttribute(pi) != null)
-                return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, typeof(T).Name, pi.Name + ((DwarfPropertyAttribute.IsFK(pi)) ? "Id" : string.Empty));
+                return string.Format("{0}{2}{1}.{0}{3}{1}", QueryConstructor.LeftContainer, QueryConstructor.RightContainer, typeof(T).Name, pi.Name + ((DwarfPropertyAttribute.RequiresAppendedId(pi)) ? "Id" : string.Empty));
 
             if (DwarfProjectionPropertyAttribute.GetAttribute(pi) != null)
                 return "(" + DwarfProjectionPropertyAttribute.GetAttribute(pi).Script + ")";
@@ -826,7 +826,7 @@ namespace Evergreen.Dwarf.DataAccess
         internal static string GetColumnName(PropertyInfo pi)
         {
             if (DwarfPropertyAttribute.GetAttribute(pi) != null)
-                return pi.Name + ((DwarfPropertyAttribute.IsFK(pi)) ? "Id" : string.Empty);
+                return pi.Name + ((DwarfPropertyAttribute.RequiresAppendedId(pi)) ? "Id" : string.Empty);
 
             if (DwarfProjectionPropertyAttribute.GetAttribute(pi) != null)
                 return "(" + DwarfProjectionPropertyAttribute.GetAttribute(pi).Script + ")";

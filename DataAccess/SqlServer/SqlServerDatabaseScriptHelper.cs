@@ -667,7 +667,7 @@ namespace Evergreen.Dwarf.DataAccess
             if (att != null && att.IsUnique)
             {
                 if (!skipConstraint)
-                    value += string.Format(" CONSTRAINT [UQ_{0}_{1}{2}] UNIQUE", type.Name, pi.Name, DwarfPropertyAttribute.IsFK(pi) ? "Id" : string.Empty);
+                    value += string.Format(" CONSTRAINT [UQ_{0}_{1}{2}] UNIQUE", type.Name, pi.Name, DwarfPropertyAttribute.RequiresAppendedId(pi) ? "Id" : string.Empty);
                 else
                     value += "/* WARNING! You might manually have to drop and recreate any Unique Constraint*/";
             }
@@ -719,7 +719,7 @@ namespace Evergreen.Dwarf.DataAccess
         /// </summary>
         internal static object TypeToColumnName(PropertyInfo pi)
         {
-            return DwarfPropertyAttribute.IsFK(pi) ? "[" + pi.Name + "Id]" : "[" + pi.Name + "]";
+            return DwarfPropertyAttribute.RequiresAppendedId(pi) ? "[" + pi.Name + "Id]" : "[" + pi.Name + "]";
         }
 
         /// <summary>

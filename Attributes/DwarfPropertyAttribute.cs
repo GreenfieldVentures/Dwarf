@@ -142,6 +142,16 @@ namespace Evergreen.Dwarf.Attributes
 
         #endregion IsFK
 
+        internal static bool RequiresAppendedId(PropertyInfo pi)
+        {
+            return IsFK(pi) || pi.PropertyType.Implements<IGem>();
+        }
+
+        internal static bool RequiresAppendedId(ExpressionProperty ep)
+        {
+            return IsFK(ep) || ep.PropertyType.Implements<IGem>();
+        }
+
         #endregion Methods
     }
 }
