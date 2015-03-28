@@ -157,7 +157,7 @@ namespace Evergreen.Dwarf.DataAccess
 
             foreach (var type in DwarfHelper.GetValidTypes<T>())
             {
-                var typeProps = DwarfHelper.GetDBProperties(type).Where(x => !toSkip.Contains(x)).Flatten(x => "[" + (x.PropertyType.Implements<IDwarf>() ? x.Name + "Id" : x.Name) + "], ");
+                var typeProps = (DwarfHelper.GetDBProperties(type).Union(DwarfHelper.GetGemListProperties(type))).Where(x => !toSkip.Contains(x)).Flatten(x => "[" + (x.PropertyType.Implements<IDwarf>() ? x.Name + "Id" : x.Name) + "], ");
                 typeProps = typeProps.TruncateEnd(2);
 
                 tables.AppendLine(string.Format("INSERT INTO [{0}] ({1}) (SELECT {1} from [{2}].dbo.[{0}])", type.Name, typeProps, otherDatabaseName));

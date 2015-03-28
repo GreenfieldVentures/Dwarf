@@ -121,7 +121,7 @@ namespace Evergreen.Dwarf.DataAccess
         /// </summary>
         public string ToQuery()
         {
-            return new QueryBuilder().WhereConditionToQuery(this);
+            return new QueryBuilder<T>().WhereConditionToQuery(this);
         }
 
         /// <summary>
