@@ -11,6 +11,7 @@ using Evergreen.Dwarf.Attributes;
 using Evergreen.Dwarf.Extensions;
 using Evergreen.Dwarf.DataAccess;
 using Evergreen.Dwarf.Interfaces;
+using Evergreen.Dwarf.Proxy;
 using Evergreen.Dwarf.Utilities;
 
 namespace Evergreen.Dwarf
@@ -553,6 +554,9 @@ namespace Evergreen.Dwarf
         /// </summary>
         public void Reset()
         {
+            if (originalValues == null)
+                throw new InvalidOperationException("You cannot reset a new object. Just create a new one?");
+
             foreach (var kvp in originalValues)
                 PropertyHelper.SetValue(this, kvp.Key, kvp.Value);
 
@@ -1097,7 +1101,44 @@ namespace Evergreen.Dwarf
         }
 
         #endregion GetOriginalValue
-     
+
+        #region GetPropertyId
+
+        /// <summary>
+        /// Returns the current Id of the forgeign key without invoking any lazy loading.
+        /// WARNING! Uses reflection and thus might cost you a little. Definitely not more 
+        /// than loading the full object from the database, but still.
+        /// </summary>
+        public Guid? GetPropertyId(Expression<Func<T, IDwarf>> expression)
+        {
+            var propName = ReflectionHelper.GetPropertyName(expression);
+
+            if (this is IProxy)
+            {
+                var isAccessed = GetType().GetField("accessed" + propName, BindingFlags.NonPublic | BindingFlags.Instance);
+                var backingField = GetType().GetField(propName.ToLowerAtIndex(0), BindingFlags.NonPublic | BindingFlags.Instance);
+
+                if ((bool) isAccessed.GetValue(this))
+                {
+                    if (backingField != null)
+                        return ((IDwarf) backingField.GetValue(this)).Id;
+                }
+
+                return (Guid?)GetOriginalValue(propName); 
+            }
+            else
+            {
+                var obj = PropertyHelper.GetValue(this, propName);
+
+                if (obj != null)
+                    return ((IDwarf) obj).Id;
+            }
+
+            return null;
+        }
+
+        #endregion GetPropertyId
+            
         #region GetProperty
 
         /// <summary>

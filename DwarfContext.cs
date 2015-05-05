@@ -82,7 +82,7 @@ namespace Evergreen.Dwarf
         #region GetDatabase
 
         /// <summary>
-        /// Returns the database object for the supplied type
+        /// Returns the database object for the supplied typeq
         /// </summary>
         internal static IDatabase GetDatabase(Type type)
         {

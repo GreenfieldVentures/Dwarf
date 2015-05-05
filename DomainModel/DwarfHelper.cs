@@ -446,6 +446,11 @@ namespace Evergreen.Dwarf
 
         #endregion GetValidTypes
 
+        public static IDwarfConfiguration GetConfiguration<T>()
+        {
+            return DwarfContext<T>.GetConfiguration();
+        }
+
         #endregion Methods
     }
 }

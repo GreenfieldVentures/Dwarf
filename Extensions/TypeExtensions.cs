@@ -32,6 +32,18 @@ namespace Evergreen.Dwarf.Extensions
 
         #endregion HasAttribute
 
+        #region GetAttribute
+
+        /// <summary>
+        /// Returns the attribute if the type defines or is a descendant of a type that defines the specified attribute
+        /// </summary>
+        public static T GetAttribute<T>(this Type type) where T : Attribute
+        {
+            return (T)Attribute.GetCustomAttribute(type, typeof (T), true);
+        }
+
+        #endregion GetAttribute
+
         #region FindMethodRecursively
 
         /// <summary>
