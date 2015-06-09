@@ -682,7 +682,7 @@ namespace Evergreen.Dwarf.DataAccess
         /// </summary>
         internal string ConvertToQueryCondition<T>(Expression<Func<T, object>> expression, object value)
         {
-            return ConvertToQueryCondition(typeof(T), ReflectionHelper.GetPropertyInfo(expression).Name, DwarfContext<T>.GetDatabase().ValueToSqlString(value));
+            return ConvertToQueryCondition(typeof(T), ReflectionHelper.GetPropertyName(expression), DwarfContext<T>.GetDatabase().ValueToSqlString(value));
         }
 
         #endregion ConvertToQueryCondition
@@ -723,7 +723,7 @@ namespace Evergreen.Dwarf.DataAccess
         {
             PrepareQueryConstructor<T>();
 
-            return ConvertToQueryColumn(typeof (T), ReflectionHelper.GetPropertyInfo(expression));
+            return ConvertToQueryColumn(typeof(T), ReflectionHelper.GetPropertyInfo(expression));
         }
 
         #endregion ConvertToQueryColumn
@@ -1418,7 +1418,7 @@ namespace Evergreen.Dwarf.DataAccess
                         : ReflectionHelper.GetPropertyInfo(leftCondition),
                 RightType = typeof (TY),
                 RightColumn = rightCondition.Body.NodeType == ExpressionType.Parameter
-                        ? PropertyHelper.GetProperty(typeof(TY), "Id").ContainedProperty 
+                        ? PropertyHelper.GetProperty(typeof(TY), "Id").ContainedProperty
                         : ReflectionHelper.GetPropertyInfo(rightCondition),
                 IsLeftOuterJoin = false
             });

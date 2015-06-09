@@ -109,7 +109,7 @@ namespace Evergreen.Dwarf.DataAccess
         {
             //ToDo:C# bug? :(
             return PropertyHelper.GetProperty(typeof(T), column.Name).ContainedProperty;
-//            return typeof(T).GetProperty(column.Name);
+//            return typeof(T).GetPropertyInfo(column.Name);
         }
 
         #endregion GetColumn

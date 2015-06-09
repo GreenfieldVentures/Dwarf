@@ -122,7 +122,7 @@ namespace Evergreen.Dwarf
 
         #endregion GetPropertyInfo
 
-        #region GetProperty
+        #region GetPropertyInfo
 
         public static ExpressionProperty GetProperty(Type type, string propertyName)
         {
@@ -138,7 +138,7 @@ namespace Evergreen.Dwarf
             return GetProperty(typeof (T), propertyName);
         }
 
-        #endregion GetProperty
+        #endregion GetPropertyInfo
 
         #region GetProperties
 

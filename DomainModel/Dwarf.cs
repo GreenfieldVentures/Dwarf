@@ -1159,7 +1159,7 @@ namespace Evergreen.Dwarf
             return backingField;
         }
 
-        #endregion GetProperty        
+        #endregion GetProperty   
         
         #region SetProperty
 

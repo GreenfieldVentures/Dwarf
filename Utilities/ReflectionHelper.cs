@@ -12,63 +12,33 @@ namespace Evergreen.Dwarf.Utilities
     /// </summary>
     public static class ReflectionHelper
     {
-        #region GetPropertyInfo
-
-        /// <summary>
-        /// Extracts a PropertyInfo object from the supplied expression and returns the name
-        /// </summary>
-        public static PropertyInfo GetPropertyInfo<T>(Expression<Func<T, object>> expression)
+        private static string GetMemberName(this LambdaExpression memberSelector)
         {
-            return ExtractPropertyInfo(expression);
-        }        
-        
-        /// <summary>
-        /// Extracts a PropertyInfo object from the supplied expression and returns the name
-        /// </summary>
-        public static PropertyInfo GetPropertyInfo<T, TY>(Expression<Func<T, TY>> expression)
-        {
-            return ExtractPropertyInfo(expression);
-        }
-
-        /// <summary>
-        /// Extracts a PropertyInfo object from the supplied expression
-        /// </summary>
-        private static PropertyInfo ExtractPropertyInfo(Expression lambdaExpression)
-        {
-            Expression expressionToCheck = lambdaExpression;
-
-            var done = false;
-
-            while (!done)
+            Func<Expression, string> nameSelector = null;  //recursive func
+            nameSelector = e => //or move the entire thing to a separate recursive method
             {
-                switch (expressionToCheck.NodeType)
+                switch (e.NodeType)
                 {
-                    case ExpressionType.Convert:
-                        expressionToCheck = ((UnaryExpression)expressionToCheck).Operand;
-                        break;
-                    case ExpressionType.Lambda:
-                        expressionToCheck = ((LambdaExpression)expressionToCheck).Body;
-                        break;
+                    case ExpressionType.Parameter:
+                        return ((ParameterExpression)e).Name;
                     case ExpressionType.MemberAccess:
-                        var memberExpression = ((MemberExpression)expressionToCheck);
-
-                        if (memberExpression.Expression.NodeType != ExpressionType.Parameter && memberExpression.Expression.NodeType != ExpressionType.Convert)
-                        {
-                            throw new ArgumentException(string.Format("Expression '{0}' must resolve to top-level member.", lambdaExpression), "lambdaExpression");
-                        }
-
-                        var member = memberExpression.Member as PropertyInfo;
-                        return member;
+                        return ((MemberExpression)e).Member.Name;
+                    case ExpressionType.Call:
+                        return ((MethodCallExpression)e).Method.Name;
+                    case ExpressionType.Convert:
+                    case ExpressionType.ConvertChecked:
+                        return nameSelector(((UnaryExpression)e).Operand);
+                    case ExpressionType.Invoke:
+                        return nameSelector(((InvocationExpression)e).Expression);
+                    case ExpressionType.ArrayLength:
+                        return "Length";
                     default:
-                        done = true;
-                        break;
+                        throw new Exception("not a proper member selector");
                 }
-            }
+            };
 
-            return null;
+            return nameSelector(memberSelector.Body);
         }
-
-        #endregion GetPropertyInfo
 
         #region GetPropertyName
 
@@ -77,7 +47,7 @@ namespace Evergreen.Dwarf.Utilities
         /// </summary>
         public static string GetPropertyName<T>(Expression<Func<T, object>> expression)
         {
-            return ExtractPropertyName(expression);
+            return GetMemberName(expression);
         }       
         
         /// <summary>
@@ -85,19 +55,23 @@ namespace Evergreen.Dwarf.Utilities
         /// </summary>
         public static string GetPropertyName<T, TY>(Expression<Func<T, TY>> expression)
         {
-            return ExtractPropertyName(expression);
+            return GetMemberName(expression);
         }
+        
+        #endregion GetPropertyName
+
+        #region GetPropertyInfo
 
         /// <summary>
         /// Extracts a PropertyInfo object from the supplied expression and returns the name
         /// </summary>
-        private static string ExtractPropertyName(Expression lambdaExpression)
+        public static PropertyInfo GetPropertyInfo<T, TY>(Expression<Func<T, TY>> expression)
         {
-            var pi = ExtractPropertyInfo(lambdaExpression);
+            var name = GetMemberName(expression);
 
-            return pi != null ? pi.Name : string.Empty;
+            return PropertyHelper.GetProperty<T>(name).ContainedProperty;
         }
 
-        #endregion GetPropertyName
+        #endregion GetPropertyInfo
     }
 }
