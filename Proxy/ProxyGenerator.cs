@@ -55,7 +55,7 @@ namespace Evergreen.Dwarf.Proxy
                 getMethodIL.Emit(OpCodes.Ldflda, backingField);
                 getMethodIL.Emit(OpCodes.Ldarg_0);
                 getMethodIL.Emit(OpCodes.Ldflda, accessedField);
-                getMethodIL.Emit(OpCodes.Call, baseType.GetMethod("GetPropertyInfo", BindingFlags.Instance | BindingFlags.NonPublic).MakeGenericMethod(new[] { pi.PropertyType }));
+                getMethodIL.Emit(OpCodes.Call, baseType.GetMethod("GetProperty", BindingFlags.Instance | BindingFlags.NonPublic).MakeGenericMethod(new[] { pi.PropertyType }));
                 getMethodIL.Emit(OpCodes.Ret);
 
                 var setMethodIL = typeBuilder.DefineMethod("set_" + propertyName, attribs, null, new[] { returntype }).GetILGenerator();
