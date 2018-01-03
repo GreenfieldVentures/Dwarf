@@ -4,13 +4,8 @@ using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
 using System.Data;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Data.SqlClient;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Caching;
-using System.Web.Management;
 using Evergreen.Dwarf.Attributes;
 using Evergreen.Dwarf.Extensions;
 using Evergreen.Dwarf.Interfaces;
@@ -239,7 +234,7 @@ namespace Evergreen.Dwarf.DataAccess
         {
             var type = DbContextHelper<T>.ClearCacheForType(DwarfHelper.DeProxyfy(dwarf));
 
-            dwarf.Id = customId.HasValue ? customId.Value : Guid.NewGuid();
+            dwarf.Id = customId ?? Guid.NewGuid();
 
             ExecuteNonQuery<T, TY>(new QueryBuilder<T>().InsertInto(type).Values(dwarf));
 
@@ -679,6 +674,9 @@ namespace Evergreen.Dwarf.DataAccess
         {
             var con = DbContextHelper<T, TY>.OpenConnection();
 
+            if (CacheManager.TryGetCache(query, out TY f))
+                return f ;
+
             var command = CreateCommand<T>(query, con);
 
             object result;
@@ -702,12 +700,12 @@ namespace Evergreen.Dwarf.DataAccess
             }
 
             if (result is TY)
-                return (TY)result;
+                return CacheManager.SetCache(query, (TY)result);
 
             if (result is DBNull || result == null)
-                return default(TY);
+                return CacheManager.SetCache(query, default(TY));
 
-            return (TY)Convert.ChangeType(result, typeof(TY));
+            return CacheManager.SetCache(query, (TY)Convert.ChangeType(result, typeof(TY)));
         }
 
         #endregion ExecuteScalar

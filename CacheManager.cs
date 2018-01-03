@@ -104,7 +104,7 @@ namespace Evergreen.Dwarf
         /// <summary>
         /// Cache the supplied Dwarf
         /// </summary>
-        internal static T SetCache<T>(string key, T value) where T : Dwarf<T>, new()
+        internal static T SetCache<T>(string key, T value)// where T : Dwarf<T>, new()
         {
             if (Cache == null)
                 return value;
@@ -112,18 +112,19 @@ namespace Evergreen.Dwarf
             return (T)Insert(GetUserKey(key), value, AggregateCacheDependencies<T>());
         }
 
+
         #endregion SetCache
 
         #region TryGetCache
 
-        internal static bool TryGetCache<T>(Guid id, out T result) where T : Dwarf<T>, new()
+        internal static bool TryGetCache<T>(Guid id, out T result)
         {
             return TryGetCache(id.ToString(), out result);
         }
 
-        internal static bool TryGetCache<T>(string key, out T result) where T : Dwarf<T>, new()
+        internal static bool TryGetCache<T>(string key, out T result)
         {
-            result = null;
+            result = default(T);
 
             if (Cache == null)
                 return false;

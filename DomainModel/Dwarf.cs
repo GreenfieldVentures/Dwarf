@@ -259,7 +259,7 @@ namespace Evergreen.Dwarf
                 else
                     DbContextHelper<T>.UnRegisterInvalidObject(this);
 
-                var actionType = AuditLogTypes.Updated;
+                var auditLogType = AuditLogTypes.Updated;
               
                 var traces = CreateTraceEventsForProperties();
 
@@ -270,11 +270,11 @@ namespace Evergreen.Dwarf
                 }
                 else
                 {
-                    actionType = AuditLogTypes.Created;
+                    auditLogType = AuditLogTypes.Created;
                     DwarfContext<T>.GetDatabase().Insert<T, T>(this, Id);
                 }
 
-                CreateAuditLog(actionType, traces);
+                CreateAuditLog(auditLogType, traces);
                 PersistOneToManyCollections();
                 PersistManyToManyCollections(); 
 
